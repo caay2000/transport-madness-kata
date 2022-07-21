@@ -2,7 +2,6 @@ package com.github.caay2000.ttk
 
 import com.github.caay2000.ttk.application.Application
 import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.infra.provider.DefaultWorldProvider
 
 class App {
@@ -14,7 +13,7 @@ class App {
 
         val application = Application(configuration, provider)
 
-        return application.invoke(Position(0, 0), Position(0, 0))
+        return application.invoke()
     }
 }
 

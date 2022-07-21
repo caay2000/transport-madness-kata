@@ -17,8 +17,8 @@ class ApplicationIntegrationTest {
     private val provider: WorldProvider = DefaultWorldProvider()
 
     @ParameterizedTest
-    @MethodSource("examples")
-    fun `asaas`(startPosition: Position, destination: Position, turns: Int) {
+    @MethodSource("exercise 1 data")
+    fun `execise 1`(startPosition: Position, destination: Position, turns: Int) {
 
         val sut = Application(configuration, provider)
 
@@ -27,7 +27,7 @@ class ApplicationIntegrationTest {
 
     companion object {
         @JvmStatic
-        fun examples(): Stream<Arguments> {
+        fun `exercise 1 data`(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(Position(0, 0), Position(3, 2), 5),
                 Arguments.of(Position(0, 0), Position(0, 4), 4),
