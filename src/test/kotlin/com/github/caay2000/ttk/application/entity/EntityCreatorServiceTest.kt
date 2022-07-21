@@ -19,7 +19,7 @@ internal class EntityCreatorServiceTest {
     @Test
     fun `entity is added to world correctly`() {
 
-        provider.set(WorldMother.empty())
+        provider.set(WorldMother.empty(3, 3))
 
         sut.invoke(Position(1, 1)).shouldBeRight {
             assertThat(it.entities).hasSize(1)
@@ -30,8 +30,8 @@ internal class EntityCreatorServiceTest {
     @ParameterizedTest
     @CsvSource(value = ["-1,0", "0,-1", "1,0", "0,1"])
     fun `entity added out of bounds throw exception`(x: Int, y: Int) {
-        provider.set(WorldMother.empty(1, 1))
+        provider.set(WorldMother.empty(x, y))
 
-        sut.invoke(Position(x, y)).shouldBeLeftOfType<InvalidEntityPositionException>()
+        sut.invoke(Position(1, 1)).shouldBeLeftOfType<InvalidEntityPositionException>()
     }
 }

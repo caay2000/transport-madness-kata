@@ -4,11 +4,6 @@ import arrow.core.Either
 
 interface WorldProvider {
 
-    fun get(): Either<ProviderException, World>
-    fun set(world: World): Either<ProviderException, World>
-
-    class ProviderException : RuntimeException {
-        constructor(message: String) : super(message)
-        constructor(cause: Throwable) : super(cause)
-    }
+    fun get(): Either<Throwable, World>
+    fun set(world: World): Either<Throwable, World>
 }
