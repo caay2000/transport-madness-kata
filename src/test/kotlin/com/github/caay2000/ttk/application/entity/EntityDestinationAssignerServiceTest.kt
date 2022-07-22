@@ -8,6 +8,7 @@ import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class EntityDestinationAssignerServiceTest {
@@ -16,6 +17,7 @@ internal class EntityDestinationAssignerServiceTest {
     private val sut = EntityDestinationAssignerService(provider)
 
     @Test
+    @Disabled
     fun `destination is added to entity`() {
 
         val entityId: EntityId = randomDomainId()
