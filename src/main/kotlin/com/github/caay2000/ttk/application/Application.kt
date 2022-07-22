@@ -27,8 +27,15 @@ class Application(
 
         createWorld()
         createEntity(0, 0)
-        updateWorld()
+
+        while (checkRouteCompleted().not()) {
+            updateWorld()
+            if (provider.get().bind().currentTurn > 100)
+                return -1
+        }
 
         return provider.get().bind().currentTurn
     }
+
+    private fun checkRouteCompleted(): Boolean = provider.get().bind().entities.values.first().finished
 }

@@ -1,6 +1,5 @@
 package com.github.caay2000.ttk.application.entity
 
-import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.infra.provider.DefaultWorldProvider
 import com.github.caay2000.ttk.mother.WorldMother
@@ -19,19 +18,18 @@ internal class EntityCreatorServiceTest {
     @Test
     fun `entity is added to world correctly`() {
 
-        provider.set(WorldMother.empty(3, 3))
+        provider.set(WorldMother.empty())
 
         sut.invoke(Position(1, 1)).shouldBeRight {
             assertThat(it.entities).hasSize(1)
-            assertThat(it).isEqualTo(provider.get().bind())
         }
     }
 
     @ParameterizedTest
     @CsvSource(value = ["-1,0", "0,-1", "1,0", "0,1"])
     fun `entity added out of bounds throw exception`(x: Int, y: Int) {
-        provider.set(WorldMother.empty(x, y))
+        provider.set(WorldMother.empty(1, 1))
 
-        sut.invoke(Position(1, 1)).shouldBeLeftOfType<InvalidEntityPositionException>()
+        sut.invoke(Position(x, y)).shouldBeLeftOfType<InvalidEntityPositionException>()
     }
 }

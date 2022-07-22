@@ -47,11 +47,12 @@ pitest {
     avoidCallsTo.add("kotlin.jvm.internal")
     mutators.addAll("STRONGER", "EXTENDED")
     detectInlinedCode.set(true)
+    timestampedReports.set(false)
     threads.set(4)
     failWhenNoMutations.set(false)
     dependencies {
         pitest("com.groupcdg.pitest:pitest-accelerator-junit5:1.0.0")
-        pitest("com.groupcdg.pitest:extended-mutators:0.1.2")
-        pitest("com.groupcdg.pitest:pitest-kotlin-plugin:0.1.1")
+        pitest("com.groupcdg.pitest:extended-mutators:0.1.4")
+        pitest("com.groupcdg.pitest:pitest-kotlin-plugin:0.1.2")
     }
 }
