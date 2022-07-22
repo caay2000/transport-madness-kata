@@ -20,7 +20,7 @@ class EntityCreatorService(private val worldProvider: WorldProvider) {
             .mapLeft { UnknownEntityException(it) }
 
     private fun World.createEntity(position: Position): Either<EntityException, World> =
-        Either.catch { this.addEntity(Entity(position)) }
+        Either.catch { this.putEntity(Entity.create(position = position)) }
             .mapLeft { UnknownEntityException(it) }
 
     private fun World.guardPosition(position: Position): Either<EntityException, World> =
