@@ -19,6 +19,7 @@ internal class WorldCreatorServiceTest {
     @Test
     fun `world is created correctly`() {
 
+        println(configuration)
         sut.invoke(configuration).shouldBeRight {
             assertThat(it).isEqualTo(WorldMother.empty(configuration.worldWidth, configuration.worldHeight))
             assertThat(it).isEqualTo(provider.get().bind())

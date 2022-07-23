@@ -6,8 +6,8 @@ import java.util.Random
 object ConfigurationMother {
 
     fun random(
-        worldWidth: Int = Random().nextInt(1, 5),
-        worldHeight: Int = Random().nextInt(1, 5),
+        worldWidth: Int = Random().nextInt(3, 5),
+        worldHeight: Int = worldWidth + 1,
     ): Configuration =
         Configuration(
             worldWidth = worldWidth,

@@ -1,5 +1,6 @@
 package com.github.caay2000.ttk.application.entity
 
+import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.infra.provider.DefaultWorldProvider
 import com.github.caay2000.ttk.mother.WorldMother
@@ -22,6 +23,7 @@ internal class EntityCreatorServiceTest {
 
         sut.invoke(Position(1, 1)).shouldBeRight {
             assertThat(it.entities).hasSize(1)
+            assertThat(it).isEqualTo(provider.get().bind())
         }
     }
 

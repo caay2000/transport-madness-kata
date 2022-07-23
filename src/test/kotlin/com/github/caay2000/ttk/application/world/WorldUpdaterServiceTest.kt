@@ -22,4 +22,15 @@ internal class WorldUpdaterServiceTest {
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }
+
+    @Test
+    fun `entities are also updated`() {
+
+        provider.set(WorldMother.empty(3, 3))
+
+        sut.invoke().shouldBeRight {
+            assertThat(it.currentTurn).isEqualTo(1)
+            assertThat(it).isEqualTo(provider.get().bind())
+        }
+    }
 }

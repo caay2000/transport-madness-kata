@@ -16,13 +16,13 @@ so after 5 updates it should be in the final destination (3,2)
     INPUT
     0,0 3,2
     OUTPUT
-    4
+    5
 
     Test data 2
     INPUT
     0,0 0,4
     OUTPUT
-    3
+    4
 
 
 
