@@ -2,14 +2,14 @@ package com.github.caay2000.ttk.application.entity
 
 import arrow.core.Either
 import com.github.caay2000.ttk.domain.entity.Entity
-import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
+import com.github.caay2000.ttk.domain.world.WorldProvider
 import com.github.caay2000.ttk.shared.EntityId
 
-abstract class EntityService(protected val provider: Provider) {
+abstract class EntityService(protected val worldProvider: WorldProvider) {
 
     protected fun findWorld(): Either<EntityException, World> =
-        provider.get()
+        worldProvider.get()
             .mapLeft { UnknownEntityException(it) }
 
     protected fun World.findEntity(entityId: EntityId): Either<EntityException, Entity> =
@@ -17,6 +17,6 @@ abstract class EntityService(protected val provider: Provider) {
             .mapLeft { EntityNotFound(entityId) }
 
     protected fun World.save(): Either<EntityException, World> =
-        provider.set(this)
+        worldProvider.set(this)
             .mapLeft { UnknownEntityException(it) }
 }
