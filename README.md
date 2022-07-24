@@ -9,20 +9,19 @@ one [here](https://github.com/Softwarepark/exercises/blob/master/transport-tycoo
 
 Create a 4x6 map and make a vehicle with a route from (0,0) (top,left) to (3,2).
 
-Everytime the update method on the vehicle is called, the vehicle should do one step towards the destination, 
-so after 5 updates it should be in the final destination (3,2)
-    
+Everytime the update method on the vehicle is called, the vehicle should do one step towards the destination, so after 5
+updates it should be in the final destination (3,2)
+
     |                | data 1 | data 2 |
     |----------------|--------|--------|
     | start position |   0,0  |   0,0  |
     | destination    |   3,2  |   0,4  |
     | turns          |    5   |    4   |
 
-
 ## Exercise 2
 
-Now that we have a moving vehicle, let's create a route for it.
-The idea is to assign a route for the vehicle, for example A(0,0) - B(3,2) - C(1,4) and then back to A  
+Now that we have a moving vehicle, let's create a route for it. The idea is to assign a route for the vehicle, for
+example A(0,0) - B(3,2) - C(1,4) and then back to A
 
     |   | 0 | 1 | 2 | 3 | 4 | 5 |
     |---|---|---|---|---|---|---|
@@ -32,7 +31,7 @@ The idea is to assign a route for the vehicle, for example A(0,0) - B(3,2) - C(1
     | 3 | \ | _ | B | _ | / |   |
 
 We also want to stay 1 turn in each point, so the time to complete the route, from A to A again will be:
- 
+
     |A stop  |  1 turn  |
     |A to B  |  5 turns |
     |B stop  |  1 turn  |
@@ -41,3 +40,5 @@ We also want to stay 1 turn in each point, so the time to complete the route, fr
     |C to A  |  5 turn  |
     |TOTAL   | 17 turns |
 
+You can also try with a circular route repeating some stops, like for example (0,0) -> (3,2) -> (1,4) -> (3,2). This
+will take 22 turns to complete
