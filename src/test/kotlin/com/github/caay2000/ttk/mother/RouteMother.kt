@@ -8,6 +8,6 @@ object RouteMother {
     fun random(stop: Position, vararg stops: Position) =
         Route(listOf(stop) + stops.toList())
 
-    fun random(stops: List<Position>, stopIndex: Int = 0) =
-        Route(stops = stops, stopIndex = stopIndex)
+    fun random(stops: List<Position>, currentDestination: Position = stops.first()) =
+        Route(stops = stops, currentDestination = currentDestination)
 }

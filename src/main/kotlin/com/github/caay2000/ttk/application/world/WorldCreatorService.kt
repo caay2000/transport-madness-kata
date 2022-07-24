@@ -3,20 +3,25 @@ package com.github.caay2000.ttk.application.world
 import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
-import com.github.caay2000.ttk.domain.world.WorldProvider
 
-class WorldCreatorService(private val worldProvider: WorldProvider) {
+class WorldCreatorService(private val provider: Provider) {
 
-    fun invoke(configuration: Configuration): Either<WorldException, World> =
-        createWorld(configuration)
+    fun invoke(): Either<WorldException, World> =
+        findConfiguration()
+            .flatMap { configuration -> createWorld(configuration) }
             .flatMap { world -> world.save() }
+
+    private fun findConfiguration(): Either<WorldException, Configuration> =
+        provider.getConfiguration()
+            .mapLeft { UnknownWorldException(it) }
 
     private fun createWorld(configuration: Configuration): Either<WorldException, World> =
         Either.catch { World.create(configuration.worldWidth, configuration.worldHeight) }
             .mapLeft { UnknownWorldException(it) }
 
     private fun World.save(): Either<WorldException, World> =
-        worldProvider.set(this)
+        provider.set(this)
             .mapLeft { UnknownWorldException(it) }
 }
