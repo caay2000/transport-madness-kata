@@ -9,6 +9,6 @@ sealed class EntityException : RuntimeException {
 }
 
 data class EntityNotFound(val entityId: EntityId) : EntityException("entity $entityId not found")
-object InvalidRouteException : EntityException("invalid route")
+data class InvalidRouteException(val stops: List<Position>) : EntityException("invalid route for $stops")
 data class InvalidEntityPositionException(val position: Position) : EntityException("invalid position $position")
 data class UnknownEntityException(override val cause: Throwable) : EntityException(cause)

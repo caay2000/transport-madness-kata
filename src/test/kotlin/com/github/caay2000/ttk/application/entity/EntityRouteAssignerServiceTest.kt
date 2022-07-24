@@ -6,6 +6,7 @@ import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.WorldMother
+import io.kotest.assertions.arrow.either.shouldBeLeftOfType
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,7 +17,7 @@ internal class EntityRouteAssignerServiceTest {
     private val sut = EntityRouteAssignerService(provider)
 
     @Test
-    fun `destination is added to entity`() {
+    fun `route is added to entity`() {
 
         val entity = EntityMother.random()
         val world = WorldMother.oneVehicle(entity = entity)
@@ -27,5 +28,15 @@ internal class EntityRouteAssignerServiceTest {
             assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(route = Route(stops)))
             assertThat(it).isEqualTo(provider.get().bind())
         }
+    }
+
+    @Test
+    fun `should fail if route is invlaid`() {
+
+        val entity = EntityMother.random()
+        val world = WorldMother.oneVehicle(entity = entity)
+        provider.set(world)
+
+        sut.invoke(entity.id, emptyList()).shouldBeLeftOfType<InvalidRouteException>()
     }
 }

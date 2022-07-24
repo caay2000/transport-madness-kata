@@ -1,6 +1,6 @@
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.10"
     id("info.solidsoft.pitest") version "1.7.4"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
@@ -26,7 +26,7 @@ tasks.test {
 
 dependencies {
     implementation("org.jgrapht:jgrapht-core:1.5.1")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
     implementation("io.arrow-kt:arrow-core:1.0.1")
 
     testImplementation(kotlin("test"))
@@ -47,11 +47,12 @@ pitest {
     avoidCallsTo.add("kotlin.jvm.internal")
     mutators.addAll("STRONGER", "EXTENDED")
     detectInlinedCode.set(true)
+    timestampedReports.set(false)
     threads.set(4)
     failWhenNoMutations.set(false)
     dependencies {
         pitest("com.groupcdg.pitest:pitest-accelerator-junit5:1.0.0")
-        pitest("com.groupcdg.pitest:extended-mutators:0.1.2")
-        pitest("com.groupcdg.pitest:pitest-kotlin-plugin:0.1.1")
+        pitest("com.groupcdg.pitest:extended-mutators:0.1.4")
+        pitest("com.groupcdg.pitest:pitest-kotlin-plugin:0.1.2")
     }
 }
