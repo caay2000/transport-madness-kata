@@ -20,10 +20,9 @@ class EntityRouteAssignerService(provider: Provider) : EntityService(provider) {
         findEntity(entityId)
             .flatMap { entity -> entity.updateRoute(stops) }
             .map { entity -> putEntity(entity) }
-            .mapLeft { UnknownEntityException(it) }
 
     private fun Entity.updateRoute(stops: List<Position>): Either<EntityException, Entity> =
         Either.catch { Route.create(stops) }
-            .map { route -> this.setRoute(route) }
-            .mapLeft { InvalidRouteException }
+            .map { route -> setRoute(route) }
+            .mapLeft { InvalidRouteException(stops) }
 }

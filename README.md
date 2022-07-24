@@ -18,6 +18,12 @@ updates it should be in the final destination (3,2)
     | destination    |   3,2  |   0,4  |
     | turns          |    5   |    4   |
 
+### Tip:
+
+One way to make the vehicle decide the route, is to check for each possible movement which one will be closest to the
+final destination. It's not the best algorithm, but will do the trick at the moment. We'll change that in future
+exercises
+
 ## Exercise 2
 
 Now that we have a moving vehicle, let's create a route for it. The idea is to assign a route for the vehicle, for

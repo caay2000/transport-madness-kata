@@ -81,7 +81,7 @@ internal class EntityUpdaterServiceTest {
     fun `entity moves to next route destination after configuration$turnsStoppedInStation turns in STOP`() {
 
         val configuration = ConfigurationMother.random()
-        val route = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), currentDestination = Position(3, 0))
+        val route = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), stopIndex = 0)
         val entity: Entity = EntityMother.random(
             currentPosition = Position(3, 0),
             currentDuration = configuration.turnsStoppedInStation,
@@ -96,7 +96,7 @@ internal class EntityUpdaterServiceTest {
             assertThat(it.getEntity(entity.id)).isEqualTo(
                 entity.copy(
                     currentPosition = Position(3, 1),
-                    route = route.copy(currentDestination = Position(3, 4)),
+                    route = route.copy(stopIndex = 1),
                     status = EntityStatus.IN_ROUTE
                 )
             )
@@ -108,7 +108,7 @@ internal class EntityUpdaterServiceTest {
     fun `moves to first stop after configuration$turnsStoppedInStation turns in final stop`() {
 
         val configuration = ConfigurationMother.random()
-        val route = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), currentDestination = Position(3, 4))
+        val route = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), stopIndex = 1)
         val entity: Entity = EntityMother.random(
             currentPosition = Position(3, 4),
             currentDuration = configuration.turnsStoppedInStation,
@@ -123,7 +123,7 @@ internal class EntityUpdaterServiceTest {
             assertThat(it.getEntity(entity.id)).isEqualTo(
                 entity.copy(
                     currentPosition = Position(3, 3),
-                    route = route.copy(currentDestination = Position(3, 0)),
+                    route = route.copy(stopIndex = 0),
                     status = EntityStatus.IN_ROUTE
                 )
             )
