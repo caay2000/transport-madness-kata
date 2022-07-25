@@ -6,7 +6,7 @@ import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
 
-class WorldCreatorService(private val provider: Provider) {
+class WorldCreatorService(provider: Provider) : WorldService(provider) {
 
     fun invoke(): Either<WorldException, World> =
         findConfiguration()
@@ -21,7 +21,4 @@ class WorldCreatorService(private val provider: Provider) {
         Either.catch { World.create(configuration.worldWidth, configuration.worldHeight) }
             .mapLeft { UnknownWorldException(it) }
 
-    private fun World.save(): Either<WorldException, World> =
-        provider.set(this)
-            .mapLeft { UnknownWorldException(it) }
 }

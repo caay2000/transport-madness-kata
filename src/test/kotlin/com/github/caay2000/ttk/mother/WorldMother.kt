@@ -21,8 +21,8 @@ object WorldMother {
     fun oneVehicle(entity: Entity = EntityMother.random()): World =
         empty(entities = mapOf(entity.id to entity))
 
-    private fun createCells(width: Int, height: Int): List<Cell> {
-        val cells = mutableListOf<Cell>()
+    private fun createCells(width: Int, height: Int): Set<Cell> {
+        val cells = mutableSetOf<Cell>()
         for (x in 0 until width) {
             for (y in 0 until height) {
                 cells.add(Cell(x, y))

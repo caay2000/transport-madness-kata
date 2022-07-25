@@ -48,3 +48,23 @@ We also want to stay 1 turn in each point, so the time to complete the route, fr
 
 You can also try with a circular route repeating some stops, like for example (0,0) -> (3,2) -> (1,4) -> (3,2). This
 will take 22 turns to complete
+
+## Exercise 3
+
+Let's create real routes with real infrastructure. We want to create highways or railways from point to point, and then
+allow vehicles just to move on that routes.
+
+Using the same examples as before, let's create a route from A(0,0) to B(3,2) and from B to C(1,4). Then use the same
+routes, from A -> B -> C (21 turns) and A -> B -> C -> B (22 turns) and check the times
+
+    |   | 0 | 1 | 2 | 3 | 4 | 5 |
+    |---|---|---|---|---|---|---|
+    | 0 | A |   |   |   |   |   |
+    | 1 | ¦ |   |   |   | C |   |
+    | 2 | ¦ |   |   |   | ¦ |   |
+    | 3 | \ | _ | B | _ | / |   |
+
+### Tip:
+
+If you want, you can use a graph library like for example jGraphT!
+

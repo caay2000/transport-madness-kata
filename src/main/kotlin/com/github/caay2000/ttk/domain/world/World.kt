@@ -5,15 +5,15 @@ import com.github.caay2000.ttk.shared.EntityId
 
 data class World(
     val currentTurn: Int,
-    val cells: List<Cell>,
+    val cells: Set<Cell>,
     val entities: Map<EntityId, Entity>
 ) {
 
     companion object {
         fun create(width: Int, height: Int) = World(0, createCells(width, height), emptyMap())
 
-        private fun createCells(width: Int, height: Int): List<Cell> {
-            val cells = mutableListOf<Cell>()
+        private fun createCells(width: Int, height: Int): Set<Cell> {
+            val cells = mutableSetOf<Cell>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
                     cells.add(Cell(x, y))
