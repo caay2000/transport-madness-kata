@@ -20,5 +20,4 @@ class WorldCreatorService(provider: Provider) : WorldService(provider) {
     private fun createWorld(configuration: Configuration): Either<WorldException, World> =
         Either.catch { World.create(configuration.worldWidth, configuration.worldHeight) }
             .mapLeft { UnknownWorldException(it) }
-
 }
