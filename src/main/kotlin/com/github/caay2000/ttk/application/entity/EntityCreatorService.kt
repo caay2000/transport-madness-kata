@@ -4,10 +4,10 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
-import com.github.caay2000.ttk.domain.world.WorldProvider
 
-class EntityCreatorService(worldProvider: WorldProvider) : EntityService(worldProvider) {
+class EntityCreatorService(provider: Provider) : EntityService(provider) {
 
     fun invoke(position: Position): Either<EntityException, World> =
         findWorld()
@@ -16,11 +16,12 @@ class EntityCreatorService(worldProvider: WorldProvider) : EntityService(worldPr
             .flatMap { world -> world.save() }
 
     private fun World.createEntity(position: Position): Either<EntityException, World> =
-        Either.catch { this.putEntity(Entity.create(position = position)) }
+        provider.getConfiguration()
+            .map { configuration -> putEntity(Entity.create(position = position, configuration = configuration)) }
             .mapLeft { UnknownEntityException(it) }
 
     private fun World.guardPosition(position: Position): Either<EntityException, World> =
-        Either.catch { this.getCell(position) }
+        Either.catch { getCell(position) }
             .map { this }
             .mapLeft { InvalidEntityPositionException(position) }
 }

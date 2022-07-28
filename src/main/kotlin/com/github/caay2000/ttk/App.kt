@@ -3,18 +3,18 @@ package com.github.caay2000.ttk
 import com.github.caay2000.ttk.application.Application
 import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.world.Position
-import com.github.caay2000.ttk.infra.provider.DefaultWorldProvider
+import com.github.caay2000.ttk.infra.provider.DefaultProvider
 
 class App {
 
     fun invoke(src: String, dest: String): Int {
 
         val configuration = Configuration(4, 6)
-        val provider = DefaultWorldProvider()
+        val provider = DefaultProvider()
 
         val application = Application(configuration, provider)
 
-        return application.invoke(Position(0, 0), Position(0, 0))
+        return application.invoke(Position(0, 0), listOf(Position(0, 0)))
     }
 }
 
