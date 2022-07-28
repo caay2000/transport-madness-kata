@@ -13,12 +13,14 @@ data class Entity(
     val currentDuration: Int,
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
-    val configuration: Configuration,
-    val movementStrategy: MovementStrategy = SimpleMovementStrategy()
+    @Transient
+    val configuration: Configuration
 ) {
 
+    private val movementStrategy: MovementStrategy = SimpleMovementStrategy()
+
     companion object {
-        fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration) = Entity(
+        fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
             id = id,
             currentPosition = position,
             currentDuration = 0,

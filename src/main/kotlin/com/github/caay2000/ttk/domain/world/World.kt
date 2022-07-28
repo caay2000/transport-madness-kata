@@ -29,4 +29,15 @@ data class World(
     fun putEntity(entity: Entity): World = copy(entities = entities + (entity.id to entity))
 
     fun update(): World = copy(currentTurn = currentTurn + 1)
+
+    fun createConnection(path: Set<Cell>): World =
+        path.fold(initial = this) { world, cell ->
+            world.replaceCell(cell)
+        }
+
+    private fun replaceCell(cell: Cell): World =
+        this.copy(cells = (cells.filterNot { it.samePosition(cell) } + cell).toSet())
+
+    val connectedCells: Set<Cell>
+        get() = cells.filter { it.connected }.toSet()
 }

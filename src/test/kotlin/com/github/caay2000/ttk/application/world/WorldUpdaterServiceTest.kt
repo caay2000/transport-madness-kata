@@ -15,7 +15,7 @@ internal class WorldUpdaterServiceTest {
     @Test
     fun `turn is updated correctly`() {
 
-        provider.set(WorldMother.empty(3, 3))
+        `world exists`()
 
         sut.invoke().shouldBeRight {
             assertThat(it.currentTurn).isEqualTo(1)
@@ -26,11 +26,13 @@ internal class WorldUpdaterServiceTest {
     @Test
     fun `entities are also updated`() {
 
-        provider.set(WorldMother.empty(3, 3))
+        `world exists`()
 
         sut.invoke().shouldBeRight {
             assertThat(it.currentTurn).isEqualTo(1)
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }
+
+    private fun `world exists`() = provider.set(WorldMother.empty(3, 3))
 }

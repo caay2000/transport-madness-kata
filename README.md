@@ -63,8 +63,3 @@ routes, from A -> B -> C (21 turns) and A -> B -> C -> B (22 turns) and check th
     | 1 | ¦ |   |   |   | C |   |
     | 2 | ¦ |   |   |   | ¦ |   |
     | 3 | \ | _ | B | _ | / |   |
-
-### Tip:
-
-If you want, you can use a graph library like for example jGraphT!
-

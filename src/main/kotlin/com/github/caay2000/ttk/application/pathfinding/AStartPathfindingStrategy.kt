@@ -1,39 +1,46 @@
-package com.github.caay2000.ttk.application.entity.pathfinding
+package com.github.caay2000.ttk.application.pathfinding
 
-import com.github.caay2000.ttk.application.entity.pathfinding.PathfindingStrategy.Node
+import arrow.core.Either
 import com.github.caay2000.ttk.domain.world.Cell
 import com.github.caay2000.ttk.domain.world.Position
 
-class AStartPathfindingStrategy : PathfindingStrategy {
+class AStartPathfindingStrategy(override val pathfindingConfiguration: PathfindingConfiguration) : PathfindingStrategy {
 
-    override fun invoke(cells: Set<Cell>, source: Cell, target: Cell): Path =
-        recursiveInvoke(
-            cells = Grid(cells.associate { it.position to Node(it, 1) }),
-            source = source,
-            target = target
-        )
+    override fun invoke(cells: Set<Cell>, source: Cell, target: Cell): Either<PathfindingException, PathfindingResult> =
+        Either.catch {
+            recursiveInvoke(
+                grid = createGrid(cells),
+                source = source,
+                target = target
+            )
+        }.mapLeft { UnknownPathfindingException(it) }
 
-    private fun recursiveInvoke(cells: Grid, source: Cell, target: Cell): Path {
+    private fun createGrid(cells: Set<Cell>): Grid = Grid(
+        cells.filter { if (pathfindingConfiguration.needConnection) it.connected else true }
+            .associateBy { it.position }
+    )
+
+    private fun recursiveInvoke(grid: Grid, source: Cell, target: Cell): PathfindingResult {
 
         val openVertices = mutableSetOf(source)
-        val closedVertices = mutableSetOf<Cell>()
+        val visitedVertices = mutableSetOf<Cell>()
         val costFromStart = mutableMapOf(source to 0)
         val estimatedTotalCost = mutableMapOf(source to source.distance(target))
         val cameFrom = mutableMapOf<Cell, Cell>()
 
         while (openVertices.size > 0) {
             val currentPos = openVertices.minBy { estimatedTotalCost.getValue(it) }
-            if (currentPos == target) {
+            if (currentPos.samePosition(target)) {
                 val path = generatePath(currentPos, cameFrom)
                 val cost = estimatedTotalCost.getValue(target)
-                return Path(path, cost)
+                return PathfindingResult(path, cost)
             }
             openVertices.remove(currentPos)
-            closedVertices.add(currentPos)
-            cells.getNeighbours(currentPos)
-                .filterNot { closedVertices.contains(it) }
+            visitedVertices.add(currentPos)
+            grid.getNeighbours(currentPos)
+                .filterNot { visitedVertices.contains(it) }
                 .forEach { neighbour ->
-                    val score = costFromStart.getValue(currentPos) + cells.moveCost(currentPos, neighbour)
+                    val score = costFromStart.getValue(currentPos) + grid.moveCost(currentPos, neighbour)
                     if (score < costFromStart.getOrDefault(neighbour, MAX_SCORE)) {
                         if (!openVertices.contains(neighbour)) {
                             openVertices.add(neighbour)
@@ -57,12 +64,12 @@ class AStartPathfindingStrategy : PathfindingStrategy {
         return path.toSet()
     }
 
-    data class Grid(val cells: Map<Position, Node>) {
+    data class Grid(val cells: Map<Position, Cell>) {
 
-        fun getNeighbours(position: Cell): Set<Cell> =
-            position.position.neighbours
+        fun getNeighbours(cell: Cell): Set<Cell> =
+            cell.position.neighbours
                 .filter { cells.containsKey(it) }
-                .map { cells.getValue(it).cell }
+                .map { cells.getValue(it) }
                 .toSet()
 
         fun moveCost(currentPos: Cell, neighbour: Cell): Int {
@@ -71,6 +78,6 @@ class AStartPathfindingStrategy : PathfindingStrategy {
     }
 
     companion object {
-        private const val MAX_SCORE = 99999999
+        private const val MAX_SCORE = Int.MAX_VALUE
     }
 }
