@@ -8,9 +8,10 @@ one [here](https://github.com/Softwarepark/exercises/blob/master/transport-tycoo
 It will include several exercises to create a nice transport simulation. Feel free to fork it and do them on your own
 with your own preferred language.
 
-All exercises will be published in `master` and a branch with my solution (_in Kotlin_) will be published after a while.
-You can always check my solution for guidance or propose improvements/discussion in the issues section. I'll answer as
-soon as I can.
+All exercises will be published in `master` and a branch with
+my [solution](https://github.com/caay2000/transport-madness-kata/tree/solution) (_in Kotlin_) will be published after a
+while. You can always check my solution for guidance or propose improvements/discussion in the issues section. I'll
+answer as soon as I can.
 
 ## Motivation
 
