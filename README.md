@@ -3,63 +3,41 @@
 This is a kata inspired by Transport Tycoon Kata by SoftwarePark. You can find the original
 one [here](https://github.com/Softwarepark/exercises/blob/master/transport-tycoon.md)
 
-# Transport Madness Exercises
+<kbd> <img src="readme/main_header.png" /> </kbd>
 
-## Exercise 1
+It will include several exercises to create a nice transport simulation. Feel free to fork it and do them on your own
+with your own preferred language.
 
-Create a 4x6 map and make a vehicle with a route from (0,0) (top,left) to (3,2).
+All exercises will be published in `master` and a branch with
+my [solution](https://github.com/caay2000/transport-madness-kata/tree/solution) (_in Kotlin_) will be published after a
+while. You can always check my solution for guidance or propose improvements/discussion in the issues section. I'll
+answer as soon as I can.
 
-Everytime the update method on the vehicle is called, the vehicle should do one step towards the destination, so after 5
-updates it should be in the final destination (3,2)
+## Motivation
 
-    |                | data 1 | data 2 |
-    |----------------|--------|--------|
-    | start position |   0,0  |   0,0  |
-    | destination    |   3,2  |   0,4  |
-    | turns          |    5   |    4   |
+I was interested in Transport Tycoon Kata by SoftwarePark, and created my version of it. I've done it to practice some
+architectural principles, but after a while, I wanted to change lots of things and created one branch after another with
+no final purpose. It made me feel lost and demotivated, so I decided to do something similar, close to what I wanted,
+but starting simple and making it more and more complex with each exercise.
 
-### Tip:
+The "final" idea in my head is something similar to Transport Tycoon, where there is a map with cities and industries,
+where you deliver goods from one place to another using trains, trucks or other transport methods. Each transport method
+will have its vehicles and paths (railways, highways...)
 
-One way to make the vehicle decide the route, is to check for each possible movement which one will be closest to the
-final destination. It's not the best algorithm, but will do the trick at the moment. We'll change that in future
-exercises
+So, let's start doing some exercises and have fun!
 
-## Exercise 2
+## Transport Madness Exercises
 
-Now that we have a moving vehicle, let's create a route for it. The idea is to assign a route for the vehicle, for
-example A(0,0) - B(3,2) - C(1,4) and then back to A
+### [Exercise 1 - Start](readme/exercise-1.md)
 
-    |   | 0 | 1 | 2 | 3 | 4 | 5 |
-    |---|---|---|---|---|---|---|
-    | 0 | A | - | - | - | \ |   |
-    | 1 | ¦ |   |   |   | C |   |
-    | 2 | ¦ |   |   |   | ¦ |   |
-    | 3 | \ | _ | B | _ | / |   |
+Create a simple map with a vehicle that moves from one point to another
 
-We also want to stay 1 turn in each point, so the time to complete the route, from A to A again will be:
+### [Exercise 2 - Routes I](readme/exercise-2.md)
 
-    |A stop  |  1 turn  |
-    |A to B  |  5 turns |
-    |B stop  |  1 turn  |
-    |B to C  |  4 turn  |
-    |C stop  |  1 turn  |
-    |C to A  |  5 turn  |
-    |TOTAL   | 17 turns |
+Assign a route to the vehicle
 
-You can also try with a circular route repeating some stops, like for example (0,0) -> (3,2) -> (1,4) -> (3,2). This
-will take 22 turns to complete
+### [Exercise 3 - Connections I](readme/exercise-3.md)
 
-## Exercise 3
+Create some connections that routes should follow
 
-Let's create real routes with real infrastructure. We want to create highways or railways from point to point, and then
-allow vehicles just to move on that routes.
-
-Using the same examples as before, let's create a route from A(0,0) to B(3,2) and from B to C(1,4). Then use the same
-routes, from A -> B -> C (21 turns) and A -> B -> C -> B (22 turns) and check the times
-
-    |   | 0 | 1 | 2 | 3 | 4 | 5 |
-    |---|---|---|---|---|---|---|
-    | 0 | A |   |   |   |   |   |
-    | 1 | ¦ |   |   |   | C |   |
-    | 2 | ¦ |   |   |   | ¦ |   |
-    | 3 | \ | _ | B | _ | / |   |
+### [More to Come](README.md)
