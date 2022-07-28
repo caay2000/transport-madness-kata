@@ -1,0 +1,7 @@
+#Licence file for pitest extensions
+#Sun May 29 21:24:03 BST 2022
+expires=29/05/2024
+keyVersion=1
+signature=FrMd+k1XiOrKW+C7T4/GkLbfzyz6SM8JLQ7YkShMQreQEARnkvnDnhEUb1cLbYUI3Jll4C89msdVLh0h1tiaXxIkxImIbfQAFQHKjVCjCjk5q3rwpSqoHN45wIfdse9Vkc8djOqCZ6TsS/0RGNTzE2oS3pCbIPkG+sykeTq6kIY\=
+packages=com.github.caay2000.ttk.*
+type=OSSS
