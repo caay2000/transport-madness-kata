@@ -1,2 +1,0 @@
-* text=auto
-*.xml filter=lfs diff=lfs merge=lfs -text
