@@ -4,39 +4,38 @@ import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.application.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.world.Cell
+import com.github.caay2000.ttk.domain.world.Location
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.World
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
 import com.github.caay2000.ttk.mother.world.CellMother
 import com.github.caay2000.ttk.shared.EntityId
+import com.github.caay2000.ttk.shared.LocationId
 
 object WorldMother {
 
-    val pathfindingStrategy = AStartPathfindingStrategy(PathfindingConfigurationMother.default(needConnection = false))
+    private val pathfindingStrategy = AStartPathfindingStrategy(PathfindingConfigurationMother.default(needConnection = false))
 
     fun empty(
         width: Int = 6,
         height: Int = 6,
-        entities: Map<EntityId, Entity> = emptyMap()
+        entities: Map<EntityId, Entity> = emptyMap(),
+        locations: Map<LocationId, Location> = emptyMap()
     ): World =
         World(
             currentTurn = 0,
             cells = createCells(width, height),
-            entities = entities
+            entities = entities,
+            locations = locations
         )
 
     fun connectedPaths(
         width: Int = 6,
         height: Int = 6,
         entities: Map<EntityId, Entity> = emptyMap(),
+        locations: Map<LocationId, Location> = emptyMap(),
         connectedPaths: Map<Position, List<Position>>
-    ): World = World(
-        currentTurn = 0,
-        cells = createCells(width, height),
-        entities = entities
-    ).let { world ->
-        world.connectPath(connectedPaths)
-    }
+    ): World = empty(width, height, entities, locations).connectPath(connectedPaths)
 
     fun oneVehicle(entity: Entity = EntityMother.random()): World =
         empty(entities = mapOf(entity.id to entity))

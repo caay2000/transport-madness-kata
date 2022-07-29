@@ -13,10 +13,6 @@ class WorldCreatorService(provider: Provider) : WorldService(provider) {
             .flatMap { configuration -> createWorld(configuration) }
             .flatMap { world -> world.save() }
 
-    private fun findConfiguration(): Either<WorldException, Configuration> =
-        provider.getConfiguration()
-            .mapLeft { UnknownWorldException(it) }
-
     private fun createWorld(configuration: Configuration): Either<WorldException, World> =
         Either.catch { World.create(configuration.worldWidth, configuration.worldHeight) }
             .mapLeft { UnknownWorldException(it) }

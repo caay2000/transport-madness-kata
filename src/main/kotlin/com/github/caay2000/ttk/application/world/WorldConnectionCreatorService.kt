@@ -26,5 +26,5 @@ class WorldConnectionCreatorService(provider: Provider, pathfindingConfiguration
             .mapLeft { error -> UnknownWorldException(error) }
 
     private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
-        this.path.map { cell -> cell.copy(cost = 1) }.toSet()
+        this.path.map { cell -> cell.createConnection() }.toSet()
 }

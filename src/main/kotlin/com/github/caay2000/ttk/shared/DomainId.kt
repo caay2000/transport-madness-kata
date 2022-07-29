@@ -9,6 +9,7 @@ sealed class DomainId(uuid: UUID) {
 }
 
 data class EntityId(override val uuid: UUID = UUID.randomUUID()) : DomainId(uuid)
+data class LocationId(override val uuid: UUID = UUID.randomUUID()) : DomainId(uuid)
 
 inline fun <reified T : DomainId> randomDomainId() =
     UUID.randomUUID().toDomainId<T>()

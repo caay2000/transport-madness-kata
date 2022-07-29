@@ -1,8 +1,11 @@
 package com.github.caay2000.ttk.domain.world
 
+import com.github.caay2000.ttk.shared.LocationId
+
 data class Cell(
     val position: Position,
-    val cost: Int
+    val cost: Int,
+    val locationId: LocationId? = null
 ) {
     constructor(x: Int, y: Int, cost: Int = 0) : this(position = Position(x, y), cost)
 

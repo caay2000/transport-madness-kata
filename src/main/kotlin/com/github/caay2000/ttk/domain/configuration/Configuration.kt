@@ -7,5 +7,9 @@ data class Configuration(
     val worldHeight: Int = 6,
 
     /* STOP VALUES */
-    val turnsStoppedInStation: Int = 1
+    val turnsStoppedInStation: Int = 1,
+
+    /* CITY VALUES */
+    val minDistanceBetweenCities: Int = 1,
+    val cityPAXPercentage: Double = 0.002
 )
