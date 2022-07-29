@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.mother.world.city
+package com.github.caay2000.ttk.mother.world.location
 
 object PopulationMother {
 

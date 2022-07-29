@@ -8,7 +8,7 @@ import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.WorldMother
-import com.github.caay2000.ttk.mother.world.city.PopulationMother
+import com.github.caay2000.ttk.mother.world.location.PopulationMother
 import io.kotest.assertions.arrow.either.shouldBeLeftOfType
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
@@ -16,15 +16,15 @@ import org.junit.jupiter.api.Test
 
 class LocationCreatorServiceTest {
 
+    private val configuration = ConfigurationMother.random()
     private val provider: Provider = DefaultProvider()
-
     private val sut = LocationCreatorService(provider)
 
     @Test
     fun `city is created correctly`() {
 
         provider.set(WorldMother.empty())
-        provider.setConfiguration(ConfigurationMother.random())
+        provider.setConfiguration(configuration)
 
         val position = Position(0, 0)
         val population = PopulationMother.random()
@@ -33,7 +33,14 @@ class LocationCreatorServiceTest {
             val locationId = it.getCell(position).locationId!!
             assertThat(it.locations).hasSize(1)
             assertThat(locationId).isNotNull
-            assertThat(it.locations[locationId]).isEqualTo(Location(locationId, position, population))
+            assertThat(it.locations[locationId]).isEqualTo(
+                Location(
+                    id = locationId,
+                    position = position,
+                    population = population,
+                    configuration = configuration
+                )
+            )
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }
@@ -41,7 +48,7 @@ class LocationCreatorServiceTest {
     @Test
     fun `city creation fails if distance between cities is less than configuration$minDistanceBetweenCities`() {
         provider.set(WorldMother.empty())
-        provider.setConfiguration(ConfigurationMother.random())
+        provider.setConfiguration(configuration)
 
         sut.invoke(Position(0, 0), PopulationMother.random()).shouldBeRight()
         sut.invoke(Position(0, 2), PopulationMother.random()).shouldBeLeftOfType<LocationsTooCloseException>()
