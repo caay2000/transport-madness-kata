@@ -5,9 +5,9 @@ import com.github.caay2000.ttk.application.configuration.ConfigurationSetterServ
 import com.github.caay2000.ttk.application.entity.EntityCreatorService
 import com.github.caay2000.ttk.application.entity.EntityRouteAssignerService
 import com.github.caay2000.ttk.application.pathfinding.PathfindingConfiguration
-import com.github.caay2000.ttk.application.world.WorldConnectionCreatorService
-import com.github.caay2000.ttk.application.world.WorldCreatorService
-import com.github.caay2000.ttk.application.world.WorldUpdaterService
+import com.github.caay2000.ttk.application.world.create.WorldConnectionCreatorService
+import com.github.caay2000.ttk.application.world.create.WorldCreatorService
+import com.github.caay2000.ttk.application.world.update.WorldUpdaterService
 import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.world.Position

@@ -1,10 +1,13 @@
-package com.github.caay2000.ttk.application.world
+package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.application.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.application.pathfinding.PathfindingConfiguration
 import com.github.caay2000.ttk.application.pathfinding.PathfindingResult
+import com.github.caay2000.ttk.application.world.UnknownWorldException
+import com.github.caay2000.ttk.application.world.WorldException
+import com.github.caay2000.ttk.application.world.WorldService
 import com.github.caay2000.ttk.domain.world.Cell
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
@@ -26,5 +29,5 @@ class WorldConnectionCreatorService(provider: Provider, pathfindingConfiguration
             .mapLeft { error -> UnknownWorldException(error) }
 
     private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
-        this.path.map { cell -> cell.copy(cost = 1) }.toSet()
+        this.path.map { cell -> cell.createConnection() }.toSet()
 }

@@ -5,4 +5,5 @@ sealed class WorldException : RuntimeException {
     constructor(cause: Throwable) : super(cause)
 }
 
+data class LocationsTooCloseException(override val message: String) : WorldException(message)
 data class UnknownWorldException(override val cause: Throwable) : WorldException(cause)

@@ -1,7 +1,10 @@
-package com.github.caay2000.ttk.application.world
+package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.Either
 import arrow.core.flatMap
+import com.github.caay2000.ttk.application.world.UnknownWorldException
+import com.github.caay2000.ttk.application.world.WorldException
+import com.github.caay2000.ttk.application.world.WorldService
 import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
@@ -12,10 +15,6 @@ class WorldCreatorService(provider: Provider) : WorldService(provider) {
         findConfiguration()
             .flatMap { configuration -> createWorld(configuration) }
             .flatMap { world -> world.save() }
-
-    private fun findConfiguration(): Either<WorldException, Configuration> =
-        provider.getConfiguration()
-            .mapLeft { UnknownWorldException(it) }
 
     private fun createWorld(configuration: Configuration): Either<WorldException, World> =
         Either.catch { World.create(configuration.worldWidth, configuration.worldHeight) }

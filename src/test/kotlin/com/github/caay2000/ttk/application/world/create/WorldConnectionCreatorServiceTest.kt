@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.application.world
+package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.application.pathfinding.PathfindingConfiguration

@@ -8,7 +8,21 @@ object ConfigurationMother {
     fun random(
         worldWidth: Int = Random().nextInt(3) + 4, // from 4 to 6
         worldHeight: Int = worldWidth + 1, // from 5 to 7
+        turnsStoppedInStation: Int = 1,
+        minDistanceBetweenCities: Int = 6,
+        cityPAXPercentage: Double = 0.002
     ): Configuration = Configuration(
+        worldWidth = worldWidth,
+        worldHeight = worldHeight,
+        turnsStoppedInStation = turnsStoppedInStation,
+        minDistanceBetweenCities = minDistanceBetweenCities,
+        cityPAXPercentage = cityPAXPercentage
+    )
+
+    fun tiny(
+        worldWidth: Int = Random().nextInt(3) + 4, // from 4 to 6, // from 4 to 6
+        worldHeight: Int = worldWidth + 1, // from 5 to 7
+    ): Configuration = random(
         worldWidth = worldWidth,
         worldHeight = worldHeight
     )
