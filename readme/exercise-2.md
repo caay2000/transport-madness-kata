@@ -1,6 +1,6 @@
 ## Exercise 2 - Routes I
 
-Create a simple map with a vehicle that moves from one point to another
+Assign a route to the vehicle
 
 <kbd> <img src="exercise_2_header.png" /> </kbd>
 

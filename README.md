@@ -40,4 +40,8 @@ Assign a route to the vehicle
 
 Create some connections that routes should follow
 
+### [Exercise 4 - Cities I](readme/exercise-4.md)
+
+Create cities in our map that generate and receive passengers
+
 ### [More to Come](README.md)

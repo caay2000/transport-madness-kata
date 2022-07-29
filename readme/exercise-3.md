@@ -1,10 +1,10 @@
 ## Exercise 3 - Connections I
 
-Create a simple map with a vehicle that moves from one point to another
+Create some connections that routes should follow
 
 <kbd> <img src="exercise_3_header.png" /> </kbd>
 
-[Home](../README.md) | [Exercise 2 - Routes I](exercise-2.md) | [Exercise 2 - Routes I](exercise-2.md)
+[Home](../README.md) | [Exercise 2 - Routes I](exercise-2.md) | [Exercise 4 - Cities I](exercise-4.md)
 
 ## Summary
 
