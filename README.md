@@ -42,6 +42,10 @@ Create some connections that routes should follow
 
 ### [Exercise 4 - Cities I](readme/exercise-4.md)
 
-Create cities in our map that generate and receive passengers
+Create cities in our map that generate passengers
+
+### [Exercise 5 - Transport I](readme/exercise-4.md)
+
+Let's try to put everything together and start moving passengers from one city to another
 
 ### [More to Come](README.md)
