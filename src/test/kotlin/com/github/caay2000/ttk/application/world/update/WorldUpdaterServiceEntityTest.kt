@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.application.world
+package com.github.caay2000.ttk.application.world.update
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.domain.entity.Entity

@@ -1,7 +1,10 @@
-package com.github.caay2000.ttk.application.world
+package com.github.caay2000.ttk.application.world.update
 
 import arrow.core.Either
 import arrow.core.flatMap
+import com.github.caay2000.ttk.application.world.UnknownWorldException
+import com.github.caay2000.ttk.application.world.WorldException
+import com.github.caay2000.ttk.application.world.WorldService
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.world.Location
 import com.github.caay2000.ttk.domain.world.Provider
@@ -21,12 +24,8 @@ class WorldUpdaterService(provider: Provider) : WorldService(provider) {
             .mapLeft { UnknownWorldException(it) }
 
     private fun World.updateLocations() = locations.values.fold(this) { world, location -> world.updateLocation(location) }
-    private fun World.updateLocation(location: Location): World =
-        this.getLocation(location.id).update()
-            .let { location -> this.putLocation(location) }
+    private fun World.updateLocation(location: Location): World = putLocation(location.update())
 
     private fun World.updateEntities() = entities.values.fold(this) { world, entity -> world.updateEntity(entity) }
-    private fun World.updateEntity(entity: Entity): World =
-        this.getEntity(entity.id).update()
-            .let { entity -> this.putEntity(entity) }
+    private fun World.updateEntity(entity: Entity): World = putEntity(entity.update())
 }

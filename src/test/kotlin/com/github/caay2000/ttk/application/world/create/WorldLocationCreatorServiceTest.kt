@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.application.world.location
+package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.application.world.LocationsTooCloseException
@@ -14,11 +14,11 @@ import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class LocationCreatorServiceTest {
+class WorldLocationCreatorServiceTest {
 
     private val configuration = ConfigurationMother.random()
     private val provider: Provider = DefaultProvider()
-    private val sut = LocationCreatorService(provider)
+    private val sut = WorldLocationCreatorService(provider)
 
     @Test
     fun `city is created correctly`() {

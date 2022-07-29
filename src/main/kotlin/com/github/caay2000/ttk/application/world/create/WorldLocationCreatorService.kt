@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.application.world.location
+package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.Either
 import arrow.core.flatMap
@@ -12,7 +12,7 @@ import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
 
-class LocationCreatorService(provider: Provider) : WorldService(provider) {
+class WorldLocationCreatorService(provider: Provider) : WorldService(provider) {
 
     fun invoke(position: Position, population: Int): Either<Throwable, World> =
         findWorld()
@@ -28,13 +28,14 @@ class LocationCreatorService(provider: Provider) : WorldService(provider) {
             }
 
     private fun World.createLocation(position: Position, population: Int): Either<Throwable, World> =
-        Either.catch { Location.create(position, population) }
-            .map { location -> this.putLocation(location) }
+        findConfiguration()
+            .map { configuration -> Location.create(position, population, configuration) }
+            .map { location -> putLocation(location) }
 
     private fun World.anyLocationTooClose(
         position: Position,
         configuration: Configuration
-    ) = this.locations.values.any { it.position.distanceTo(position) < configuration.minDistanceBetweenCities }
+    ) = locations.values.any { it.position.distanceTo(position) < configuration.minDistanceBetweenCities }
 
     private fun tooCloseException(position: Position) = LocationsTooCloseException("Location $position is too close to another location").left()
 }
