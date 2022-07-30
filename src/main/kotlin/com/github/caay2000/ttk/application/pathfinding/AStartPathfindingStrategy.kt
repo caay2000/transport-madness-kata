@@ -54,14 +54,14 @@ class AStartPathfindingStrategy(override val pathfindingConfiguration: Pathfindi
         throw IllegalArgumentException("No Path from Start $source to Finish $target")
     }
 
-    private fun generatePath(currentPos: Cell, cameFrom: Map<Cell, Cell>): Set<Cell> {
+    private fun generatePath(currentPos: Cell, cameFrom: Map<Cell, Cell>): List<Cell> {
         val path = mutableListOf(currentPos)
         var current = currentPos
         while (cameFrom.containsKey(current)) {
             current = cameFrom.getValue(current)
             path.add(0, current)
         }
-        return path.toSet()
+        return path
     }
 
     data class Grid(val cells: Map<Position, Cell>) {

@@ -34,11 +34,16 @@ internal class WorldUpdaterServiceEntityTest {
     fun `entity moves if it has an assigned route`() {
 
         val entity: Entity = EntityMother.random(currentPosition = Position(0, 0), route = RouteMother.random(Position(3, 0)), currentDuration = 1)
-        val world = WorldMother.oneVehicle(entity = entity)
+        val world = WorldMother.connectedPaths(
+            entities = mapOf(entity.id to entity),
+            connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
+        )
         provider.set(world)
 
         sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(currentPosition = Position(1, 0), status = EntityStatus.IN_ROUTE))
+            val entity = it.getEntity(entity.id)
+            assertThat(entity.currentPosition).isEqualTo(Position(1, 0))
+            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }
@@ -51,11 +56,16 @@ internal class WorldUpdaterServiceEntityTest {
             route = RouteMother.random(Position(3, 0)),
             status = EntityStatus.IN_ROUTE
         )
-        val world = WorldMother.oneVehicle(entity = entity)
+        val world = WorldMother.connectedPaths(
+            entities = mapOf(entity.id to entity),
+            connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
+        )
         provider.set(world)
 
         sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP))
+            val entity = it.getEntity(entity.id)
+            assertThat(entity.currentPosition).isEqualTo(Position(3, 0))
+            assertThat(entity.status).isEqualTo(EntityStatus.STOP)
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }
@@ -89,17 +99,17 @@ internal class WorldUpdaterServiceEntityTest {
             status = EntityStatus.STOP,
             configuration = configuration
         )
-        val world = WorldMother.oneVehicle(entity = entity)
+        val world = WorldMother.connectedPaths(
+            entities = mapOf(entity.id to entity),
+            connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
+        )
         provider.set(world)
 
         sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(
-                entity.copy(
-                    currentPosition = Position(3, 1),
-                    route = route.copy(stopIndex = 1),
-                    status = EntityStatus.IN_ROUTE
-                )
-            )
+            val entity = it.getEntity(entity.id)
+            assertThat(entity.currentPosition).isEqualTo(Position(3, 1))
+            assertThat(entity.route.stopIndex).isEqualTo(1)
+            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }
@@ -116,17 +126,17 @@ internal class WorldUpdaterServiceEntityTest {
             status = EntityStatus.STOP,
             configuration = configuration
         )
-        val world = WorldMother.oneVehicle(entity = entity)
+        val world = WorldMother.connectedPaths(
+            entities = mapOf(entity.id to entity),
+            connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
+        )
         provider.set(world)
 
         sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(
-                entity.copy(
-                    currentPosition = Position(3, 3),
-                    route = route.copy(stopIndex = 0),
-                    status = EntityStatus.IN_ROUTE
-                )
-            )
+            val entity = it.getEntity(entity.id)
+            assertThat(entity.currentPosition).isEqualTo(Position(3, 3))
+            assertThat(entity.route.stopIndex).isEqualTo(0)
+            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }

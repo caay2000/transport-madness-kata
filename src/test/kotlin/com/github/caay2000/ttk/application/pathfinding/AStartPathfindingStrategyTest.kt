@@ -18,7 +18,7 @@ internal class AStartPathfindingStrategyTest {
         sut.invoke(map, cell(0, 0), cell(0, 0)).shouldBeRight {
             assertThat(it.path)
                 .hasSize(1)
-                .isEqualTo(setOf(cell(0, 0)))
+                .isEqualTo(listOf(cell(0, 0)))
         }
     }
 
@@ -28,7 +28,7 @@ internal class AStartPathfindingStrategyTest {
         sut.invoke(map, cell(0, 0), cell(0, 1)).shouldBeRight {
             assertThat(it.path)
                 .hasSize(2)
-                .isEqualTo(setOf(cell(0, 0), cell(0, 1)))
+                .isEqualTo(listOf(cell(0, 0), cell(0, 1)))
         }
     }
 
@@ -38,7 +38,7 @@ internal class AStartPathfindingStrategyTest {
         sut.invoke(map, cell(0, 0), cell(0, 2)).shouldBeRight {
             assertThat(it.path)
                 .hasSize(3)
-                .isEqualTo(setOf(cell(0, 0), cell(0, 1), cell(0, 2)))
+                .isEqualTo(listOf(cell(0, 0), cell(0, 1), cell(0, 2)))
         }
     }
 
@@ -49,7 +49,7 @@ internal class AStartPathfindingStrategyTest {
             assertThat(it.path)
                 .hasSize(6)
                 .isEqualTo(
-                    setOf(
+                    listOf(
                         Cell(x = 0, y = 0),
                         Cell(x = 1, y = 0),
                         Cell(x = 2, y = 0),
