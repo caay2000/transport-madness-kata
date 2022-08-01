@@ -23,6 +23,6 @@ class EntityRouteAssignerService(provider: Provider) : EntityService(provider) {
 
     private fun Entity.updateRoute(stops: List<Position>): Either<EntityException, Entity> =
         Either.catch { Route.create(stops) }
-            .map { route -> setRoute(route) }
+            .map { route -> assignRoute(route) }
             .mapLeft { InvalidRouteException(stops) }
 }

@@ -16,8 +16,6 @@ data class Entity(
     val configuration: Configuration
 ) {
 
-//    private val movementStrategy: MovementStrategy = SimpleMovementStrategy()
-
     companion object {
         fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
             id = id,
@@ -28,40 +26,35 @@ data class Entity(
         )
     }
 
-    fun setRoute(route: Route) = copy(route = route)
-
-    fun update(): Entity = when (status) {
-        EntityStatus.STOP -> updateInStop()
-        EntityStatus.IN_ROUTE -> updateInRoute()
-    }
-
-    val shouldResumeRoute: Boolean
-        get() = currentDuration >= configuration.turnsStoppedInStation && status == EntityStatus.STOP
-
     val currentDestination: Position
         get() = route.currentDestination
 
     val nextDestination: Position
         get() = route.nextDestination
 
-    private fun updateInStop(): Entity {
-        return when {
-            shouldResumeRoute -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute()
-            else -> copy(currentDuration = currentDuration + 1)
-        }
-    }
+    val shouldResumeRoute: Boolean
+        get() = currentDuration >= configuration.turnsStoppedInStation && status == EntityStatus.STOP
 
     val shouldUpdateNextSection: Boolean
-        get() = shouldResumeRoute || (route.nextSection.isEmpty() && this.status == EntityStatus.IN_ROUTE)
+        get() = shouldResumeRoute || (route.nextSection.isEmpty() && status == EntityStatus.IN_ROUTE)
+
+    fun assignRoute(route: Route) = copy(route = route)
+
+    fun update(): Entity = when (status) {
+        EntityStatus.STOP -> updateInStop()
+        EntityStatus.IN_ROUTE -> updateInRoute()
+    }
 
     fun updateNextSection(nextSection: List<Cell>): Entity =
         copy(route = route.copy(nextSection = nextSection))
 
-    private fun updateInRoute(): Entity {
-        val nextPosition = route.nextSection.first()
-        val route = route.copy(nextSection = route.nextSection - nextPosition)
+    private fun updateInStop(): Entity = when {
+        shouldResumeRoute -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute()
+        else -> copy(currentDuration = currentDuration + 1)
+    }
 
-//        val nextPosition = route.nextSection..move(currentPosition, route.currentDestination)
+    private fun updateInRoute(): Entity {
+        val (nextPosition, route) = route.popNextSection()
         val stopReached = nextPosition.position == route.currentDestination
         return if (stopReached) {
             copy(currentPosition = nextPosition.position, status = EntityStatus.STOP, currentDuration = 0, route = route)

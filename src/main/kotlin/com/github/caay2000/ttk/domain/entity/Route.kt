@@ -11,15 +11,6 @@ data class Route(
     val nextSection: List<Cell> = emptyList()
 ) {
 
-    private val nextIndex: Int
-        get() = if (stopIndex + 1 < stops.size) stopIndex + 1 else 0
-
-    val currentDestination: Position
-        get() = stops[stopIndex]
-
-    val nextDestination: Position
-        get() = stops[nextIndex]
-
     companion object {
         fun create(stops: List<Position>): Route {
             if (stops.isEmpty()) throw InvalidRouteException(stops)
@@ -27,9 +18,17 @@ data class Route(
         }
     }
 
-//
-//    fun addNextSection(nextSection: Set<Position>): Route = copy(nextSection = nextSection)
-//    fun nextSection(): Route = copy(nextSection = nextSection.)
+    val currentDestination: Position
+        get() = stops[stopIndex]
+
+    val nextDestination: Position
+        get() = stops[nextIndex]
 
     fun nextStop(): Route = copy(stopIndex = nextIndex)
+
+    fun popNextSection(): Pair<Cell, Route> =
+        nextSection.first().let { section -> section to copy(nextSection = nextSection - section) }
+
+    private val nextIndex: Int
+        get() = if (stopIndex + 1 < stops.size) stopIndex + 1 else 0
 }
