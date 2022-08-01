@@ -3,7 +3,7 @@ package com.github.caay2000.ttk.application.world.update
 import arrow.core.Either
 import arrow.core.computations.ResultEffect.bind
 import arrow.core.flatMap
-import com.github.caay2000.ttk.application.entity.update.EntityUpdaterService
+import com.github.caay2000.ttk.application.entity.update.EntityUpdaterInternalService
 import com.github.caay2000.ttk.application.world.UnknownWorldException
 import com.github.caay2000.ttk.application.world.WorldException
 import com.github.caay2000.ttk.application.world.WorldService
@@ -13,7 +13,7 @@ import com.github.caay2000.ttk.domain.world.World
 
 class WorldUpdaterService(provider: Provider) : WorldService(provider) {
 
-    private val entityUpdaterService = EntityUpdaterService(provider)
+    private val entityUpdaterInternalService = EntityUpdaterInternalService()
 
     fun invoke(): Either<WorldException, World> =
         findWorld()
@@ -26,10 +26,10 @@ class WorldUpdaterService(provider: Provider) : WorldService(provider) {
             .map { world -> world.update() }
             .mapLeft { UnknownWorldException(it) }
 
-    private fun World.updateLocations() = locations.values.fold(this) { world, location -> world.updateLocation(location) }
     private fun World.updateLocation(location: Location): World = putLocation(location.update())
+    private fun World.updateLocations() = locations.values
+        .fold(this) { world, location -> world.updateLocation(location) }
 
-//    private fun World.updateEntities() = entities.values.fold(this) { world, entity -> world.updateEntity(entity) }
-    private fun World.updateEntities() = entities.values.fold(this) { _, entity -> entityUpdaterService.invoke(entity.id).bind() }
-//    private fun World.updateEntity(entity: Entity): World = putEntity(entity.update())
+    private fun World.updateEntities() = entities.values
+        .fold(this) { world, entity -> entityUpdaterInternalService.invoke(world, entity).bind() }
 }

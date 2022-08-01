@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.domain.entity
 
+import com.github.caay2000.ttk.application.pathfinding.PathfindingResult
 import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.world.Cell
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
@@ -45,8 +45,10 @@ data class Entity(
         EntityStatus.IN_ROUTE -> updateInRoute()
     }
 
-    fun updateNextSection(nextSection: List<Cell>): Entity =
-        copy(route = route.copy(nextSection = nextSection))
+    fun updateNextSection(pathfinding: () -> PathfindingResult): Entity =
+        if (shouldResumeRoute || shouldUpdateNextSection)
+            copy(route = route.copy(nextSection = pathfinding().path))
+        else this
 
     private fun updateInStop(): Entity = when {
         shouldResumeRoute -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute()
