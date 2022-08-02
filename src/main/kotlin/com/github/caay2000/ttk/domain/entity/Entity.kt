@@ -26,40 +26,40 @@ data class Entity(
         )
     }
 
-    val currentDestination: Position
+    private val currentDestination: Position
         get() = route.currentDestination
 
-    val nextDestination: Position
-        get() = route.nextDestination
-
-    val shouldResumeRoute: Boolean
+    private val shouldResumeRoute: Boolean
         get() = currentDuration >= configuration.turnsStoppedInStation && status == EntityStatus.STOP
 
-    val shouldUpdateNextSection: Boolean
+    private val shouldUpdateNextSection: Boolean
         get() = shouldResumeRoute || (route.nextSection.isEmpty() && status == EntityStatus.IN_ROUTE)
 
     fun assignRoute(route: Route) = copy(route = route)
 
-    fun update(): Entity = when (status) {
-        EntityStatus.STOP -> updateInStop()
-        EntityStatus.IN_ROUTE -> updateInRoute()
-    }
+    fun update(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity =
+        when (status) {
+            EntityStatus.STOP -> updateInStop(nextSectionFinder)
+            EntityStatus.IN_ROUTE -> updateInRoute(nextSectionFinder)
+        }
 
-    fun updateNextSection(pathfinding: () -> PathfindingResult): Entity =
-        if (shouldResumeRoute || shouldUpdateNextSection)
-            copy(route = route.copy(nextSection = pathfinding().path))
-        else this
-
-    private fun updateInStop(): Entity = when {
-        shouldResumeRoute -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute()
+    private fun updateInStop(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity = when {
+        shouldResumeRoute -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute(nextSectionFinder)
         else -> copy(currentDuration = currentDuration + 1)
     }
 
-    private fun updateInRoute(): Entity {
-        val (nextPosition, route) = route.popNextSection()
-        val stopReached = nextPosition.position == route.currentDestination
-        return if (stopReached) {
-            copy(currentPosition = nextPosition.position, status = EntityStatus.STOP, currentDuration = 0, route = route)
-        } else copy(currentPosition = nextPosition.position, currentDuration = currentDuration + 1, route = route)
-    }
+    private fun updateInRoute(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity =
+        updateNextSection(nextSectionFinder)
+            .let {
+                val (nextPosition, route) = it.route.popNextSection()
+                val stopReached = nextPosition.position == it.route.currentDestination
+                return if (stopReached) {
+                    it.copy(currentPosition = nextPosition.position, status = EntityStatus.STOP, currentDuration = 0, route = route)
+                } else it.copy(currentPosition = nextPosition.position, currentDuration = currentDuration + 1, route = route)
+            }
+
+    private fun updateNextSection(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity =
+        if (shouldResumeRoute || shouldUpdateNextSection)
+            copy(route = route.copy(nextSection = nextSectionFinder.invoke(currentPosition, currentDestination).path))
+        else this
 }
