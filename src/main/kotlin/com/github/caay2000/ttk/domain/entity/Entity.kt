@@ -1,6 +1,5 @@
 package com.github.caay2000.ttk.domain.entity
 
-import com.github.caay2000.ttk.application.pathfinding.PathfindingResult
 import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.shared.EntityId
@@ -12,7 +11,6 @@ data class Entity(
     val currentDuration: Int,
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
-    @Transient
     val configuration: Configuration
 ) {
 
@@ -29,37 +27,42 @@ data class Entity(
     private val currentDestination: Position
         get() = route.currentDestination
 
+    private val destinationReached: Boolean
+        get() = currentPosition == currentDestination && status == EntityStatus.IN_ROUTE
+
     private val shouldResumeRoute: Boolean
-        get() = currentDuration >= configuration.turnsStoppedInStation && status == EntityStatus.STOP
+        get() = currentDuration > configuration.turnsStoppedInStation && status == EntityStatus.STOP
 
     private val shouldUpdateNextSection: Boolean
-        get() = shouldResumeRoute || (route.nextSection.isEmpty() && status == EntityStatus.IN_ROUTE)
+        get() = route.nextSectionList.isEmpty() && status == EntityStatus.IN_ROUTE
+
+    private val shouldMove: Boolean
+        get() = status == EntityStatus.IN_ROUTE
 
     fun assignRoute(route: Route) = copy(route = route)
 
-    fun update(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity =
-        when (status) {
-            EntityStatus.STOP -> updateInStop(nextSectionFinder)
-            EntityStatus.IN_ROUTE -> updateInRoute(nextSectionFinder)
-        }
+    fun update(nextSectionFinder: NextSectionPathfinding): Entity =
+        increaseDuration()
+            .resumeRoute()
+            .refreshNextSection(nextSectionFinder)
+            .moveEntity()
+            .stopEntity()
 
-    private fun updateInStop(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity = when {
-        shouldResumeRoute -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute(nextSectionFinder)
-        else -> copy(currentDuration = currentDuration + 1)
-    }
+    private fun increaseDuration(): Entity = copy(currentDuration = currentDuration + 1)
 
-    private fun updateInRoute(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity =
-        updateNextSection(nextSectionFinder)
-            .let {
-                val (nextPosition, route) = it.route.popNextSection()
-                val stopReached = nextPosition.position == it.route.currentDestination
-                return if (stopReached) {
-                    it.copy(currentPosition = nextPosition.position, status = EntityStatus.STOP, currentDuration = 0, route = route)
-                } else it.copy(currentPosition = nextPosition.position, currentDuration = currentDuration + 1, route = route)
-            }
+    private fun resumeRoute(): Entity =
+        if (shouldResumeRoute) copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
+        else this
 
-    private fun updateNextSection(nextSectionFinder: (Position, Position) -> PathfindingResult): Entity =
-        if (shouldResumeRoute || shouldUpdateNextSection)
-            copy(route = route.copy(nextSection = nextSectionFinder.invoke(currentPosition, currentDestination).path))
+    private fun refreshNextSection(nextSectionFinder: NextSectionPathfinding): Entity =
+        if (shouldUpdateNextSection) copy(route = route.updateNextSection(nextSectionFinder.invoke(currentPosition, currentDestination)))
+        else this
+
+    private fun moveEntity(): Entity =
+        if (shouldMove) copy(currentPosition = route.nextSection.position, route = route.dropNextSection())
+        else this
+
+    private fun stopEntity(): Entity =
+        if (destinationReached) copy(status = EntityStatus.STOP, currentDuration = 0)
         else this
 }
