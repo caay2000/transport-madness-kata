@@ -14,7 +14,6 @@ class NextSectionFinder(private val world: World) : NextSectionPathfinding {
     private val pathfindingStrategy = AStartPathfindingStrategy(PathfindingConfiguration())
 
     override fun invoke(source: Position, target: Position): List<Cell> =
-
         pathfindingStrategy.invoke(
             cells = world.connectedCells,
             source = world.getCell(source),
