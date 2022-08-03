@@ -1,10 +1,10 @@
 ## Exercise 4 - Cities I
 
-Create cities in our map that generate and receive passengers
+Create cities in our map that generate passengers
 
 <kbd> <img src="exercise_4_header.png" /> </kbd>
 
-[Home](../README.md) | [Exercise 3 - Connections I](exercise-3.md)
+[Home](../README.md) | [Exercise 3 - Connections I](exercise-3.md) | [Exercise 5 - Transport I](exercise-5.md)
 
 ## Summary
 
