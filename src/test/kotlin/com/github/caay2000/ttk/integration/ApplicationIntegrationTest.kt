@@ -13,7 +13,7 @@ import java.util.stream.Stream
 
 class ApplicationIntegrationTest {
 
-    private val configuration = ConfigurationMother.random(worldWidth = 4, worldHeight = 6)
+    private val configuration = ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1)
     private val provider: Provider = DefaultProvider()
 
     @ParameterizedTest
@@ -26,6 +26,7 @@ class ApplicationIntegrationTest {
             sut.invoke(
                 startPosition = startPosition,
                 paths = paths,
+                locations = setOf((Position(0, 0) to 500), (Position(3, 2) to 1000), (Position(1, 4) to 250)),
                 route = route
             )
         ).isEqualTo(turns)
