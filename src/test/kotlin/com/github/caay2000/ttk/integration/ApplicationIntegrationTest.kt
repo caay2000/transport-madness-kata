@@ -36,10 +36,10 @@ class ApplicationIntegrationTest {
         @JvmStatic
         fun `exercise 3 data`(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2`(), `route from 0,0 to 3,2`(), 12),
-                Arguments.of(Position(0, 0), `path from 0,0 to 0,4`(), `route from 0,0 to 0,4`(), 10),
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 21),
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4`(), 17),
+//                Arguments.of(Position(0, 0), `path from 0,0 to 3,2`(), `route from 0,0 to 3,2`(), 12),
+//                Arguments.of(Position(0, 0), `path from 0,0 to 0,4`(), `route from 0,0 to 0,4`(), 10),
+//                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 21),
+//                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4`(), 17),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4 to 3,2`(), 22)
             )
         }

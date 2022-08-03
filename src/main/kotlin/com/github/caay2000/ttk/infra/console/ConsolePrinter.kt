@@ -8,7 +8,7 @@ import com.github.caay2000.ttk.domain.world.World
 class ConsolePrinter(val configuration: Configuration) : Printer {
 
     override fun print(world: World) {
-        println("${world.currentTurn} - ${world.entities.values.first()}")
+        println("WORLD CURRENT TURN -> ${world.currentTurn} - ${world.entities.values.first()}")
 
         printHeader()
         for (y in 0 until configuration.worldHeight) {

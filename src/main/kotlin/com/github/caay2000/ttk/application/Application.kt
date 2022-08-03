@@ -44,14 +44,14 @@ class Application(
         entityCreatorService.invoke(startPosition).bind()
         entityRouteAssignerService.invoke(entity.id, route).bind()
 
+        printer.print(world)
         while (checkRouteCompleted(startPosition).not()) {
-            printer.print(world)
             worldUpdaterService.invoke().bind()
+            printer.print(world)
 //            println("${world.currentTurn} - $entity")
             if (world.currentTurn > 100)
                 return -1
         }
-        printer.print(world)
         return world.currentTurn
     }
 
