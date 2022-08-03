@@ -46,6 +46,12 @@ If we use the following data:
     |    (0,0)   |        500   |  1 PAX |   5 PAX |   10 PAX |
     |    (3,2)   |       1000   |  2 PAX |  10 PAX |   20 PAX |
     |    (1,4)   |        250   |  0 PAX |   2 PAX |    5 PAX |
-     
-If we use the following route: from A`(0,0)` to B`(3,2)`, from B to C`(1,4)` and from C to B again and back to A
 
+If we use the following route: from A`(0,0)` to B`(3,2)`, from B to C`(1,4)` and from C to B again and back to A, we
+should have the following numbers for PAX and received PAX
+
+    | LOCATION   | 1 turn             | 7 turn | 12 turn | 17 turn | 22 turn |              
+    |------------|--------------------|--------|---------|---------|---------|
+    |    (0,0)   | 1 PAX / 0 Received |  6 / 0 | 11 / 0  | 16 / 0  | 21 / 20 | 
+    |    (3,2)   | 2 PAX / 0 Received | 14 / 1 | 10 / 1  | 20 / 7  | 10 / 13 | 
+    |    (1,4)   | 0 PAX / 0 Received |  3 / 0 |  6 / 14 |  2 / 14 |  5 / 14 | 
