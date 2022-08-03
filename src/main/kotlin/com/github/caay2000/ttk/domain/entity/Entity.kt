@@ -1,7 +1,5 @@
 package com.github.caay2000.ttk.domain.entity
 
-import com.github.caay2000.ttk.application.entity.movement.MovementStrategy
-import com.github.caay2000.ttk.application.entity.movement.SimpleMovementStrategy
 import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.shared.EntityId
@@ -13,11 +11,8 @@ data class Entity(
     val currentDuration: Int,
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
-    @Transient
     val configuration: Configuration
 ) {
-
-    private val movementStrategy: MovementStrategy = SimpleMovementStrategy()
 
     companion object {
         fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
@@ -29,25 +24,45 @@ data class Entity(
         )
     }
 
-    fun setRoute(route: Route) = copy(route = route)
+    private val currentDestination: Position
+        get() = route.currentDestination
 
-    fun update(): Entity = when (status) {
-        EntityStatus.STOP -> updateInStop()
-        EntityStatus.IN_ROUTE -> updateInRoute()
-    }
+    private val destinationReached: Boolean
+        get() = currentPosition == currentDestination && status == EntityStatus.IN_ROUTE
 
-    private fun updateInStop(): Entity {
-        return when {
-            currentDuration < configuration.turnsStoppedInStation -> copy(currentDuration = currentDuration + 1)
-            else -> copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0).updateInRoute()
-        }
-    }
+    private val shouldResumeRoute: Boolean
+        get() = currentDuration > configuration.turnsStoppedInStation && status == EntityStatus.STOP
 
-    private fun updateInRoute(): Entity {
-        val nextPosition = movementStrategy.move(currentPosition, route.currentDestination)
-        val stopReached = nextPosition == route.currentDestination
-        return if (stopReached) {
-            copy(currentPosition = nextPosition, status = EntityStatus.STOP, currentDuration = 0)
-        } else copy(currentPosition = nextPosition, currentDuration = currentDuration + 1)
-    }
+    private val shouldUpdateNextSection: Boolean
+        get() = route.nextSectionList.isEmpty() && status == EntityStatus.IN_ROUTE
+
+    private val shouldMove: Boolean
+        get() = status == EntityStatus.IN_ROUTE
+
+    fun assignRoute(route: Route) = copy(route = route)
+
+    fun update(nextSectionFinder: NextSectionPathfinding): Entity =
+        increaseDuration()
+            .resumeRoute()
+            .refreshNextSection(nextSectionFinder)
+            .moveEntity()
+            .stopEntity()
+
+    private fun increaseDuration(): Entity = copy(currentDuration = currentDuration + 1)
+
+    private fun resumeRoute(): Entity =
+        if (shouldResumeRoute) copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
+        else this
+
+    private fun refreshNextSection(nextSectionFinder: NextSectionPathfinding): Entity =
+        if (shouldUpdateNextSection) copy(route = route.updateNextSection(nextSectionFinder.invoke(currentPosition, currentDestination)))
+        else this
+
+    private fun moveEntity(): Entity =
+        if (shouldMove) copy(currentPosition = route.nextSection.position, route = route.dropNextSection())
+        else this
+
+    private fun stopEntity(): Entity =
+        if (destinationReached) copy(status = EntityStatus.STOP, currentDuration = 0)
+        else this
 }
