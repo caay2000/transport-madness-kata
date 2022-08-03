@@ -1,18 +1,16 @@
 ## Exercise 5 - Transport I
 
-Let's try to put everything together and start moving passengers from one city to another
+Let's try to put everything together and start moving passengers from one city to another (and an optional visualisation
+exercise)
 
 <kbd> <img src="exercise_5_header.png" /> </kbd>
 
 [Home](../README.md) | [Exercise 4 - Cities I](exercise-4.md)
 
-## Summary
+## Summary (Optional Part)
 
-We want now to transport passengers from our cities to other cities. The idea will be to create a simple map with some
-connected cities, and let the vehicles do their job.
-
-First part of the exercise will be to visualize our network in some way. You can do whatever works for you, but I'll propose 
-something quite simple on the console. The same map we have been working with will be represented like this:
+First part of the exercise will be to visualize our network in some way. You can do whatever works for you, but I'll
+propose something quite simple on the console. The same map we have been working with will be represented like this:
 
 ```
    0  1  2  3  4  5    
@@ -33,39 +31,21 @@ something quite simple on the console. The same map we have been working with wi
 `H` for cities
 `@` for our running vehicles
 
-This can be printed each turn to see how our simulation is working
+This can be printed each turn to see how our simulation is working. Check that your vehicle is using the correct routes
+and paths!
 
+## Summary
 
+We want now to transport passengers from our cities to other cities. The idea will be to create a simple map with some
+connected cities, and let the vehicles do their job. You can take advantage of the already existing map we used before.
 
+If we use the following data:
 
-
-
-
-
-
-
-
-
-
-
-To do this, we're going to create a 30X30 map and put some cities in it
-
-Let's create cities in our maps! In this first stage, we want a city to be positioned in just on x,y coordinate in our
-map! These cities will have a random population (> 100) and will generate each turn some passengers to travel between
-cities in our world! The ratio will be changed later on, but at the moment we can agree on 0.2% of city population per
-turn.
-
-    | CITY SIZE  | 1 turn | 5 turns | 10 turns |
-    |------------|--------|---------|----------|
-    |      100   |  0 PAX |   0 PAX |    1 PAX |
-    |      500   |  1 PAX |   5 PAX |   10 PAX |
-    |     1000   |  2 PAX |  10 PAX |   20 PAX |
-    |     2500   |  5 PAX |  25 PAX |   50 PAX |
-
-We also want to avoid having 2 cities to close to each other, so we'll need to put some rule to avoid cities with a
-distance lower than 6
-
-> I would recommend putting all these variables like `percentage of PAX per turn` or `min distance between cities` to
-> be stored in a configuration, so it can be changed easily later on
-
+    | LOCATION   | POPULATION   | 1 turn | 5 turns | 10 turns |
+    |------------|--------------|--------|---------|----------|
+    |    (0,0)   |        500   |  1 PAX |   5 PAX |   10 PAX |
+    |    (3,2)   |       1000   |  2 PAX |  10 PAX |   20 PAX |
+    |    (1,4)   |        250   |  0 PAX |   2 PAX |    5 PAX |
+     
+If we use the following route: from A`(0,0)` to B`(3,2)`, from B to C`(1,4)` and from C to B again and back to A
 

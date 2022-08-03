@@ -46,6 +46,6 @@ Create cities in our map that generate passengers
 
 ### [Exercise 5 - Transport I](readme/exercise-4.md)
 
-Let's try to put everything together and start moving passengers from one city to another
+Let's try to put everything together and start moving passengers from one city to another (and an optional visualisation exercise)
 
 ### [More to Come](README.md)

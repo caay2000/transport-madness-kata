@@ -22,7 +22,7 @@ Let's create a connection from A`(0,0)` to B`(3,2)` and from B to C`(1,4)`. Then
     | 3 |   |   |   | ¦ |   |
     | 4 |   | C | - | / |   |
 
-You can also check what happens with the circular route (A &rarr; B &rarr; C &rarr; B) when the connection is also
+You can also check what happens with the "circular" route (A &rarr; B &rarr; C &rarr; B) when the connection is also
 circular (_from A`(0,0)` to B`(3,2)`, from B to C`(1,4)` and from C to A again_)
 
 > You can use any pathfinding algorithm to search for the correct route from point to point. There are multiple implementations out there (_Disjktra, A*..._)
