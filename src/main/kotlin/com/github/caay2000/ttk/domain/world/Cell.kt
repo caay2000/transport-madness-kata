@@ -12,6 +12,7 @@ data class Cell(
     fun distance(target: Cell): Float = this.position.distance(target.position)
     fun samePosition(cell: Cell): Boolean = this.position == cell.position
     fun createConnection(): Cell = copy(cost = 1)
+    fun updateLocationId(locationId: LocationId): Cell = this.copy(locationId = locationId)
 
     val connected: Boolean
         get() = cost > 0

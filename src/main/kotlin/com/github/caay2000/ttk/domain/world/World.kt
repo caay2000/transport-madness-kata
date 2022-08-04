@@ -3,6 +3,7 @@ package com.github.caay2000.ttk.domain.world
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.LocationId
+import com.github.caay2000.ttk.shared.replace
 
 data class World(
     val currentTurn: Int,
@@ -36,8 +37,8 @@ data class World(
 
     fun getLocation(id: LocationId): Location = locations.getValue(id)
     fun putLocation(location: Location): World =
-        copy(locations = locations + (location.id to location))
-            .replaceCell(getCell(location.position).copy(locationId = location.id))
+        updateCell { getCell(location.position).updateLocationId(location.id) }
+            .copy(locations = locations + (location.id to location))
 
     fun refreshLocation(location: Location): World =
         copy(locations = locations + (location.id to location))
@@ -45,10 +46,9 @@ data class World(
     fun update(): World = copy(currentTurn = currentTurn + 1)
 
     fun createConnection(path: Set<Cell>): World =
-        path.fold(initial = this) { world, cell ->
-            world.replaceCell(cell)
-        }
+        path.fold(initial = this) { world, cell -> world.updateCell { cell } }
 
-    private fun replaceCell(cell: Cell): World =
-        this.copy(cells = (cells.filterNot { it.samePosition(cell) } + cell).toSet())
+    private fun updateCell(cell: () -> Cell): World = cell().let { cell ->
+        copy(cells = cells.replace(predicate = { it.samePosition(cell) }, operation = { cell }).toSet())
+    }
 }

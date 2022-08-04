@@ -43,12 +43,17 @@ data class Entity(
 
     fun update(nextSectionFinder: NextSectionPathfinding): Entity =
         increaseDuration()
+            .loadPassengers()
             .resumeRoute()
             .refreshNextSection(nextSectionFinder)
             .moveEntity()
             .stopEntity()
 
     private fun increaseDuration(): Entity = copy(currentDuration = currentDuration + 1)
+
+    private fun loadPassengers(/*here we should add something similar to the nextSectionFinder*/): Entity =
+        if (status == EntityStatus.STOP) this
+        else this
 
     private fun resumeRoute(): Entity =
         if (shouldResumeRoute) copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
