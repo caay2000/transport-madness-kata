@@ -11,12 +11,13 @@ Assign a route to the vehicle
 Now that we have a moving vehicle, let's create a route for it. The idea is to assign a route for the vehicle, for
 example A`(0,0)` &rarr; B`(3,2)` &rarr; C`(1,4)` and then back to A
 
-    |   | 0 | 1 | 2 | 3 | 4 | 5 |
-    |---|---|---|---|---|---|---|
-    | 0 | A | - | - | - | \ |   |
-    | 1 | ¦ |   |   |   | C |   |
-    | 2 | ¦ |   |   |   | ¦ |   |
-    | 3 | \ | _ | B | _ | / |   |
+    |   | 0 | 1 | 2 | 3 | 4 |
+    |---|---|---|---|---|---|
+    | 0 | A | - | - | \ |   |
+    | 1 | ¦ |   |   | ¦ |   |
+    | 2 | ¦ |   |   | B |   |
+    | 3 | ¦ |   |   | ¦ |   |
+    | 4 | \ | C | - | / |   |
 
 We also want to stay 1 turn at each stop, so the time to complete the route, from A to A again will be:
 
