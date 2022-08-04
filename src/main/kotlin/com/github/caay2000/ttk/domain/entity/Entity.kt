@@ -1,6 +1,7 @@
 package com.github.caay2000.ttk.domain.entity
 
 import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.domain.pathifinding.NextSectionPathfinding
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId

@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.domain.entity
+package com.github.caay2000.ttk.domain.pathifinding
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.application.pathfinding.AStartPathfindingStrategy

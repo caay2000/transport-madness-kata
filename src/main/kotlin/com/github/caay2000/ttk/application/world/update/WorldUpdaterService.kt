@@ -5,7 +5,7 @@ import arrow.core.flatMap
 import com.github.caay2000.ttk.application.world.UnknownWorldException
 import com.github.caay2000.ttk.application.world.WorldException
 import com.github.caay2000.ttk.application.world.WorldService
-import com.github.caay2000.ttk.domain.entity.NextSectionFinder
+import com.github.caay2000.ttk.domain.pathifinding.NextSectionFinder
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
 
