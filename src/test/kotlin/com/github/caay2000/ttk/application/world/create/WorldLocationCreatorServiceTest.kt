@@ -2,10 +2,13 @@ package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.application.world.LocationsTooCloseException
-import com.github.caay2000.ttk.domain.world.Location
+import com.github.caay2000.ttk.domain.location.Location
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.world.location.PopulationMother
@@ -18,7 +21,8 @@ class WorldLocationCreatorServiceTest {
 
     private val configuration = ConfigurationMother.random()
     private val provider: Provider = DefaultProvider()
-    private val sut = WorldLocationCreatorService(provider)
+    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
+    private val sut = WorldLocationCreatorService(provider, eventPublisher)
 
     @Test
     fun `city is created correctly`() {

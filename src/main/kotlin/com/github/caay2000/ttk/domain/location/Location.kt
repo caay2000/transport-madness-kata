@@ -1,18 +1,20 @@
-package com.github.caay2000.ttk.domain.world
+package com.github.caay2000.ttk.domain.location
 
 import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.infra.eventbus.domain.Aggregate
 import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.randomDomainId
 import kotlin.math.floor
 
 data class Location(
-    val id: LocationId,
+    override val id: LocationId,
     val position: Position,
     val population: Int,
     val rawPAX: Double = 0.0,
     @Transient
     val configuration: Configuration
-) {
+) : Aggregate() {
 
     val pax: Int
         get() = floor(rawPAX).toInt()

@@ -1,10 +1,12 @@
-package com.github.caay2000.ttk.application.world.update
+package com.github.caay2000.ttk.application.entity.update
 
-import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.entity.EntityStatus
 import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
@@ -13,10 +15,11 @@ import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class WorldUpdaterServiceEntityTest {
+internal class EntityUpdaterServiceTest {
 
     private val provider = DefaultProvider()
-    private val sut = WorldUpdaterService(provider)
+    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
+    private val sut = EntityUpdaterService(provider, eventPublisher)
 
     @Test
     fun `entity does not move if not needed`() {
@@ -25,8 +28,8 @@ internal class WorldUpdaterServiceEntityTest {
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(currentDuration = 1))
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it).isEqualTo(entity.copy(currentDuration = 1))
         }
     }
 
@@ -40,11 +43,9 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(1, 0))
-            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(1, 0))
+            assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
     }
 
@@ -62,11 +63,9 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(3, 0))
-            assertThat(entity.status).isEqualTo(EntityStatus.STOP)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(3, 0))
+            assertThat(it.status).isEqualTo(EntityStatus.STOP)
         }
     }
 
@@ -81,9 +80,8 @@ internal class WorldUpdaterServiceEntityTest {
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP, currentDuration = 1))
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP, currentDuration = 1))
         }
     }
 
@@ -105,12 +103,10 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(3, 1))
-            assertThat(entity.route.stopIndex).isEqualTo(1)
-            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(3, 1))
+            assertThat(it.route.stopIndex).isEqualTo(1)
+            assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
     }
 
@@ -132,12 +128,10 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(3, 3))
-            assertThat(entity.route.stopIndex).isEqualTo(0)
-            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(3, 3))
+            assertThat(it.route.stopIndex).isEqualTo(0)
+            assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
     }
 }

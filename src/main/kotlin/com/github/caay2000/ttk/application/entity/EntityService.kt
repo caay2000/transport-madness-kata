@@ -1,12 +1,20 @@
 package com.github.caay2000.ttk.application.entity
 
 import arrow.core.Either
+import arrow.core.flatMap
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
 import com.github.caay2000.ttk.shared.EntityId
 
-abstract class EntityService(protected val provider: Provider) {
+abstract class EntityService(protected val provider: Provider, protected val eventPublisher: EventPublisher<Event>) {
+
+    protected fun findEntity(entityId: EntityId): Either<EntityException, Entity> =
+        provider.get()
+            .flatMap { world -> world.findEntity(entityId) }
+            .mapLeft { UnknownEntityException(it) }
 
     protected fun findWorld(): Either<EntityException, World> =
         provider.get()
@@ -16,7 +24,14 @@ abstract class EntityService(protected val provider: Provider) {
         Either.catch { getEntity(entityId) }
             .mapLeft { EntityNotFound(entityId) }
 
-    protected fun World.save(): Either<EntityException, World> =
-        provider.set(this)
+    protected fun Entity.save(): Either<EntityException, Entity> =
+        provider.get()
+            .map { world -> world.putEntity(this) }
+            .flatMap { world -> provider.set(world) }
+            .map { this }
+            .mapLeft { UnknownEntityException(it) }
+
+    protected fun Entity.publishEvents(): Either<EntityException, Entity> =
+        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
             .mapLeft { UnknownEntityException(it) }
 }

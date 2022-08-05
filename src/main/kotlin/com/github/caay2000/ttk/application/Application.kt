@@ -15,6 +15,11 @@ import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
 import com.github.caay2000.ttk.infra.console.ConsolePrinter
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventBus
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisherImpl
+import com.github.caay2000.ttk.infra.eventbus.impl.KTEventBus
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 
 class Application(
@@ -22,15 +27,18 @@ class Application(
     private val provider: Provider = DefaultProvider()
 ) {
 
+    private val eventBus: EventBus<Event> = KTEventBus.init()
+    private val eventPublisher: EventPublisher<Event> = EventPublisherImpl()
+
     private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)
 
     private val configurationSetterService = ConfigurationSetterService(provider)
-    private val worldCreatorService = WorldCreatorService(provider)
-    private val worldUpdaterService = WorldUpdaterService(provider)
-    private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, createConnectionPathfindingConfiguration)
-    private val worldLocationCreatorService = WorldLocationCreatorService(provider)
-    private val entityCreatorService = EntityCreatorService(provider)
-    private val entityRouteAssignerService = EntityRouteAssignerService(provider)
+    private val worldCreatorService = WorldCreatorService(provider, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(provider, eventPublisher)
+    private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, eventPublisher, createConnectionPathfindingConfiguration)
+    private val worldLocationCreatorService = WorldLocationCreatorService(provider, eventPublisher)
+    private val entityCreatorService = EntityCreatorService(provider, eventPublisher)
+    private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
     private val printer = ConsolePrinter(configuration)
 
     fun invoke(startPosition: Position, paths: Map<Position, List<Position>>, locations: Set<Pair<Position, Int>>, route: List<Position>): Int {

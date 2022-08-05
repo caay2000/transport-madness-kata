@@ -1,19 +1,21 @@
 package com.github.caay2000.ttk.domain.entity
 
 import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.domain.entity.event.EntityEvent
 import com.github.caay2000.ttk.domain.pathifinding.NextSectionPathfinding
 import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.infra.eventbus.domain.Aggregate
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 
 data class Entity(
-    val id: EntityId,
+    override val id: EntityId,
     val currentPosition: Position,
     val currentDuration: Int,
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
     val configuration: Configuration
-) {
+) : Aggregate() {
 
     companion object {
         fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
@@ -22,7 +24,9 @@ data class Entity(
             currentDuration = 0,
             route = Route.create(listOf(position)),
             configuration = configuration
-        )
+        ).also {
+            it.pushEvent(EntityEvent(it.id))
+        }
     }
 
     private val currentDestination: Position
