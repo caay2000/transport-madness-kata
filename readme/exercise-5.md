@@ -53,5 +53,5 @@ should have the following numbers for PAX and received PAX
     | LOCATION   | 1 turn             | 7 turn | 12 turn | 17 turn | 22 turn |              
     |------------|--------------------|--------|---------|---------|---------|
     |    (0,0)   | 1 PAX / 0 Received |  6 / 0 | 11 / 0  | 16 / 0  | 21 / 20 | 
-    |    (3,2)   | 2 PAX / 0 Received | 14 / 1 | 10 / 1  | 20 / 7  | 10 / 13 | 
+    |    (3,2)   | 2 PAX / 0 Received | 14 / 1 | 10 / 1  | 20 / 7  | 10 / 7  | 
     |    (1,4)   | 0 PAX / 0 Received |  3 / 0 |  6 / 14 |  2 / 14 |  5 / 14 | 

@@ -67,9 +67,12 @@ data class Entity(
 
     private fun loadPassengers(loadingSystem: PassengerLoadingSystem): Entity =
         if (status == EntityStatus.STOP && currentDuration == 1) {
-            copy(pax = pax + loadingSystem.invoke(currentPosition)).also {
-                it.pushEvents(pullEvents() + EntityLoadedEvent(id, it.pax, currentPosition))
-            }
+            val loadedPAX = loadingSystem.invoke(currentPosition)
+            if (loadedPAX > 0) {
+                copy(pax = pax + loadedPAX).also {
+                    it.pushEvents(pullEvents() + EntityLoadedEvent(id, loadedPAX, currentPosition))
+                }
+            } else this
         } else this
 
     private fun resumeRoute(): Entity =

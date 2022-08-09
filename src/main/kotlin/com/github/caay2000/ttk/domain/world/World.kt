@@ -46,6 +46,7 @@ data class World(
     fun refreshEntity(entity: Entity): World = putEntity(entity)
 
     fun getLocation(id: LocationId): Location = locations.getValue(id)
+    fun getLocation(position: Position): Location = locations.values.first { it.position == position }
     fun putLocation(location: Location): World =
         updateCell { getCell(location.position).updateLocationId(location.id) }
             .copy(locations = locations + (location.id to location))
