@@ -7,18 +7,21 @@ import arrow.core.right
 import com.github.caay2000.ttk.application.world.LocationsTooCloseException
 import com.github.caay2000.ttk.application.world.WorldService
 import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.world.Location
+import com.github.caay2000.ttk.domain.location.Location
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
 
-class WorldLocationCreatorService(provider: Provider) : WorldService(provider) {
+class WorldLocationCreatorService(provider: Provider, eventPublisher: EventPublisher<Event>) : WorldService(provider, eventPublisher) {
 
     fun invoke(position: Position, population: Int): Either<Throwable, World> =
         findWorld()
             .flatMap { world -> world.guardMinimumDistance(position) }
             .flatMap { world -> world.createLocation(position, population) }
             .flatMap { world -> world.save() }
+            .flatMap { world -> world.publishEvents() }
 
     private fun World.guardMinimumDistance(position: Position) =
         findConfiguration()

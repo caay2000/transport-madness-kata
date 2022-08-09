@@ -5,7 +5,10 @@ import com.github.caay2000.ttk.application.pathfinding.PathfindingConfiguration
 import com.github.caay2000.ttk.domain.world.Cell
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
 import io.kotest.assertions.arrow.either.shouldBeRight
@@ -15,9 +18,10 @@ import org.junit.jupiter.api.Test
 internal class WorldConnectionCreatorServiceTest {
 
     private val provider: Provider = DefaultProvider()
+    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
     private val pathfindingConfiguration: PathfindingConfiguration = PathfindingConfigurationMother.default(needConnection = false)
 
-    private val sut = WorldConnectionCreatorService(provider = provider, pathfindingConfiguration = pathfindingConfiguration)
+    private val sut = WorldConnectionCreatorService(provider = provider, eventPublisher = eventPublisher, pathfindingConfiguration = pathfindingConfiguration)
 
     @Test
     fun `should create connection when it does not exists`() {

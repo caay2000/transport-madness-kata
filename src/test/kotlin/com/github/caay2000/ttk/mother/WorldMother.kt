@@ -3,8 +3,8 @@ package com.github.caay2000.ttk.mother
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.application.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.domain.entity.Entity
+import com.github.caay2000.ttk.domain.location.Location
 import com.github.caay2000.ttk.domain.world.Cell
-import com.github.caay2000.ttk.domain.world.Location
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.World
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
@@ -12,6 +12,8 @@ import com.github.caay2000.ttk.mother.world.CellMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.LocationId
+import com.github.caay2000.ttk.shared.WorldId
+import com.github.caay2000.ttk.shared.randomDomainId
 
 object WorldMother {
 
@@ -21,17 +23,20 @@ object WorldMother {
     private const val DEFAULT_HEIGHT: Int = 6
 
     fun empty(
+        id: WorldId = randomDomainId(),
         width: Int = DEFAULT_WIDTH,
         height: Int = DEFAULT_HEIGHT,
         entities: Map<EntityId, Entity> = emptyMap(),
         locations: Map<LocationId, Location> = emptyMap()
-    ): World =
-        World(
-            currentTurn = 0,
-            cells = createCells(width, height),
-            entities = entities,
-            locations = locations
-        )
+    ): World = World(
+        id = id,
+        currentTurn = 0,
+        cells = createCells(width, height),
+        entities = entities,
+        locations = emptyMap()
+    ).let {
+        locations.values.fold(it) { world, location -> world.putLocation(location) }
+    }
 
     fun connectedPaths(
         width: Int = DEFAULT_WIDTH,
@@ -39,7 +44,7 @@ object WorldMother {
         entities: Map<EntityId, Entity> = emptyMap(),
         locations: Map<LocationId, Location> = emptyMap(),
         connectedPaths: Map<Position, List<Position>>
-    ): World = empty(width, height, entities, locations).connectPath(connectedPaths)
+    ): World = empty(width = width, height = height, entities = entities, locations = locations).connectPath(connectedPaths)
 
     fun oneVehicle(entity: Entity = EntityMother.random()): World =
         empty(entities = mapOf(entity.id to entity))

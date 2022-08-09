@@ -1,22 +1,27 @@
-package com.github.caay2000.ttk.application.world.update
+package com.github.caay2000.ttk.application.entity.update
 
-import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.entity.EntityStatus
+import com.github.caay2000.ttk.domain.entity.event.EntityLoadedEvent
+import com.github.caay2000.ttk.domain.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.domain.location.Location
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
 import com.github.caay2000.ttk.mother.WorldMother
+import com.github.caay2000.ttk.mother.world.location.LocationMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class WorldUpdaterServiceEntityTest {
+internal class EntityUpdaterServiceTest {
 
     private val provider = DefaultProvider()
-    private val sut = WorldUpdaterService(provider)
+    private val eventPublisher: EventPublisherMock = EventPublisherMock()
+    private val sut = EntityUpdaterService(provider, eventPublisher)
 
     @Test
     fun `entity does not move if not needed`() {
@@ -25,8 +30,8 @@ internal class WorldUpdaterServiceEntityTest {
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(currentDuration = 1))
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it).isEqualTo(entity.copy(currentDuration = 1))
         }
     }
 
@@ -40,11 +45,9 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(1, 0))
-            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(1, 0))
+            assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
     }
 
@@ -62,11 +65,9 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(3, 0))
-            assertThat(entity.status).isEqualTo(EntityStatus.STOP)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(3, 0))
+            assertThat(it.status).isEqualTo(EntityStatus.STOP)
         }
     }
 
@@ -81,9 +82,8 @@ internal class WorldUpdaterServiceEntityTest {
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            assertThat(it.getEntity(entity.id)).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP, currentDuration = 1))
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP, currentDuration = 1))
         }
     }
 
@@ -105,12 +105,10 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(3, 1))
-            assertThat(entity.route.stopIndex).isEqualTo(1)
-            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(3, 1))
+            assertThat(it.route.stopIndex).isEqualTo(1)
+            assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
     }
 
@@ -132,12 +130,54 @@ internal class WorldUpdaterServiceEntityTest {
         )
         provider.set(world)
 
-        sut.invoke().shouldBeRight {
-            val entity = it.getEntity(entity.id)
-            assertThat(entity.currentPosition).isEqualTo(Position(3, 3))
-            assertThat(entity.route.stopIndex).isEqualTo(0)
-            assertThat(entity.status).isEqualTo(EntityStatus.IN_ROUTE)
-            assertThat(it).isEqualTo(provider.get().bind())
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(3, 3))
+            assertThat(it.route.stopIndex).isEqualTo(0)
+            assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
+    }
+
+    @Test
+    fun `should unload passengers (event) when reaches a station`() {
+        val entity: Entity = EntityMother.random(
+            currentPosition = Position(2, 0),
+            route = RouteMother.random(Position(3, 0)),
+            pax = 10,
+            status = EntityStatus.IN_ROUTE
+        )
+        val world = WorldMother.connectedPaths(
+            entities = mapOf(entity.id to entity),
+            connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
+        )
+        provider.set(world)
+
+        sut.invoke(entity.id).shouldBeRight()
+        assertThat(eventPublisher.publishedEvents)
+            .hasSize(1)
+            .containsExactly(EntityUnloadedEvent(aggregateId = entity.id, amount = 10, position = Position(3, 0)))
+    }
+
+    @Test
+    fun `should load passengers (event) when in station for more than 1 turn`() {
+        val entity: Entity = EntityMother.random(
+            currentPosition = Position(3, 0),
+            route = RouteMother.random(Position(3, 0), Position(2, 4)),
+            pax = 10,
+            status = EntityStatus.STOP
+        )
+        val location: Location = LocationMother.random(position = Position(3, 0), rawPAX = 20.0)
+        val world = WorldMother.empty(
+            entities = mapOf(entity.id to entity),
+            locations = mapOf(location.id to location)
+        )
+        provider.set(world)
+
+        sut.invoke(entity.id).shouldBeRight {
+            assertThat(it.pax).isEqualTo(30)
+        }
+
+        assertThat(eventPublisher.publishedEvents)
+            .hasSize(1)
+            .containsExactly(EntityLoadedEvent(aggregateId = entity.id, amount = 20, position = Position(3, 0)))
     }
 }

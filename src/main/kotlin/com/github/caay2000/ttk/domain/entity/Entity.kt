@@ -1,18 +1,25 @@
 package com.github.caay2000.ttk.domain.entity
 
 import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.domain.entity.event.EntityLoadedEvent
+import com.github.caay2000.ttk.domain.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.domain.pathifinding.NextSectionFinder
+import com.github.caay2000.ttk.domain.pathifinding.PassengerLoadingSystem
 import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.infra.eventbus.domain.Aggregate
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 
 data class Entity(
-    val id: EntityId,
+    override val id: EntityId,
     val currentPosition: Position,
     val currentDuration: Int,
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
+    val pax: Int,
+    @Transient
     val configuration: Configuration
-) {
+) : Aggregate() {
 
     companion object {
         fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
@@ -20,6 +27,7 @@ data class Entity(
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),
+            pax = 0,
             configuration = configuration
         )
     }
@@ -41,20 +49,37 @@ data class Entity(
 
     fun assignRoute(route: Route) = copy(route = route)
 
-    fun update(nextSectionFinder: NextSectionPathfinding): Entity =
+    fun update(nextSectionFinder: NextSectionFinder, loadingSystem: PassengerLoadingSystem): Entity =
         increaseDuration()
+            .loadPassengers(loadingSystem)
             .resumeRoute()
             .refreshNextSection(nextSectionFinder)
             .moveEntity()
             .stopEntity()
+            .unloadPassengers()
 
     private fun increaseDuration(): Entity = copy(currentDuration = currentDuration + 1)
+
+    private fun unloadPassengers(): Entity =
+        if (status == EntityStatus.STOP && currentDuration == 0 && pax > 0) {
+            copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
+        } else this
+
+    private fun loadPassengers(loadingSystem: PassengerLoadingSystem): Entity =
+        if (status == EntityStatus.STOP && currentDuration == 1) {
+            val loadedPAX = loadingSystem.invoke(currentPosition)
+            if (loadedPAX > 0) {
+                copy(pax = pax + loadedPAX).also {
+                    it.pushEvents(pullEvents() + EntityLoadedEvent(id, loadedPAX, currentPosition))
+                }
+            } else this
+        } else this
 
     private fun resumeRoute(): Entity =
         if (shouldResumeRoute) copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
         else this
 
-    private fun refreshNextSection(nextSectionFinder: NextSectionPathfinding): Entity =
+    private fun refreshNextSection(nextSectionFinder: NextSectionFinder): Entity =
         if (shouldUpdateNextSection) copy(route = route.updateNextSection(nextSectionFinder.invoke(currentPosition, currentDestination)))
         else this
 

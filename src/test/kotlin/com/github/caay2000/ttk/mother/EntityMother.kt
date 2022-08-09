@@ -16,6 +16,7 @@ object EntityMother {
         currentDuration: Int = 0,
         route: Route = Route(listOf(currentPosition)),
         status: EntityStatus = EntityStatus.STOP,
+        pax: Int = 0,
         configuration: Configuration = ConfigurationMother.random()
     ) = Entity(
         id = id,
@@ -23,6 +24,7 @@ object EntityMother {
         currentDuration = currentDuration,
         route = route,
         status = status,
+        pax = pax,
         configuration = configuration
     )
 }
