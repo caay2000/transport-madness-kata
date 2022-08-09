@@ -1,6 +1,8 @@
 package com.github.caay2000.ttk.application
 
 import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.adapter.event.location.UpdateLocationOnEntityLoadedEventSubscriber
+import com.github.caay2000.ttk.adapter.event.location.UpdateLocationOnEntityUnloadedEventSubscriber
 import com.github.caay2000.ttk.application.configuration.ConfigurationSetterService
 import com.github.caay2000.ttk.application.entity.EntityCreatorService
 import com.github.caay2000.ttk.application.entity.EntityRouteAssignerService
@@ -11,24 +13,31 @@ import com.github.caay2000.ttk.application.world.create.WorldLocationCreatorServ
 import com.github.caay2000.ttk.application.world.update.WorldUpdaterService
 import com.github.caay2000.ttk.domain.configuration.Configuration
 import com.github.caay2000.ttk.domain.entity.Entity
+import com.github.caay2000.ttk.domain.entity.event.EntityLoadedEvent
+import com.github.caay2000.ttk.domain.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.domain.world.World
 import com.github.caay2000.ttk.infra.console.ConsolePrinter
 import com.github.caay2000.ttk.infra.eventbus.event.Event
-import com.github.caay2000.ttk.infra.eventbus.event.EventBus
 import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
 import com.github.caay2000.ttk.infra.eventbus.event.EventPublisherImpl
 import com.github.caay2000.ttk.infra.eventbus.impl.KTEventBus
+import com.github.caay2000.ttk.infra.eventbus.impl.instantiateEventSubscriber
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 
 class Application(
     private val configuration: Configuration,
     private val provider: Provider = DefaultProvider()
 ) {
-
-    private val eventBus: EventBus<Event> = KTEventBus.init()
     private val eventPublisher: EventPublisher<Event> = EventPublisherImpl()
+
+    init {
+
+        KTEventBus.init<Event>()
+        instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(provider, eventPublisher))
+        instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(provider, eventPublisher))
+    }
 
     private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)
 

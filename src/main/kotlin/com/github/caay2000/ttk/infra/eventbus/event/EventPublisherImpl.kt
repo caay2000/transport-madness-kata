@@ -8,6 +8,7 @@ class EventPublisherImpl<T> : EventPublisher<T> {
 
     override fun publish(events: List<T>) =
         events.forEach { event ->
+//            println(event)
             eventPublisher.publish(event)
         }
 }

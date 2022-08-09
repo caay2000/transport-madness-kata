@@ -12,6 +12,7 @@ data class Location(
     val position: Position,
     val population: Int,
     val rawPAX: Double = 0.0,
+    val received: Int = 0,
     @Transient
     val configuration: Configuration
 ) : Aggregate() {
@@ -29,4 +30,6 @@ data class Location(
     }
 
     fun update(): Location = copy(rawPAX = rawPAX + population * configuration.cityPAXPercentage)
+    fun unload(amountUnloaded: Int): Location = copy(received = received + amountUnloaded)
+    fun load(amountLoaded: Int): Location = copy(rawPAX = rawPAX - amountLoaded)
 }

@@ -7,6 +7,7 @@ import com.github.caay2000.ttk.application.entity.EntityService
 import com.github.caay2000.ttk.application.entity.UnknownEntityException
 import com.github.caay2000.ttk.domain.entity.Entity
 import com.github.caay2000.ttk.domain.pathifinding.NextSectionFinder
+import com.github.caay2000.ttk.domain.pathifinding.PassengerLoadingSystem
 import com.github.caay2000.ttk.domain.world.Provider
 import com.github.caay2000.ttk.infra.eventbus.event.Event
 import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
@@ -15,6 +16,7 @@ import com.github.caay2000.ttk.shared.EntityId
 class EntityUpdaterService(provider: Provider, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
 
     private val nextSectionFinder = NextSectionFinder(provider)
+    private val passengerLoadingSystem = PassengerLoadingSystem(provider)
 
     fun invoke(entityId: EntityId): Either<EntityException, Entity> =
         findEntity(entityId)
@@ -24,6 +26,6 @@ class EntityUpdaterService(provider: Provider, eventPublisher: EventPublisher<Ev
             .mapLeft { UnknownEntityException(it) }
 
     private fun Entity.updateEntity(): Either<EntityException, Entity> =
-        Either.catch { update(nextSectionFinder) }
+        Either.catch { update(nextSectionFinder, passengerLoadingSystem) }
             .mapLeft { UnknownEntityException(it) }
 }

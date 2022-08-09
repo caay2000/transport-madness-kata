@@ -4,6 +4,8 @@ import kotlin.math.sqrt
 
 data class Position(val x: Int, val y: Int) {
 
+    override fun toString(): String = "($x,$y)"
+
     fun distance(destination: Position): Float {
         val x = destination.x - x
         val y = destination.y - y

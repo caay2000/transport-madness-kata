@@ -134,4 +134,16 @@ internal class EntityUpdaterServiceTest {
             assertThat(it.status).isEqualTo(EntityStatus.IN_ROUTE)
         }
     }
+
+    @Test
+    fun `should unload passengers (event) when reaches a station`() {
+    }
+
+    @Test
+    fun `should load passengers (event) when in station for more than 1 turn`() {
+    }
+
+    @Test
+    fun `should continue loading passengers (event) when in station for continuous turns`() {
+    }
 }

@@ -1,5 +1,7 @@
 package com.github.caay2000.ttk.infra.eventbus.impl
 
+import com.github.caay2000.ttk.infra.eventbus.event.Event
+import com.github.caay2000.ttk.infra.eventbus.event.EventSubscriber
 import kotlin.reflect.KClass
 
 abstract class KTEventSubscriber<in EVENT>(type: KClass<*>) {
@@ -19,3 +21,8 @@ abstract class KTEventSubscriber<in EVENT>(type: KClass<*>) {
 
     abstract fun handle(event: EVENT)
 }
+
+fun <EVENT : Event> instantiateEventSubscriber(clazz: KClass<EVENT>, eventSubscriber: EventSubscriber<EVENT>): KTEventSubscriber<EVENT> =
+    object : KTEventSubscriber<EVENT>(clazz) {
+        override fun handle(event: EVENT) = eventSubscriber.handle(event)
+    }

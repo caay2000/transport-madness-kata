@@ -37,7 +37,7 @@ class ApplicationIntegrationTest {
         fun `exercise 3 data`(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2`(), `route from 0,0 to 3,2`(), 12),
-                Arguments.of(Position(0, 0), `path from 0,0 to 0,4`(), `route from 0,0 to 0,4`(), 10),
+                Arguments.of(Position(0, 0), `path from 0,0 to 1,4`(), `route from 0,0 to 1,4`(), 12),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 21),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4`(), 17),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4 to 3,2`(), 22)
@@ -45,12 +45,12 @@ class ApplicationIntegrationTest {
         }
 
         private fun `route from 0,0 to 3,2`() = listOf(Position(0, 0), Position(3, 2))
-        private fun `route from 0,0 to 0,4`() = listOf(Position(0, 0), Position(0, 4))
+        private fun `route from 0,0 to 1,4`() = listOf(Position(0, 0), Position(1, 4))
         private fun `route from 0,0 to 3,2 to 1,4`() = listOf(Position(0, 0), Position(3, 2), Position(1, 4))
         private fun `route from 0,0 to 3,2 to 1,4 to 3,2`() = listOf(Position(0, 0), Position(3, 2), Position(1, 4), Position(3, 2))
 
         private fun `path from 0,0 to 3,2`() = mapOf(Position(0, 0) to listOf(Position(3, 2)))
-        private fun `path from 0,0 to 0,4`() = mapOf(Position(0, 0) to listOf(Position(0, 4)))
+        private fun `path from 0,0 to 1,4`() = mapOf(Position(0, 0) to listOf(Position(1, 4)))
         private fun `path from 0,0 to 3,2 to 1,4`() = mapOf(
             Position(0, 0) to listOf(Position(3, 2)),
             Position(3, 2) to listOf(Position(1, 4))

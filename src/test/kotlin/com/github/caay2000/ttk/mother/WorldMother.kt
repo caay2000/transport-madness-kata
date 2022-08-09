@@ -33,8 +33,10 @@ object WorldMother {
         currentTurn = 0,
         cells = createCells(width, height),
         entities = entities,
-        locations = locations
-    )
+        locations = emptyMap()
+    ).let {
+        locations.values.fold(it) { world, location -> world.putLocation(location) }
+    }
 
     fun connectedPaths(
         width: Int = DEFAULT_WIDTH,

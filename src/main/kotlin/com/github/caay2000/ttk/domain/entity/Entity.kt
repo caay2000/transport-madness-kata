@@ -1,8 +1,10 @@
 package com.github.caay2000.ttk.domain.entity
 
 import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.entity.event.EntityEvent
-import com.github.caay2000.ttk.domain.pathifinding.NextSectionPathfinding
+import com.github.caay2000.ttk.domain.entity.event.EntityLoadedEvent
+import com.github.caay2000.ttk.domain.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.domain.pathifinding.NextSectionFinder
+import com.github.caay2000.ttk.domain.pathifinding.PassengerLoadingSystem
 import com.github.caay2000.ttk.domain.world.Position
 import com.github.caay2000.ttk.infra.eventbus.domain.Aggregate
 import com.github.caay2000.ttk.shared.EntityId
@@ -14,6 +16,8 @@ data class Entity(
     val currentDuration: Int,
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
+    val pax: Int,
+    @Transient
     val configuration: Configuration
 ) : Aggregate() {
 
@@ -23,10 +27,9 @@ data class Entity(
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),
+            pax = 0,
             configuration = configuration
-        ).also {
-            it.pushEvent(EntityEvent(it.id))
-        }
+        )
     }
 
     private val currentDestination: Position
@@ -46,25 +49,34 @@ data class Entity(
 
     fun assignRoute(route: Route) = copy(route = route)
 
-    fun update(nextSectionFinder: NextSectionPathfinding): Entity =
+    fun update(nextSectionFinder: NextSectionFinder, loadingSystem: PassengerLoadingSystem): Entity =
         increaseDuration()
-            .loadPassengers()
+            .loadPassengers(loadingSystem)
             .resumeRoute()
             .refreshNextSection(nextSectionFinder)
             .moveEntity()
             .stopEntity()
+            .unloadPassengers()
 
     private fun increaseDuration(): Entity = copy(currentDuration = currentDuration + 1)
 
-    private fun loadPassengers(/*here we should add something similar to the nextSectionFinder*/): Entity =
-        if (status == EntityStatus.STOP) this
-        else this
+    private fun unloadPassengers(): Entity =
+        if (status == EntityStatus.STOP && currentDuration == 0 && pax > 0) {
+            copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
+        } else this
+
+    private fun loadPassengers(loadingSystem: PassengerLoadingSystem): Entity =
+        if (status == EntityStatus.STOP && currentDuration == 1) {
+            copy(pax = pax + loadingSystem.invoke(currentPosition)).also {
+                it.pushEvents(pullEvents() + EntityLoadedEvent(id, it.pax, currentPosition))
+            }
+        } else this
 
     private fun resumeRoute(): Entity =
         if (shouldResumeRoute) copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
         else this
 
-    private fun refreshNextSection(nextSectionFinder: NextSectionPathfinding): Entity =
+    private fun refreshNextSection(nextSectionFinder: NextSectionFinder): Entity =
         if (shouldUpdateNextSection) copy(route = route.updateNextSection(nextSectionFinder.invoke(currentPosition, currentDestination)))
         else this
 

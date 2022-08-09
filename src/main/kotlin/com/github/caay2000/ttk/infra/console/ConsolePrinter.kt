@@ -27,7 +27,7 @@ class ConsolePrinter(val configuration: Configuration) : Printer {
             println(currentLine)
         }
         world.locations.forEach { (_, it) ->
-            println("(${it.position.x}, ${it.position.y}) ${it.population} population - ${it.pax}PAX waiting - X PAX Received")
+            println("(${it.position.x}, ${it.position.y}) ${it.population} population - ${it.pax}PAX waiting - ${it.received} PAX Received")
         }
     }
 

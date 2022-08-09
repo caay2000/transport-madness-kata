@@ -14,11 +14,13 @@ object LocationMother {
         id: LocationId = randomDomainId(),
         position: Position = PositionMother.random(),
         population: Int = PopulationMother.random(),
+        rawPAX: Double = 0.0,
         configuration: Configuration = ConfigurationMother.random()
     ) = Location(
         id = id,
         position = position,
         population = population,
+        rawPAX = rawPAX,
         configuration = configuration
     )
 }
