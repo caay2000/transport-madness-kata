@@ -37,7 +37,7 @@ class KTEventBus<in QUERY, in EVENT> private constructor() {
 
     @Suppress("UNCHECKED_CAST")
     internal fun <RESPONSE> publishQuery(query: QUERY): RESPONSE =
-        queryHandlers[query!!::class]!!.execute(query) as RESPONSE
+        queryHandlers[query!!::class]?.execute(query) as RESPONSE ?: throw QueryHandlerNotFoundException(query)
 
     internal fun publishEvent(event: EVENT) {
         notifyEventSubscribers(event)

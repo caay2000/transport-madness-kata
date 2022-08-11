@@ -3,6 +3,7 @@ package com.github.caay2000.ttk
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Query
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
@@ -40,7 +41,7 @@ class Application(
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
 
     init {
-        KTEventBus.init<String, Event>()
+        KTEventBus.init<Query, Event>()
         instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(provider, eventPublisher))
         instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(provider, eventPublisher))
 
