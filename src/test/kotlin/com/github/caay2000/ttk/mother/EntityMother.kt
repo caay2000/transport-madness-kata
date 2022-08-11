@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.mother
 
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.entity.domain.Route
@@ -17,7 +17,7 @@ object EntityMother {
         route: Route = Route(listOf(currentPosition)),
         status: EntityStatus = EntityStatus.STOP,
         pax: Int = 0,
-        configuration: Configuration = ConfigurationMother.random()
+        provider: Provider
     ) = Entity(
         id = id,
         currentPosition = currentPosition,
@@ -25,6 +25,6 @@ object EntityMother {
         route = route,
         status = status,
         pax = pax,
-        configuration
+        provider = provider
     )
 }

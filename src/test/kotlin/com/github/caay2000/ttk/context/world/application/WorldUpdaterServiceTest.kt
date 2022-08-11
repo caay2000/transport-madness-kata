@@ -11,7 +11,7 @@ import org.mockito.kotlin.mock
 internal class WorldUpdaterServiceTest {
 
     private val provider = DefaultProvider()
-    private val sut = WorldUpdaterService(provider, mock(), mock())
+    private val sut = WorldUpdaterService(provider, mock())
 
     @Test
     fun `turn is updated correctly`() {

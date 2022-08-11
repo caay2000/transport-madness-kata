@@ -11,5 +11,5 @@ class KTEventPublisher<in EVENT> : EventPublisher<EVENT> {
         }
     }
 
-    private fun publish(event: EVENT) = KTEventBus.getInstance<Any, EVENT>().publishEvent(event)
+    private fun publish(event: EVENT) = KTEventBus.getInstance<EVENT>().publishEvent(event)
 }

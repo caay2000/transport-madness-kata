@@ -20,7 +20,7 @@ internal class EntityRouteAssignerServiceTest {
     @Test
     fun `route is added to entity`() {
 
-        val entity = EntityMother.random()
+        val entity = EntityMother.random(provider = provider)
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
 
@@ -34,7 +34,7 @@ internal class EntityRouteAssignerServiceTest {
     @Test
     fun `should fail if route is invalid`() {
 
-        val entity = EntityMother.random()
+        val entity = EntityMother.random(provider = provider)
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
 

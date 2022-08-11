@@ -13,7 +13,7 @@ import org.mockito.kotlin.mock
 internal class WorldUpdaterServiceLocationTest {
 
     private val provider = DefaultProvider()
-    private val sut = WorldUpdaterService(provider, mock(), mock())
+    private val sut = WorldUpdaterService(provider, mock())
 
     @Test
     fun `location is updated correctly with 1000 inhabitants`() {

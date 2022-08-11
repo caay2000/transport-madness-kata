@@ -11,7 +11,7 @@ abstract class KTEventSubscriber<in EVENT>(type: KClass<*>) {
     }
 
     private fun subscribeTo(type: KClass<*>) {
-        KTEventBus.getInstance<Any, EVENT>().subscribe(this, type)
+        KTEventBus.getInstance<EVENT>().subscribe(this, type)
     }
 
     internal fun execute(event: Any) {

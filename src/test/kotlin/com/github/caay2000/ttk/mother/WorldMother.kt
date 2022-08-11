@@ -46,7 +46,7 @@ object WorldMother {
         connectedPaths: Map<Position, List<Position>>
     ): World = empty(width = width, height = height, entities = entities, locations = locations).connectPath(connectedPaths)
 
-    fun oneVehicle(entity: Entity = EntityMother.random()): World =
+    fun oneVehicle(entity: Entity): World =
         empty(entities = mapOf(entity.id to entity))
 
     fun oneLocation(location: Location = LocationMother.random()): World =

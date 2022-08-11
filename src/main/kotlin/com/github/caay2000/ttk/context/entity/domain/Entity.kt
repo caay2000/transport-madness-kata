@@ -1,7 +1,10 @@
 package com.github.caay2000.ttk.context.entity.domain
 
+import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
-import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
+import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
+import com.github.caay2000.ttk.context.entity.domain.update.NextSectionStrategy
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
@@ -15,17 +18,21 @@ data class Entity(
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
     val pax: Int,
-    private val configuration: Configuration
+    private val provider: Provider
 ) : Aggregate() {
 
+    private val configuration: Configuration by lazy { provider.getConfiguration().bind() }
+    private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(provider)
+    private val nextSectionStrategy = NextSectionStrategy.SimpleNextSectionStrategy(provider)
+
     companion object {
-        fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
+        fun create(id: EntityId = randomDomainId(), position: Position, provider: Provider): Entity = Entity(
             id = id,
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),
             pax = 0,
-            configuration = configuration
+            provider = provider
         )
     }
 
@@ -46,11 +53,11 @@ data class Entity(
 
     fun assignRoute(route: Route) = copy(route = route)
 
-    fun update(updaterOperations: EntityUpdateOperations): Entity =
+    fun update(): Entity =
         increaseDuration()
-            .loadPassengers(updaterOperations)
+            .loadPassengers()
             .resumeRoute()
-            .refreshNextSection(updaterOperations)
+            .refreshNextSection()
             .moveEntity()
             .stopEntity()
             .unloadPassengers()
@@ -62,22 +69,17 @@ data class Entity(
             copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
         } else this
 
-    private fun loadPassengers(updateOperations: EntityUpdateOperations): Entity =
+    private fun loadPassengers(): Entity =
         if (status == EntityStatus.STOP && currentDuration == 1) {
-            val loadedPAX = updateOperations.locationPassengerAvailable(currentPosition)
-            if (loadedPAX > 0) {
-                copy(pax = pax + loadedPAX).also {
-                    it.pushEvents(pullEvents() + EntityLoadedEvent(id, loadedPAX, currentPosition))
-                }
-            } else this
+            loadPassengersStrategy.invoke(this)
         } else this
 
     private fun resumeRoute(): Entity =
         if (shouldResumeRoute) copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
         else this
 
-    private fun refreshNextSection(updaterOperations: EntityUpdateOperations): Entity =
-        if (shouldUpdateNextSection) copy(route = route.updateNextSection(updaterOperations.entityNextSection(currentPosition, currentDestination)))
+    private fun refreshNextSection(): Entity =
+        if (shouldUpdateNextSection) nextSectionStrategy.invoke(this)
         else this
 
     private fun moveEntity(): Entity =
