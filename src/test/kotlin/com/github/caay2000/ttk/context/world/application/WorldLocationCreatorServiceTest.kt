@@ -1,12 +1,10 @@
-package com.github.caay2000.ttk.application.world.create
+package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.location.domain.Location
-import com.github.caay2000.ttk.context.world.application.LocationsTooCloseException
-import com.github.caay2000.ttk.context.world.application.WorldLocationCreatorService
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mock.EventPublisherMock

@@ -1,10 +1,9 @@
-package com.github.caay2000.ttk.application.entity.update
+package com.github.caay2000.ttk.context.entity.application
 
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.Query
 import com.github.caay2000.ttk.context.configuration.query.GetConfigurationQuery
 import com.github.caay2000.ttk.context.configuration.query.GetConfigurationQueryHandler
-import com.github.caay2000.ttk.context.entity.application.EntityUpdaterService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent

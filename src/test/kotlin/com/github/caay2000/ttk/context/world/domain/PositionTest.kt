@@ -1,6 +1,5 @@
-package com.github.caay2000.ttk.domain.world
+package com.github.caay2000.ttk.context.world.domain
 
-import com.github.caay2000.ttk.context.world.domain.Position
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

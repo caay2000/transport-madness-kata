@@ -1,10 +1,8 @@
-package com.github.caay2000.ttk.application.entity
+package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
-import com.github.caay2000.ttk.context.entity.application.InvalidEntityPositionException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mock.EventPublisherMock
