@@ -1,16 +1,17 @@
 package com.github.caay2000.ttk.application.world.create
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.application.pathfinding.PathfindingConfiguration
-import com.github.caay2000.ttk.domain.world.Cell
-import com.github.caay2000.ttk.domain.world.Position
-import com.github.caay2000.ttk.domain.world.Provider
-import com.github.caay2000.ttk.infra.eventbus.event.Event
-import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
+import com.github.caay2000.ttk.context.world.domain.Cell
+import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
+import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test

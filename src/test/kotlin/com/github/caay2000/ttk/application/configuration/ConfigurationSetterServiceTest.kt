@@ -1,6 +1,7 @@
 package com.github.caay2000.ttk.application.configuration
 
 import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import io.kotest.assertions.arrow.either.shouldBeRight

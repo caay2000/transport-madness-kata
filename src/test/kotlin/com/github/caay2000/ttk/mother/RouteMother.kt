@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.mother
 
-import com.github.caay2000.ttk.domain.entity.Route
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.context.entity.domain.Route
+import com.github.caay2000.ttk.context.world.domain.Position
 
 object RouteMother {
 

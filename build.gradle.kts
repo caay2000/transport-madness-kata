@@ -38,7 +38,7 @@ dependencies {
 }
 
 pitest {
-    pitestVersion.set("1.9.3")
+    pitestVersion.set("1.9.4")
     junit5PluginVersion.set("1.0.0")
     targetClasses.add("com.github.caay2000.ttk.*")
     excludedMethods.addAll("toString")
@@ -53,6 +53,6 @@ pitest {
     dependencies {
         pitest("com.groupcdg.pitest:pitest-accelerator-junit5:1.0.0")
         pitest("com.groupcdg.pitest:extended-mutators:0.1.4")
-        pitest("com.groupcdg.pitest:pitest-kotlin-plugin:0.1.2")
+        pitest("com.groupcdg.pitest:pitest-kotlin-plugin:0.1.3")
     }
 }

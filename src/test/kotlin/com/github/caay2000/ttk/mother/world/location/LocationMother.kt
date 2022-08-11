@@ -1,8 +1,8 @@
 package com.github.caay2000.ttk.mother.world.location
 
-import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.location.Location
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.world.PositionMother
 import com.github.caay2000.ttk.shared.LocationId

@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.mother
 
-import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import java.util.Random
 
 object ConfigurationMother {

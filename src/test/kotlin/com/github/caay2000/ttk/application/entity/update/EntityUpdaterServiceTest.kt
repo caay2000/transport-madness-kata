@@ -1,11 +1,18 @@
 package com.github.caay2000.ttk.application.entity.update
 
-import com.github.caay2000.ttk.domain.entity.Entity
-import com.github.caay2000.ttk.domain.entity.EntityStatus
-import com.github.caay2000.ttk.domain.entity.event.EntityLoadedEvent
-import com.github.caay2000.ttk.domain.entity.event.EntityUnloadedEvent
-import com.github.caay2000.ttk.domain.location.Location
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.Query
+import com.github.caay2000.ttk.context.entity.application.EntityUpdaterService
+import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.entity.domain.EntityStatus
+import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
+import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.context.entity.query.EntityNextSectionQuery
+import com.github.caay2000.ttk.context.entity.query.EntityNextSectionQueryHandler
+import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.infra.eventbus.KTEventBus
+import com.github.caay2000.ttk.infra.eventbus.instantiateQueryHandler
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.ConfigurationMother
@@ -22,6 +29,11 @@ internal class EntityUpdaterServiceTest {
     private val provider = DefaultProvider()
     private val eventPublisher: EventPublisherMock = EventPublisherMock()
     private val sut = EntityUpdaterService(provider, eventPublisher)
+
+    init {
+        KTEventBus.init<Query, Event>()
+        instantiateQueryHandler(EntityNextSectionQuery::class, EntityNextSectionQueryHandler(provider))
+    }
 
     @Test
     fun `entity does not move if not needed`() {

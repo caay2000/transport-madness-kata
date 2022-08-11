@@ -1,9 +1,11 @@
 package com.github.caay2000.ttk.application.pathfinding
 
-import com.github.caay2000.ttk.domain.world.Cell
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.context.world.domain.Cell
+import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother.default
+import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
+import com.github.caay2000.ttk.pathfinding.PathfindingStrategy
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

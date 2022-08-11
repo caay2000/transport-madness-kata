@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.mock
 
-import com.github.caay2000.ttk.infra.eventbus.event.Event
-import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.EventPublisher
 
 class EventPublisherMock : EventPublisher<Event> {
 

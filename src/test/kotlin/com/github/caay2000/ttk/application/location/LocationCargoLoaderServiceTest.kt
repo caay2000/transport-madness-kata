@@ -1,8 +1,9 @@
 package com.github.caay2000.ttk.application.location
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.infra.eventbus.event.Event
-import com.github.caay2000.ttk.infra.eventbus.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.location.application.LocationCargoLoaderService
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.WorldMother

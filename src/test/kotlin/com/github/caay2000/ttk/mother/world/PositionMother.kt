@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.mother.world
 
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.context.world.domain.Position
 import kotlin.random.Random
 
 object PositionMother {

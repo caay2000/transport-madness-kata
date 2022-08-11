@@ -1,9 +1,9 @@
 package com.github.caay2000.ttk.integration
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.application.Application
-import com.github.caay2000.ttk.domain.world.Position
-import com.github.caay2000.ttk.domain.world.Provider
+import com.github.caay2000.ttk.Application
+import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import org.assertj.core.api.Assertions.assertThat

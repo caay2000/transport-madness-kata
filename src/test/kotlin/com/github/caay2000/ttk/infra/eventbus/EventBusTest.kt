@@ -1,8 +1,5 @@
 package com.github.caay2000.ttk.infra.eventbus
 
-import com.github.caay2000.ttk.infra.eventbus.event.EventPublisherImpl
-import com.github.caay2000.ttk.infra.eventbus.impl.KTEventBus
-import com.github.caay2000.ttk.infra.eventbus.impl.KTEventSubscriber
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -11,8 +8,8 @@ internal class EventBusTest {
     @Test
     internal fun `event is published to event bus`() {
 
-        val eventBus = KTEventBus.init<String>()
-        EventPublisherImpl<String>().publish(listOf("hi"))
+        val eventBus = KTEventBus.init<Any, String>()
+        KTEventPublisher<String>().publish(listOf("hi"))
 
         assertThat(eventBus.getAllEvents()).hasSize(1)
             .isEqualTo(listOf("hi"))
@@ -21,9 +18,9 @@ internal class EventBusTest {
     @Test
     internal fun `subscribers receive the published event`() {
 
-        KTEventBus.init<String>()
+        KTEventBus.init<Any, String>()
         val sut = StringSubscriber()
-        EventPublisherImpl<String>().publish(listOf("hi"))
+        KTEventPublisher<String>().publish(listOf("hi"))
 
         assertThat(sut.events).isEqualTo(listOf("hi"))
     }
@@ -31,10 +28,10 @@ internal class EventBusTest {
     @Test
     internal fun `multiple subscribers receive the published event`() {
 
-        val eventBus = KTEventBus.init<String>()
+        val eventBus = KTEventBus.init<Any, String>()
         val subscriber1 = StringSubscriber()
         val subscriber2 = StringSubscriber()
-        EventPublisherImpl<String>().publish(listOf("hi"))
+        KTEventPublisher<String>().publish(listOf("hi"))
 
         assertThat(subscriber1.events).isEqualTo(listOf("hi"))
         assertThat(subscriber2.events).isEqualTo(listOf("hi"))
@@ -44,9 +41,9 @@ internal class EventBusTest {
     @Test
     internal fun `subscriber of different type does not receive the event`() {
 
-        val eventBus = KTEventBus.init<String>()
+        val eventBus = KTEventBus.init<Any, String>()
         val sut = IntSubscriber()
-        EventPublisherImpl<Number>().publish(listOf(Double.MAX_VALUE))
+        KTEventPublisher<Number>().publish(listOf(Double.MAX_VALUE))
 
         assertThat(eventBus.getAllEvents()).hasSize(1)
         assertThat(sut.events).hasSize(0)

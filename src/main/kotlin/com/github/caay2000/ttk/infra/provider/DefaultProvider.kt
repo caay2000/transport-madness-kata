@@ -2,12 +2,17 @@ package com.github.caay2000.ttk.infra.provider
 
 import arrow.core.Either
 import arrow.core.rightIfNotNull
-import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.world.Provider
-import com.github.caay2000.ttk.domain.world.Provider.ProviderException
-import com.github.caay2000.ttk.domain.world.World
+import com.github.caay2000.ttk.api.provider.DomainProvider
+import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.api.provider.Provider.ProviderException
+import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.world.domain.World
 
 class DefaultProvider : Provider {
+
+    init {
+        DomainProvider.init(this)
+    }
 
     private var world: World? = null
     private var configuration: Configuration? = null
