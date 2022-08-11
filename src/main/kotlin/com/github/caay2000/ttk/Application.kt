@@ -6,6 +6,8 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.configuration.query.GetConfigurationQuery
+import com.github.caay2000.ttk.context.configuration.query.GetConfigurationQueryHandler
 import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
 import com.github.caay2000.ttk.context.entity.application.EntityRouteAssignerService
 import com.github.caay2000.ttk.context.entity.domain.Entity
@@ -15,6 +17,8 @@ import com.github.caay2000.ttk.context.entity.query.EntityNextSectionQuery
 import com.github.caay2000.ttk.context.entity.query.EntityNextSectionQueryHandler
 import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityLoadedEventSubscriber
 import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityUnloadedEventSubscriber
+import com.github.caay2000.ttk.context.location.query.LocationPassengerAvailableQuery
+import com.github.caay2000.ttk.context.location.query.LocationPassengerAvailableQueryHandler
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldLocationCreatorService
@@ -41,6 +45,8 @@ class Application(
         instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(provider, eventPublisher))
 
         instantiateQueryHandler(EntityNextSectionQuery::class, EntityNextSectionQueryHandler(provider))
+        instantiateQueryHandler(LocationPassengerAvailableQuery::class, LocationPassengerAvailableQueryHandler(provider))
+        instantiateQueryHandler(GetConfigurationQuery::class, GetConfigurationQueryHandler(provider))
     }
 
     private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)

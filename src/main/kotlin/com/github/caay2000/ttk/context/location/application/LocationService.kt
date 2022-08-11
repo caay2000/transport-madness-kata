@@ -18,7 +18,7 @@ abstract class LocationService(protected val provider: Provider, protected val e
     protected fun World.findLocation(position: Position): Either<LocationException, Location> =
         Either.catch { getCell(position) }
             .map { cell -> getLocation(cell.locationId!!) }
-            .mapLeft { LocationNotFound(position) }
+            .mapLeft { LocationNotFoundByPositionException(position) }
 
     protected fun Location.save(): Either<LocationException, Location> =
         provider.get()

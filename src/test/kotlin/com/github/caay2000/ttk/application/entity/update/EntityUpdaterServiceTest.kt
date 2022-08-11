@@ -2,6 +2,8 @@ package com.github.caay2000.ttk.application.entity.update
 
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.Query
+import com.github.caay2000.ttk.context.configuration.query.GetConfigurationQuery
+import com.github.caay2000.ttk.context.configuration.query.GetConfigurationQueryHandler
 import com.github.caay2000.ttk.context.entity.application.EntityUpdaterService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
@@ -10,6 +12,8 @@ import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.entity.query.EntityNextSectionQuery
 import com.github.caay2000.ttk.context.entity.query.EntityNextSectionQueryHandler
 import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.location.query.LocationPassengerAvailableQuery
+import com.github.caay2000.ttk.context.location.query.LocationPassengerAvailableQueryHandler
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.instantiateQueryHandler
@@ -33,6 +37,8 @@ internal class EntityUpdaterServiceTest {
     init {
         KTEventBus.init<Query, Event>()
         instantiateQueryHandler(EntityNextSectionQuery::class, EntityNextSectionQueryHandler(provider))
+        instantiateQueryHandler(LocationPassengerAvailableQuery::class, LocationPassengerAvailableQueryHandler(provider))
+        instantiateQueryHandler(GetConfigurationQuery::class, GetConfigurationQueryHandler(provider))
     }
 
     @Test
@@ -41,6 +47,7 @@ internal class EntityUpdaterServiceTest {
         val entity: Entity = EntityMother.random()
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
+        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it).isEqualTo(entity.copy(currentDuration = 1))
@@ -56,6 +63,7 @@ internal class EntityUpdaterServiceTest {
             connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         )
         provider.set(world)
+        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(1, 0))
@@ -76,6 +84,7 @@ internal class EntityUpdaterServiceTest {
             connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         )
         provider.set(world)
+        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(3, 0))
@@ -93,6 +102,7 @@ internal class EntityUpdaterServiceTest {
         )
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
+        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP, currentDuration = 1))
@@ -108,14 +118,14 @@ internal class EntityUpdaterServiceTest {
             currentPosition = Position(3, 0),
             currentDuration = configuration.turnsStoppedInStation,
             route = route,
-            status = EntityStatus.STOP,
-            configuration = configuration
+            status = EntityStatus.STOP
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
         )
         provider.set(world)
+        provider.setConfiguration(configuration)
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(3, 1))
@@ -133,14 +143,14 @@ internal class EntityUpdaterServiceTest {
             currentPosition = Position(3, 4),
             currentDuration = configuration.turnsStoppedInStation,
             route = route,
-            status = EntityStatus.STOP,
-            configuration = configuration
+            status = EntityStatus.STOP
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
         )
         provider.set(world)
+        provider.setConfiguration(configuration)
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(3, 3))
@@ -162,6 +172,7 @@ internal class EntityUpdaterServiceTest {
             connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         )
         provider.set(world)
+        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight()
         assertThat(eventPublisher.publishedEvents)
@@ -183,6 +194,7 @@ internal class EntityUpdaterServiceTest {
             locations = mapOf(location.id to location)
         )
         provider.set(world)
+        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.pax).isEqualTo(30)

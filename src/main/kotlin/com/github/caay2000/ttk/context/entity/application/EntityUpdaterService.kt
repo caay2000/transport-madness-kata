@@ -15,7 +15,6 @@ class EntityUpdaterService(provider: Provider, eventPublisher: EventPublisher<Ev
             .flatMap { entity -> entity.updateEntity() }
             .flatMap { entity -> entity.save() }
             .flatMap { entity -> entity.publishEvents() }
-            .mapLeft { UnknownEntityException(it) }
 
     private fun Entity.updateEntity(): Either<EntityException, Entity> =
         Either.catch { update() }
