@@ -1,24 +1,21 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.domain.Route
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
-import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.WorldMother
 import io.kotest.assertions.arrow.either.shouldBeLeftOfType
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 
 internal class EntityRouteAssignerServiceTest {
 
     private val provider = DefaultProvider()
-    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
-    private val sut = EntityRouteAssignerService(provider, eventPublisher)
+    private val sut = EntityRouteAssignerService(provider, mock())
 
     @Test
     fun `route is added to entity`() {

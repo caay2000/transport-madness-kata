@@ -1,6 +1,5 @@
 package com.github.caay2000.ttk.infra.eventbus
 
-import com.github.caay2000.ttk.api.event.DomainQueryExecutor
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
@@ -11,7 +10,6 @@ class KTEventBus<in QUERY, in EVENT> private constructor() {
         private lateinit var eventBus: KTEventBus<*, *>
         fun <QUERY, EVENT> init(): KTEventBus<QUERY, EVENT> {
             eventBus = KTEventBus<QUERY, EVENT>()
-            DomainQueryExecutor.init(KTQueryExecutor())
             return getInstance()
         }
 

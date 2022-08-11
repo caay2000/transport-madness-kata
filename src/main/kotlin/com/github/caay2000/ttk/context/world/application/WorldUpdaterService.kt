@@ -5,14 +5,15 @@ import arrow.core.flatMap
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.application.EntityException
 import com.github.caay2000.ttk.context.entity.application.EntityUpdaterService
 import com.github.caay2000.ttk.context.world.domain.World
 
-class WorldUpdaterService(provider: Provider, eventPublisher: EventPublisher<Event>) : WorldService(provider, eventPublisher) {
+class WorldUpdaterService(provider: Provider, eventPublisher: EventPublisher<Event>, queryExecutor: QueryExecutor) : WorldService(provider, eventPublisher) {
 
-    private val entityUpdaterService = EntityUpdaterService(provider, eventPublisher)
+    private val entityUpdaterService = EntityUpdaterService(provider, eventPublisher, queryExecutor)
 
     fun invoke(): Either<WorldException, World> =
         findWorld()

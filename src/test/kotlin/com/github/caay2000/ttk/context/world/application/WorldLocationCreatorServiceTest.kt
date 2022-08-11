@@ -1,13 +1,10 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
-import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.world.location.PopulationMother
@@ -15,13 +12,13 @@ import io.kotest.assertions.arrow.either.shouldBeLeftOfType
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 
 class WorldLocationCreatorServiceTest {
 
     private val configuration = ConfigurationMother.random()
     private val provider: Provider = DefaultProvider()
-    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
-    private val sut = WorldLocationCreatorService(provider, eventPublisher)
+    private val sut = WorldLocationCreatorService(provider, mock())
 
     @Test
     fun `city is created correctly`() {

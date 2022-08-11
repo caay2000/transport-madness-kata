@@ -1,11 +1,8 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
-import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.WorldMother
 import io.kotest.assertions.arrow.either.shouldBeLeftOfType
@@ -14,12 +11,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.kotlin.mock
 
 internal class EntityCreatorServiceTest {
 
     private val provider = DefaultProvider()
-    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
-    private val sut = EntityCreatorService(provider, eventPublisher)
+    private val sut = EntityCreatorService(provider, mock())
 
     @Test
     fun `entity is added to world correctly`() {

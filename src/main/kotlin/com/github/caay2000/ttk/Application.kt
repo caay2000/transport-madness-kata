@@ -4,6 +4,7 @@ import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.event.Query
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
@@ -29,6 +30,7 @@ import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.infra.console.ConsolePrinter
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventPublisher
+import com.github.caay2000.ttk.infra.eventbus.KTQueryExecutor
 import com.github.caay2000.ttk.infra.eventbus.instantiateEventSubscriber
 import com.github.caay2000.ttk.infra.eventbus.instantiateQueryHandler
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
@@ -39,6 +41,7 @@ class Application(
     private val provider: Provider = DefaultProvider()
 ) {
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
+    private val queryExecutor: QueryExecutor = KTQueryExecutor()
 
     init {
         KTEventBus.init<Query, Event>()
@@ -54,7 +57,7 @@ class Application(
 
     private val configurationSetterService = ConfigurationSetterService(provider)
     private val worldCreatorService = WorldCreatorService(provider, eventPublisher)
-    private val worldUpdaterService = WorldUpdaterService(provider, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(provider, eventPublisher, queryExecutor)
     private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, eventPublisher, createConnectionPathfindingConfiguration)
     private val worldLocationCreatorService = WorldLocationCreatorService(provider, eventPublisher)
     private val entityCreatorService = EntityCreatorService(provider, eventPublisher)

@@ -19,7 +19,8 @@ class EntityCreatorService(provider: Provider, eventPublisher: EventPublisher<Ev
             .flatMap { entity -> entity.publishEvents() }
 
     private fun createEntity(position: Position): Either<EntityException, Entity> =
-        Either.catch { Entity.create(position = position) }
+        provider.getConfiguration()
+            .map { configuration -> Entity.create(position = position, configuration = configuration) }
             .mapLeft { UnknownEntityException(it) }
 
     private fun World.guardPosition(position: Position): Either<EntityException, World> =

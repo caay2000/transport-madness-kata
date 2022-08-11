@@ -1,21 +1,18 @@
 package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
-import com.github.caay2000.ttk.mock.EventPublisherMock
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 
 internal class LocationCargoLoaderServiceTest {
 
     private val provider = DefaultProvider()
-    private val eventPublisher: EventPublisher<Event> = EventPublisherMock()
-    private val sut = LocationCargoLoaderService(provider, eventPublisher)
+    private val sut = LocationCargoLoaderService(provider, mock())
 
     @Test
     fun `should remove the amount passengers from station`() {
