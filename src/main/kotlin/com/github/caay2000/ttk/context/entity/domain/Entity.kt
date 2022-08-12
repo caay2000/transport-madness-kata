@@ -64,11 +64,6 @@ data class Entity(
 
     private fun increaseDuration(): Entity = copy(currentDuration = currentDuration + 1)
 
-    private fun unloadPassengers(): Entity =
-        if (status == EntityStatus.STOP && currentDuration == 0 && pax > 0) {
-            copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
-        } else this
-
     private fun loadPassengers(): Entity =
         if (status == EntityStatus.STOP && currentDuration == 1) {
             loadPassengersStrategy.invoke(this)
@@ -89,4 +84,9 @@ data class Entity(
     private fun stopEntity(): Entity =
         if (destinationReached) copy(status = EntityStatus.STOP, currentDuration = 0)
         else this
+
+    private fun unloadPassengers(): Entity =
+        if (status == EntityStatus.STOP && currentDuration == 0 && pax > 0) {
+            copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
+        } else this
 }
