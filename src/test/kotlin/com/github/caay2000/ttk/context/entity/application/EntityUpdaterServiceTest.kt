@@ -29,10 +29,9 @@ internal class EntityUpdaterServiceTest {
     @Test
     fun `entity does not move if not needed`() {
 
-        val entity: Entity = EntityMother.random(provider = provider)
+        val entity: Entity = EntityMother.random()
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
-        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it).isEqualTo(entity.copy(currentDuration = 1))
@@ -45,15 +44,13 @@ internal class EntityUpdaterServiceTest {
         val entity: Entity = EntityMother.random(
             currentPosition = Position(0, 0),
             route = RouteMother.random(Position(3, 0)),
-            currentDuration = 1,
-            provider = provider
+            currentDuration = 1
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         )
         provider.set(world)
-        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(1, 0))
@@ -67,15 +64,13 @@ internal class EntityUpdaterServiceTest {
         val entity: Entity = EntityMother.random(
             currentPosition = Position(2, 0),
             route = RouteMother.random(Position(3, 0)),
-            status = EntityStatus.IN_ROUTE,
-            provider = provider
+            status = EntityStatus.IN_ROUTE
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         )
         provider.set(world)
-        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(3, 0))
@@ -89,13 +84,11 @@ internal class EntityUpdaterServiceTest {
         val entity: Entity = EntityMother.random(
             currentPosition = Position(3, 0),
             route = RouteMother.random(Position(3, 0), Position(2, 4)),
-            status = EntityStatus.STOP,
-            provider = provider
+            status = EntityStatus.STOP
 
         )
         val world = WorldMother.oneVehicle(entity = entity)
         provider.set(world)
-        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it).isEqualTo(entity.copy(currentPosition = Position(3, 0), status = EntityStatus.STOP, currentDuration = 1))
@@ -112,14 +105,13 @@ internal class EntityUpdaterServiceTest {
             currentDuration = configuration.turnsStoppedInStation,
             route = route,
             status = EntityStatus.STOP,
-            provider = provider
+            configuration = configuration
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
         )
         provider.set(world)
-        provider.setConfiguration(configuration)
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(3, 1))
@@ -138,14 +130,13 @@ internal class EntityUpdaterServiceTest {
             currentDuration = configuration.turnsStoppedInStation,
             route = route,
             status = EntityStatus.STOP,
-            provider = provider
+            configuration = configuration
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
         )
         provider.set(world)
-        provider.setConfiguration(configuration)
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(3, 3))
@@ -161,15 +152,13 @@ internal class EntityUpdaterServiceTest {
             currentPosition = Position(2, 0),
             route = RouteMother.random(Position(3, 0)),
             pax = 10,
-            status = EntityStatus.IN_ROUTE,
-            provider = provider
+            status = EntityStatus.IN_ROUTE
         )
         val world = WorldMother.connectedPaths(
             entities = mapOf(entity.id to entity),
             connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         )
         provider.set(world)
-        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight()
         verify(eventPublisher).publish(
@@ -184,8 +173,7 @@ internal class EntityUpdaterServiceTest {
             currentPosition = Position(3, 0),
             route = RouteMother.random(Position(3, 0), Position(2, 4)),
             pax = 10,
-            status = EntityStatus.STOP,
-            provider = provider
+            status = EntityStatus.STOP
         )
         val location: Location = LocationMother.random(position = Position(3, 0), rawPAX = 20.0)
         val world = WorldMother.empty(
@@ -193,7 +181,6 @@ internal class EntityUpdaterServiceTest {
             locations = mapOf(location.id to location)
         )
         provider.set(world)
-        provider.setConfiguration(ConfigurationMother.random())
 
         sut.invoke(entity.id).shouldBeRight {
             assertThat(it.pax).isEqualTo(30)

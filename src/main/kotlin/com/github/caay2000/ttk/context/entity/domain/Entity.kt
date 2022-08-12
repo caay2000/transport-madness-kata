@@ -1,10 +1,6 @@
 package com.github.caay2000.ttk.context.entity.domain
 
-import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
-import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
-import com.github.caay2000.ttk.context.entity.domain.update.NextSectionStrategy
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
@@ -18,21 +14,17 @@ data class Entity(
     val route: Route,
     val status: EntityStatus = EntityStatus.STOP,
     val pax: Int,
-    private val provider: Provider
+    private val configuration: Configuration
 ) : Aggregate() {
 
-    private val configuration: Configuration by lazy { provider.getConfiguration().bind() }
-    private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(provider)
-    private val nextSectionStrategy = NextSectionStrategy.SimpleNextSectionStrategy(provider)
-
     companion object {
-        fun create(id: EntityId = randomDomainId(), position: Position, provider: Provider): Entity = Entity(
+        fun create(id: EntityId = randomDomainId(), position: Position, configuration: Configuration): Entity = Entity(
             id = id,
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),
             pax = 0,
-            provider = provider
+            configuration = configuration
         )
     }
 
@@ -66,7 +58,8 @@ data class Entity(
 
     private fun loadPassengers(): Entity =
         if (status == EntityStatus.STOP && currentDuration == 1) {
-            loadPassengersStrategy.invoke(this)
+//            loadPassengersStrategy.invoke(this)
+            this
         } else this
 
     private fun resumeRoute(): Entity =
@@ -74,7 +67,7 @@ data class Entity(
         else this
 
     private fun refreshNextSection(): Entity =
-        if (shouldUpdateNextSection) nextSectionStrategy.invoke(this)
+        if (shouldUpdateNextSection) this // nextSectionStrategy.invoke(this)
         else this
 
     private fun moveEntity(): Entity =
