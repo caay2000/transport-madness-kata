@@ -27,6 +27,9 @@ data class Route(
     val nextSection: Cell
         get() = nextSectionList.first()
 
+    private val nextIndex: Int
+        get() = if (stopIndex + 1 < stops.size) stopIndex + 1 else 0
+
     fun nextStop(): Route = copy(stopIndex = nextIndex)
 
     fun dropNextSection(): Route =
@@ -34,7 +37,4 @@ data class Route(
 
     fun updateNextSection(updatedNextSection: List<Cell>): Route =
         copy(nextSectionList = updatedNextSection)
-
-    private val nextIndex: Int
-        get() = if (stopIndex + 1 < stops.size) stopIndex + 1 else 0
 }

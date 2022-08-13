@@ -12,8 +12,12 @@ interface Provider {
     fun getConfiguration(): Either<ProviderException, Configuration>
     fun setConfiguration(configuration: Configuration): Either<ProviderException, Configuration>
 
-    class ProviderException : RuntimeException {
-        constructor(message: String) : super(message)
+    sealed class ProviderException : RuntimeException {
+        constructor() : super()
         constructor(cause: Throwable) : super(cause)
+
+        object WorldNotFoundProviderException : ProviderException()
+        object ConfigurationNotFoundProviderException : ProviderException()
+        data class UnknownProviderException(override val cause: Throwable) : ProviderException(cause)
     }
 }

@@ -10,5 +10,4 @@ sealed class LocationException : RuntimeException {
 
 data class LocationNotFoundByPositionException(val position: Position) : LocationException("location in position $position not found")
 data class LocationNotFoundByLocationIdException(val locationId: LocationId) : LocationException("location $locationId not found")
-data class LocationNotFoundException(override val cause: Throwable) : LocationException(cause)
 data class UnknownLocationException(override val cause: Throwable) : LocationException(cause)

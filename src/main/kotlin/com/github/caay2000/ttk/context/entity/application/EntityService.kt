@@ -11,10 +11,10 @@ import com.github.caay2000.ttk.shared.EntityId
 
 abstract class EntityService(protected val provider: Provider, protected val eventPublisher: EventPublisher<Event>) {
 
-    protected fun findEntity(entityId: EntityId): Either<EntityException, Entity> =
-        provider.get()
-            .flatMap { world -> world.findEntity(entityId) }
-            .mapLeft { UnknownEntityException(it) }
+//    protected fun findEntity(entityId: EntityId): Either<EntityException, Entity> =
+//        provider.get()
+//            .flatMap { world -> world.findEntity(entityId) }
+//            .mapLeft { UnknownEntityException(it) }
 
     protected fun findWorld(): Either<EntityException, World> =
         provider.get()
