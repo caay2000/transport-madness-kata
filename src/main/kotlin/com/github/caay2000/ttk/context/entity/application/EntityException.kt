@@ -14,4 +14,10 @@ data class InvalidEntityPositionException(val position: Position) : EntityExcept
 data class InvalidEntityNextSectionException(val source: Position, val target: Position, override val cause: Throwable) :
     EntityException("error finding next section from $source to $target: ${cause.message}")
 
+data class EntityUpdateLoaderServiceException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateMoverServiceException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateStarterServiceException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateStopperServiceException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateUnloaderServiceException(override val cause: Throwable) : EntityException(cause)
+
 data class UnknownEntityException(override val cause: Throwable) : EntityException(cause)
