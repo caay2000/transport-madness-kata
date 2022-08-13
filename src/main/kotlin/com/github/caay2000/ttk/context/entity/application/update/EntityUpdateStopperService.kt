@@ -15,6 +15,5 @@ class EntityUpdateStopperService(provider: Provider, eventPublisher: EventPublis
     fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
         Either.catch { initialEntity.updateStop() }
             .mapLeft { EntityUpdateStopperServiceException(it) }
-            .flatMap { entity -> entity.save() }
             .flatMap { entity -> entity.publishEvents() }
 }

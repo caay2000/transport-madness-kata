@@ -34,7 +34,6 @@ internal class EventBusTest {
         val sut = IntSubscriber()
         KTEventPublisher<Number>().publish(listOf(Double.MAX_VALUE))
 
-        println(sut.events)
         assertThat(sut.events).hasSize(0)
     }
 

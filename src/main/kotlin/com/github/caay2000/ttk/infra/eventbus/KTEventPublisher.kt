@@ -6,7 +6,7 @@ class KTEventPublisher<in EVENT> : EventPublisher<EVENT> {
 
     override fun publish(events: List<EVENT>) {
         events.forEach { event ->
-            println(event)
+//            println(event)
             publish(event)
         }
     }

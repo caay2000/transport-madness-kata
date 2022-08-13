@@ -15,6 +15,5 @@ class EntityUpdateUnloaderService(provider: Provider, eventPublisher: EventPubli
     fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
         Either.catch { initialEntity.updateUnload() }
             .mapLeft { EntityUpdateUnloaderServiceException(it) }
-            .flatMap { entity -> entity.save() }
             .flatMap { entity -> entity.publishEvents() }
 }

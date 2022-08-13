@@ -38,12 +38,12 @@ object WorldMother {
         locations.values.fold(it) { world, location -> world.putLocation(location) }
     }
 
-    fun connectedPaths(
+    fun random(
         width: Int = DEFAULT_WIDTH,
         height: Int = DEFAULT_HEIGHT,
         entities: Map<EntityId, Entity> = emptyMap(),
         locations: Map<LocationId, Location> = emptyMap(),
-        connectedPaths: Map<Position, List<Position>>
+        connectedPaths: Map<Position, List<Position>> = emptyMap()
     ): World = empty(width = width, height = height, entities = entities, locations = locations).connectPath(connectedPaths)
 
     fun oneVehicle(entity: Entity): World =

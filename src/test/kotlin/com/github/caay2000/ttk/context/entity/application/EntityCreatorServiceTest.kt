@@ -1,6 +1,8 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
@@ -16,7 +18,8 @@ import org.mockito.kotlin.mock
 internal class EntityCreatorServiceTest {
 
     private val provider = DefaultProvider()
-    private val sut = EntityCreatorService(provider, mock())
+    private val eventPublisher: EventPublisher<Event> = mock()
+    private val sut = EntityCreatorService(provider, eventPublisher)
 
     @Test
     fun `entity is added to world correctly`() {

@@ -1,7 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.Either
-import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
@@ -15,6 +14,4 @@ class EntityUpdateStarterService(provider: Provider, eventPublisher: EventPublis
     fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
         Either.catch { initialEntity.updateStart() }
             .mapLeft { EntityUpdateStarterServiceException(it) }
-            .flatMap { entity -> entity.save() }
-            .flatMap { entity -> entity.publishEvents() }
 }

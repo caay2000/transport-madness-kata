@@ -22,24 +22,81 @@ internal class EntityUpdateUnloaderServiceTest {
     private val sut = EntityUpdateUnloaderService(provider, eventPublisher)
 
     @Test
-    fun `should unload passengers (event) when reaches a station`() {
+    fun `should do nothing if entity is IN_ROUTE`() {
 
-        val entity: Entity = EntityMother.random(
-            currentPosition = Position(3, 0),
-            pax = 10,
-            status = EntityStatus.STOP
-        )
-        val world = WorldMother.connectedPaths(
-            entities = mapOf(entity.id to entity),
-            connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
-        )
-        provider.set(world)
+        `world exists`(movingEntity)
 
-        sut.invoke(entity).shouldBeRight {
+        sut.invoke(movingEntity).shouldBeRight {
+            assertThat(it).isEqualTo(movingEntity)
+        }
+    }
+
+    @Test
+    fun `should not load passengers when in station for less than 1 turn`() {
+
+        `world exists`(alreadyUnloadedEntity)
+
+        sut.invoke(alreadyUnloadedEntity).shouldBeRight {
+            assertThat(it).isEqualTo(alreadyUnloadedEntity)
+        }
+    }
+
+    @Test
+    fun `should unload passengers when reaches a station`() {
+
+        `world exists`(loadedEntity)
+
+        sut.invoke(loadedEntity).shouldBeRight {
             assertThat(it.pax).isEqualTo(0)
         }
-        verify(eventPublisher).publish(
-            listOf(EntityUnloadedEvent(aggregateId = entity.id, amount = 10, position = Position(3, 0)))
+    }
+
+    @Test
+    fun `should publish an event when unloads passengers`() {
+
+        `world exists`(loadedEntity)
+
+        sut.invoke(loadedEntity).shouldBeRight {
+            verify(eventPublisher).publish(
+                listOf(EntityUnloadedEvent(loadedEntity.id, amount = 10, position = it.currentPosition))
+            )
+        }
+    }
+
+    @Test
+    fun `shouldn't publish an event when entity is empty`() {
+
+        `world exists`(unloadedEntity)
+
+        sut.invoke(unloadedEntity).shouldBeRight {
+            verify(eventPublisher).publish(emptyList())
+        }
+    }
+
+    private fun `world exists`(entity: Entity) {
+        provider.set(
+            WorldMother.random(
+                entities = mapOf(entity.id to entity)
+            )
         )
     }
+
+    private val loadedEntity = EntityMother.random(
+        currentPosition = Position(3, 0),
+        pax = 10,
+        status = EntityStatus.STOP
+    )
+    private val unloadedEntity = EntityMother.random(
+        currentPosition = Position(3, 0),
+        pax = 0,
+        status = EntityStatus.STOP
+    )
+    private val alreadyUnloadedEntity: Entity = EntityMother.random(
+        currentPosition = Position(3, 0),
+        currentDuration = 1,
+        status = EntityStatus.STOP
+    )
+    private val movingEntity: Entity = EntityMother.random(
+        status = EntityStatus.IN_ROUTE
+    )
 }

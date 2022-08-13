@@ -31,7 +31,7 @@ class WorldUpdaterService(provider: Provider, eventPublisher: EventPublisher<Eve
             .mapLeft { UnknownWorldException(it) }
 
     private fun World.updateAllEntities(): Either<WorldException, World> =
-        entities.keys.fold(Unit.right() as Either<EntityException, Unit>) { _, entityId -> entityUpdaterService.invoke(entityId).void() }
+        entities.values.fold(Unit.right() as Either<EntityException, Unit>) { _, entity -> entityUpdaterService.invoke(entity).void() }
             .flatMap { provider.get() }
             .mapLeft { UnknownWorldException(it) }
 }

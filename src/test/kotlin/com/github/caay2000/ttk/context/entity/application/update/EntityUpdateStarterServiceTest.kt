@@ -11,7 +11,7 @@ import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
 import com.github.caay2000.ttk.mother.WorldMother
 import io.kotest.assertions.arrow.either.shouldBeRight
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 
@@ -24,47 +24,70 @@ internal class EntityUpdateStarterServiceTest {
     @Test
     fun `entity should wait x turns in STOP`() {
 
-        val entity: Entity = EntityMother.random(
-            currentPosition = Position(3, 0),
-            currentDuration = 1,
-            route = RouteMother.random(Position(3, 0), Position(2, 4)),
-            status = EntityStatus.STOP
+        `world exists`(waitingEntity)
 
-        )
-        val world = WorldMother.oneVehicle(entity = entity)
-        provider.set(world)
-
-        sut.invoke(entity).shouldBeRight {
-            Assertions.assertThat(it).isEqualTo(entity)
+        sut.invoke(waitingEntity).shouldBeRight {
+            assertThat(it).isEqualTo(waitingEntity)
         }
     }
 
     @Test
     fun `entity starts movement to next route destination after configuration$turnsStoppedInStation turns in STOP`() {
 
-        val configuration = ConfigurationMother.random()
-        val route = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), stopIndex = 0)
-        val entity: Entity = EntityMother.random(
-            currentPosition = Position(3, 0),
-            currentDuration = configuration.turnsStoppedInStation + 1,
-            route = route,
-            status = EntityStatus.STOP,
-            configuration = configuration
-        )
-        val world = WorldMother.connectedPaths(
-            entities = mapOf(entity.id to entity),
-            connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
-        )
-        provider.set(world)
+        `world exists`(firstStopReadyEntity)
 
-        sut.invoke(entity).shouldBeRight {
-            Assertions.assertThat(it).isEqualTo(
-                entity.copy(
+        sut.invoke(firstStopReadyEntity).shouldBeRight {
+            assertThat(it).isEqualTo(
+                firstStopReadyEntity.copy(
                     status = EntityStatus.IN_ROUTE,
-                    route = entity.route.nextStop(),
+                    route = routeToLastStop,
                     currentDuration = 0
                 )
             )
         }
     }
+
+    @Test
+    fun `entity starts movement to initial destination after configuration$turnsStoppedInStation turns in STOP if current stop is the last one`() {
+
+        `world exists`(lastStopReadyEntity)
+
+        sut.invoke(lastStopReadyEntity).shouldBeRight {
+            assertThat(it).isEqualTo(
+                lastStopReadyEntity.copy(
+                    status = EntityStatus.IN_ROUTE,
+                    route = routeToInitialStop,
+                    currentDuration = 0
+                )
+            )
+        }
+    }
+
+    private fun `world exists`(entity: Entity) {
+        provider.set(
+            WorldMother.random(
+                entities = mapOf(entity.id to entity),
+                connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
+            )
+        )
+    }
+
+    private val configuration = ConfigurationMother.random()
+    private val routeToLastStop = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), stopIndex = 0)
+    private val routeToInitialStop = routeToLastStop.copy(stopIndex = 1)
+    private val waitingEntity: Entity = EntityMother.random(
+        currentPosition = Position(3, 0),
+        currentDuration = configuration.turnsStoppedInStation,
+        status = EntityStatus.STOP,
+        configuration = configuration
+
+    )
+    private val firstStopReadyEntity: Entity = waitingEntity.copy(
+        currentDuration = configuration.turnsStoppedInStation + 1,
+        route = routeToInitialStop
+    )
+    private val lastStopReadyEntity: Entity = waitingEntity.copy(
+        currentDuration = configuration.turnsStoppedInStation + 1,
+        route = routeToLastStop
+    )
 }

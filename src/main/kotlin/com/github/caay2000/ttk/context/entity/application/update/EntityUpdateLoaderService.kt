@@ -18,6 +18,5 @@ class EntityUpdateLoaderService(provider: Provider, eventPublisher: EventPublish
     fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
         Either.catch { initialEntity.updateLoad(loadPassengersStrategy) }
             .mapLeft { EntityUpdateLoaderServiceException(it) }
-            .flatMap { entity -> entity.save() }
             .flatMap { entity -> entity.publishEvents() }
 }

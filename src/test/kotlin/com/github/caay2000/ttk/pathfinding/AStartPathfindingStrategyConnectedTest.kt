@@ -61,7 +61,7 @@ internal class AStartPathfindingStrategyConnectedTest {
         }
     }
 
-    private val map = WorldMother.connectedPaths(
+    private val map = WorldMother.random(
         width = 4,
         height = 4,
         connectedPaths = mapOf(Position(0, 0) to listOf(Position(0, 2), Position(3, 2)))
