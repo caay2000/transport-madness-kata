@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.mother
 
-import com.github.caay2000.ttk.domain.configuration.Configuration
+import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import java.util.Random
 
 object ConfigurationMother {
@@ -17,13 +17,5 @@ object ConfigurationMother {
         turnsStoppedInStation = turnsStoppedInStation,
         minDistanceBetweenCities = minDistanceBetweenCities,
         cityPAXPercentage = cityPAXPercentage
-    )
-
-    fun tiny(
-        worldWidth: Int = Random().nextInt(3) + 4, // from 4 to 6, // from 4 to 6
-        worldHeight: Int = worldWidth + 1, // from 5 to 7
-    ): Configuration = random(
-        worldWidth = worldWidth,
-        worldHeight = worldHeight
     )
 }

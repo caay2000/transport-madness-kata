@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.mother.entity.pathfinding
 
-import com.github.caay2000.ttk.application.pathfinding.PathfindingConfiguration
+import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 
 object PathfindingConfigurationMother {
 

@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.mother.world
 
-import com.github.caay2000.ttk.domain.world.Cell
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.context.world.domain.Cell
+import com.github.caay2000.ttk.context.world.domain.Position
 
 object CellMother {
 

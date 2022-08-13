@@ -1,9 +1,8 @@
 package com.github.caay2000.ttk.infra.console
 
-import com.github.caay2000.ttk.application.Printer
-import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.world.Position
-import com.github.caay2000.ttk.domain.world.World
+import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.context.world.domain.World
 
 class ConsolePrinter(val configuration: Configuration) : Printer {
 

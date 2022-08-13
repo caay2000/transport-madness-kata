@@ -1,15 +1,15 @@
 package com.github.caay2000.ttk.mother
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.application.pathfinding.AStartPathfindingStrategy
-import com.github.caay2000.ttk.domain.entity.Entity
-import com.github.caay2000.ttk.domain.location.Location
-import com.github.caay2000.ttk.domain.world.Cell
-import com.github.caay2000.ttk.domain.world.Position
-import com.github.caay2000.ttk.domain.world.World
+import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.world.domain.Cell
+import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
 import com.github.caay2000.ttk.mother.world.CellMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
+import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.WorldId
@@ -38,15 +38,15 @@ object WorldMother {
         locations.values.fold(it) { world, location -> world.putLocation(location) }
     }
 
-    fun connectedPaths(
+    fun random(
         width: Int = DEFAULT_WIDTH,
         height: Int = DEFAULT_HEIGHT,
         entities: Map<EntityId, Entity> = emptyMap(),
         locations: Map<LocationId, Location> = emptyMap(),
-        connectedPaths: Map<Position, List<Position>>
+        connectedPaths: Map<Position, List<Position>> = emptyMap()
     ): World = empty(width = width, height = height, entities = entities, locations = locations).connectPath(connectedPaths)
 
-    fun oneVehicle(entity: Entity = EntityMother.random()): World =
+    fun oneVehicle(entity: Entity): World =
         empty(entities = mapOf(entity.id to entity))
 
     fun oneLocation(location: Location = LocationMother.random()): World =

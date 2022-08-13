@@ -1,10 +1,10 @@
 package com.github.caay2000.ttk.mother
 
-import com.github.caay2000.ttk.domain.configuration.Configuration
-import com.github.caay2000.ttk.domain.entity.Entity
-import com.github.caay2000.ttk.domain.entity.EntityStatus
-import com.github.caay2000.ttk.domain.entity.Route
-import com.github.caay2000.ttk.domain.world.Position
+import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.entity.domain.EntityStatus
+import com.github.caay2000.ttk.context.entity.domain.Route
+import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 
