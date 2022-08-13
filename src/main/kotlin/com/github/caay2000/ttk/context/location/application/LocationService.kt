@@ -22,7 +22,7 @@ abstract class LocationService(protected val provider: Provider, protected val e
 
     protected fun Location.save(): Either<LocationException, Location> =
         provider.get()
-            .map { world -> world.putLocation(this) }
+            .map { world -> world.updateLocation(this) }
             .flatMap { world -> provider.set(world) }
             .map { this }
             .mapLeft { UnknownLocationException(it) }

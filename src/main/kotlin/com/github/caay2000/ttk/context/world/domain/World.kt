@@ -43,15 +43,14 @@ data class World(
 
     fun getEntity(id: EntityId): Entity = entities.getValue(id)
     fun putEntity(entity: Entity): World = copy(entities = entities + (entity.id to entity))
-    fun refreshEntity(entity: Entity): World = putEntity(entity)
 
     fun getLocation(id: LocationId): Location = locations.getValue(id)
     fun getLocation(position: Position): Location = locations.values.first { it.position == position }
-    fun putLocation(location: Location): World =
+    fun addLocation(location: Location): World =
         updateCell { getCell(location.position).updateLocationId(location.id) }
             .copy(locations = locations + (location.id to location))
 
-    fun refreshLocation(location: Location): World =
+    fun updateLocation(location: Location): World =
         copy(locations = locations + (location.id to location))
 
     fun update(): World = copy(currentTurn = currentTurn + 1)

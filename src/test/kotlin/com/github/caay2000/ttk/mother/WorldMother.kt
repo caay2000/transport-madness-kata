@@ -35,7 +35,7 @@ object WorldMother {
         entities = entities,
         locations = emptyMap()
     ).let {
-        locations.values.fold(it) { world, location -> world.putLocation(location) }
+        locations.values.fold(it) { world, location -> world.addLocation(location) }
     }
 
     fun random(

@@ -21,8 +21,17 @@ class EntityUpdaterService(
     private val starterService = EntityUpdateStarterService(provider, eventPublisher)
     private val stopperService = EntityUpdateStopperService(provider, eventPublisher)
 
-    fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
-        initialEntity.update().right()
+    fun invoke(): Either<EntityException, Unit> =
+        findAllEntities()
+            .tap { entities -> entities.forEach { it.updateEntity() } }
+            .void()
+
+    private fun findAllEntities(): Either<EntityException, Collection<Entity>> =
+        findWorld()
+            .map { world -> world.entities.values }
+
+    private fun Entity.updateEntity(): Either<EntityException, Entity> =
+        this.update().right()
             .flatMap { entity -> loaderService.invoke(entity) }
             .flatMap { entity -> starterService.invoke(entity) }
             .flatMap { entity -> moverService.invoke(entity) }

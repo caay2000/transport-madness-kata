@@ -14,7 +14,7 @@ data class Position(val x: Int, val y: Int) {
 
     infix fun distanceTo(a: Position) = this.distance(a)
 
-    fun sum(position: Position): Position = copy(x = x + position.x, y = y + position.y)
+    private fun sum(position: Position): Position = copy(x = x + position.x, y = y + position.y)
 
     val neighbours: Set<Position>
         get() = setOf(

@@ -7,15 +7,15 @@ import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.world.domain.World
 
-abstract class WorldService(protected val provider: Provider, protected val eventBus: EventPublisher<Event>) {
+abstract class WorldService(private val provider: Provider, private val eventBus: EventPublisher<Event>) {
 
     protected fun findWorld(): Either<WorldException, World> =
         provider.get()
-            .mapLeft { UnknownWorldException(it) }
+            .mapLeft { WorldNotFoundWorldException(it) }
 
     protected fun findConfiguration(): Either<WorldException, Configuration> =
         provider.getConfiguration()
-            .mapLeft { UnknownWorldException(it) }
+            .mapLeft { ConfigurationNotFoundWorldException(it) }
 
     protected fun World.save(): Either<WorldException, World> =
         provider.set(this)

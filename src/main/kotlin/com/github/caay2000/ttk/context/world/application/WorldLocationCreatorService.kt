@@ -31,7 +31,7 @@ class WorldLocationCreatorService(provider: Provider, eventPublisher: EventPubli
     private fun World.createLocation(position: Position, population: Int): Either<Throwable, World> =
         findConfiguration()
             .map { configuration -> Location.create(position, population, configuration) }
-            .map { location -> putLocation(location) }
+            .map { location -> addLocation(location) }
 
     private fun World.anyLocationTooClose(
         position: Position,
