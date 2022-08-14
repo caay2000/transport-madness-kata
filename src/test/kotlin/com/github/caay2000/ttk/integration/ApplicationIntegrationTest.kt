@@ -28,7 +28,12 @@ class ApplicationIntegrationTest {
             sut.invoke(
                 startPosition = startPosition,
                 paths = paths,
-                locations = setOf((Position(0, 0) to 500), (Position(3, 2) to 1000), (Position(1, 4) to 250)),
+                locations = setOf(
+                    Position(0, 0) to 500,
+                    Position(3, 0) to 100,
+                    Position(3, 2) to 1000,
+                    Position(1, 4) to 250
+                ),
                 route = route
             )
         ).isEqualTo(turns)
@@ -66,6 +71,7 @@ class ApplicationIntegrationTest {
         @JvmStatic
         fun `exercise 3 data`(): Stream<Arguments> {
             return Stream.of(
+                Arguments.of(Position(0, 0), `path from 0,0 to 3,0`(), `route from 0,0 to 3,0`(), 8),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2`(), `route from 0,0 to 3,2`(), 12),
                 Arguments.of(Position(0, 0), `path from 0,0 to 1,4`(), `route from 0,0 to 1,4`(), 12),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 21),
@@ -74,11 +80,13 @@ class ApplicationIntegrationTest {
             )
         }
 
+        private fun `route from 0,0 to 3,0`() = listOf(Position(0, 0), Position(3, 0))
         private fun `route from 0,0 to 3,2`() = listOf(Position(0, 0), Position(3, 2))
         private fun `route from 0,0 to 1,4`() = listOf(Position(0, 0), Position(1, 4))
         private fun `route from 0,0 to 3,2 to 1,4`() = listOf(Position(0, 0), Position(3, 2), Position(1, 4))
         private fun `route from 0,0 to 3,2 to 1,4 to 3,2`() = listOf(Position(0, 0), Position(3, 2), Position(1, 4), Position(3, 2))
 
+        private fun `path from 0,0 to 3,0`() = mapOf(Position(0, 0) to listOf(Position(3, 0)))
         private fun `path from 0,0 to 3,2`() = mapOf(Position(0, 0) to listOf(Position(3, 2)))
         private fun `path from 0,0 to 1,4`() = mapOf(Position(0, 0) to listOf(Position(1, 4)))
         private fun `path from 0,0 to 3,2 to 1,4`() = mapOf(
