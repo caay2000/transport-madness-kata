@@ -2,6 +2,7 @@ package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.world.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother

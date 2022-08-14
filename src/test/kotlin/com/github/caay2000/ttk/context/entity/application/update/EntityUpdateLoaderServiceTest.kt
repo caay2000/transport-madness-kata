@@ -8,6 +8,7 @@ import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
@@ -82,6 +83,7 @@ internal class EntityUpdateLoaderServiceTest {
                 locations = mapOf(location.id to location)
             )
         )
+        provider.setConfiguration(ConfigurationMother.random())
     }
 
     private val readyToLoadEntity: Entity = EntityMother.random(

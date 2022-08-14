@@ -1,6 +1,7 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.context.entity.domain.InvalidRouteException
 import com.github.caay2000.ttk.context.entity.domain.Route
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider

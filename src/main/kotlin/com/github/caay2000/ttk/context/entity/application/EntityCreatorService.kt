@@ -6,6 +6,9 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.entity.domain.EntityException
+import com.github.caay2000.ttk.context.entity.domain.InvalidEntityPositionException
+import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 
@@ -19,8 +22,7 @@ class EntityCreatorService(provider: Provider, eventPublisher: EventPublisher<Ev
             .flatMap { entity -> entity.publishEvents() }
 
     private fun createEntity(position: Position): Either<EntityException, Entity> =
-        provider.getConfiguration()
-            .map { configuration -> Entity.create(position = position, configuration = configuration) }
+        Either.catch { Entity.create(position = position) }
             .mapLeft { UnknownEntityException(it) }
 
     private fun World.guardPosition(position: Position): Either<EntityException, World> =

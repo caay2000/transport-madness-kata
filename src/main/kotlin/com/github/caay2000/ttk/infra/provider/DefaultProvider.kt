@@ -8,7 +8,12 @@ import com.github.caay2000.ttk.api.provider.Provider.ProviderException.Configura
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException.UnknownProviderException
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException.WorldNotFoundProviderException
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.shared.EntityId
+import com.github.caay2000.ttk.shared.mapCatch
 
 class DefaultProvider : Provider {
 
@@ -22,6 +27,16 @@ class DefaultProvider : Provider {
         Either.catch { this.world = world }
             .map { world }
             .mapLeft { UnknownProviderException(it) }
+
+    override fun getLocation(position: Position): Either<ProviderException, Location> =
+        get()
+            .mapCatch { world -> world.locations.values.first { it.position == position } }
+            .mapLeft { ProviderException.LocationNotFoundByPositionException(position) }
+
+    override fun getEntity(entityId: EntityId): Either<ProviderException, Entity> =
+        get()
+            .map { world -> world.entities.values.first { it.id == entityId } }
+            .mapLeft { ProviderException.EntityNotFoundException(entityId) }
 
     override fun getConfiguration(): Either<ProviderException, Configuration> =
         configuration.rightIfNotNull { ConfigurationNotFoundProviderException }

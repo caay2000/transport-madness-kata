@@ -6,6 +6,9 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.entity.domain.EntityException
+import com.github.caay2000.ttk.context.entity.domain.EntityNotFound
+import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.shared.EntityId
 

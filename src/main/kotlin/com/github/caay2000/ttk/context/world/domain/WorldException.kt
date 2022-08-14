@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.context.world.application
+package com.github.caay2000.ttk.context.world.domain
 
 sealed class WorldException : RuntimeException {
     constructor(message: String) : super(message)

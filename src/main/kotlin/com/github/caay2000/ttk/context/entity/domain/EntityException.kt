@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.context.entity.application
+package com.github.caay2000.ttk.context.entity.domain
 
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.EntityId
