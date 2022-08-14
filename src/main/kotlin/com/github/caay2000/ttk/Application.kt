@@ -49,7 +49,15 @@ class Application(
     private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
     private val printer = ConsolePrinter(configuration)
 
-    fun invoke(startPosition: Position, paths: Map<Position, List<Position>>, locations: Set<Pair<Position, Int>>, route: List<Position>): Int {
+    fun invoke(
+        startPosition: Position,
+        paths: Map<Position, List<Position>>,
+        locations: Set<Pair<Position, Int>>,
+        route: List<Position>,
+        timesToComplete: Int = 1
+    ): Int {
+
+        var completed = 0
 
         configurationSetterService.invoke(configuration).bind()
         worldCreatorService.invoke().bind()
@@ -61,10 +69,12 @@ class Application(
         entityRouteAssignerService.invoke(entity.id, route).bind()
 
         printer.print(world)
-        while (checkRouteCompleted(startPosition).not()) {
+
+        while (timesToComplete > completed) {
             worldUpdaterService.invoke().bind()
             printer.print(world)
-//            println("${world.currentTurn} - $entity")
+
+            if (checkRouteCompleted(startPosition)) completed++
             if (world.currentTurn > 100)
                 return -1
         }
@@ -79,7 +89,7 @@ class Application(
         }
     }
 
-    private fun checkRouteCompleted(startPosition: Position): Boolean = world.currentTurn > 1 && entity.currentPosition == startPosition
+    private fun checkRouteCompleted(startPosition: Position): Boolean = world.currentTurn > 1 && entity.currentPosition == startPosition && entity.currentDuration == 0
 
     private val world: World
         get() = provider.get().bind()

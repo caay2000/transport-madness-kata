@@ -20,7 +20,7 @@ class ApplicationIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("exercise 3 data")
-    fun `execise 3`(startPosition: Position, paths: Map<Position, List<Position>>, route: List<Position>, turns: Int) {
+    fun `exercise 3`(startPosition: Position, paths: Map<Position, List<Position>>, route: List<Position>, turns: Int) {
 
         val sut = Application(configuration, provider)
 
@@ -40,7 +40,7 @@ class ApplicationIntegrationTest {
     }
 
     @Test
-    fun `execise 5`() {
+    fun `exercise 5`() {
 
         val finishingTurn = 22
 
@@ -65,6 +65,32 @@ class ApplicationIntegrationTest {
         assertThat(world.getLocation(locationB).received).isEqualTo(7)
         assertThat(world.getLocation(locationC).pax).isEqualTo(5)
         assertThat(world.getLocation(locationC).received).isEqualTo(14)
+    }
+
+    @Test
+    fun `exercise 6`() {
+
+        val finishingTurn = 16
+
+        val sut = Application(configuration, provider)
+
+        val locationA = Position(0, 0)
+        val locationB = Position(3, 0)
+        assertThat(
+            sut.invoke(
+                startPosition = Position(0, 0),
+                paths = `path from 0,0 to 3,0`(),
+                locations = setOf((locationA to 5000), (locationB to 5000)),
+                route = `route from 0,0 to 3,0`(),
+                timesToComplete = 2
+            )
+        ).isEqualTo(finishingTurn)
+
+        val world = provider.get().bind()
+        assertThat(world.getLocation(locationA).pax).isEqualTo(21)
+        assertThat(world.getLocation(locationA).received).isEqualTo(20)
+        assertThat(world.getLocation(locationB).pax).isEqualTo(10)
+        assertThat(world.getLocation(locationB).received).isEqualTo(7)
     }
 
     companion object {

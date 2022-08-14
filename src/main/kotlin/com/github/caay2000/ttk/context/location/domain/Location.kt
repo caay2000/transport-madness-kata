@@ -13,21 +13,21 @@ data class Location(
     val population: Int,
     val rawPAX: Double = 0.0,
     val received: Int = 0,
-    @Transient
-    val configuration: Configuration
+    val configuration: LocationConfiguration
 ) : Aggregate() {
 
-    val pax: Int
-        get() = floor(rawPAX).toInt()
-
     companion object {
-        fun create(position: Position, population: Int, configuration: Configuration) = Location(
+        fun create(position: Position, population: Int, rawPAX: Double = 0.0, configuration: Configuration) = Location(
             id = randomDomainId(),
             position = position,
             population = population,
-            configuration = configuration
+            rawPAX = rawPAX,
+            configuration = LocationConfiguration.fromConfiguration(configuration)
         )
     }
+
+    val pax: Int
+        get() = floor(rawPAX).toInt()
 
     fun update(): Location = copy(rawPAX = rawPAX + population * configuration.cityPAXPercentage)
     fun unload(amountUnloaded: Int): Location = copy(received = received + amountUnloaded)
