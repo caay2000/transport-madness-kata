@@ -6,6 +6,9 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.location.domain.LocationException
+import com.github.caay2000.ttk.context.location.domain.LocationNotFoundByPositionException
+import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 
@@ -17,7 +20,7 @@ abstract class LocationService(protected val provider: Provider, protected val e
 
     protected fun World.findLocation(position: Position): Either<LocationException, Location> =
         Either.catch { getCell(position) }
-            .map { cell -> getLocation(cell.locationId!!) }
+            .flatMap { cell -> Either.catch { getLocation(cell.locationId!!) } }
             .mapLeft { LocationNotFoundByPositionException(position) }
 
     protected fun Location.save(): Either<LocationException, Location> =

@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.context.location.application
+package com.github.caay2000.ttk.context.location.domain
 
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.LocationId

@@ -9,6 +9,7 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.world.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 
@@ -30,7 +31,7 @@ class WorldLocationCreatorService(provider: Provider, eventPublisher: EventPubli
 
     private fun World.createLocation(position: Position, population: Int): Either<Throwable, World> =
         findConfiguration()
-            .map { configuration -> Location.create(position, population, configuration) }
+            .map { configuration -> Location.create(position = position, population = population, configuration = configuration) }
             .map { location -> addLocation(location) }
 
     private fun World.anyLocationTooClose(

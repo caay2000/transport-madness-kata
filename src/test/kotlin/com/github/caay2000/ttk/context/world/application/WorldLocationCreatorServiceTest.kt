@@ -2,7 +2,7 @@ package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.provider.Provider
-import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.world.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
@@ -30,17 +30,10 @@ class WorldLocationCreatorServiceTest {
         val population = PopulationMother.random()
 
         sut.invoke(position, population).shouldBeRight {
-            val locationId = it.getCell(position).locationId!!
             assertThat(it.locations).hasSize(1)
-            assertThat(locationId).isNotNull
-            assertThat(it.locations[locationId]).isEqualTo(
-                Location(
-                    id = locationId,
-                    position = position,
-                    population = population,
-                    configuration = configuration
-                )
-            )
+            val location = it.locations.values.first()
+            assertThat(location.position).isEqualTo(position)
+            assertThat(location.population).isEqualTo(population)
             assertThat(it).isEqualTo(provider.get().bind())
         }
     }

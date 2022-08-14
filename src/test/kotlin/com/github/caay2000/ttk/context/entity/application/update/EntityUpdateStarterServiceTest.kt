@@ -10,6 +10,7 @@ import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
 import com.github.caay2000.ttk.mother.WorldMother
+import com.github.caay2000.ttk.mother.world.location.LocationMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -67,19 +68,24 @@ internal class EntityUpdateStarterServiceTest {
         provider.set(
             WorldMother.random(
                 entities = mapOf(entity.id to entity),
+                locations = mapOf(location.id to location),
                 connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
             )
         )
+        provider.setConfiguration(configuration)
     }
 
     private val configuration = ConfigurationMother.random()
+
+    private val location = LocationMother.random(Position(3, 0))
+
     private val routeToLastStop = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), stopIndex = 0)
     private val routeToInitialStop = routeToLastStop.copy(stopIndex = 1)
+
     private val waitingEntity: Entity = EntityMother.random(
         currentPosition = Position(3, 0),
         currentDuration = configuration.turnsStoppedInStation,
-        status = EntityStatus.STOP,
-        configuration = configuration
+        status = EntityStatus.STOP
 
     )
     private val firstStopReadyEntity: Entity = waitingEntity.copy(

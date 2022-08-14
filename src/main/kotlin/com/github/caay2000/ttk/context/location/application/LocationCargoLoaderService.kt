@@ -6,6 +6,7 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.world.domain.Position
 
 class LocationCargoLoaderService(provider: Provider, eventPublisher: EventPublisher<Event>) : LocationService(provider, eventPublisher) {

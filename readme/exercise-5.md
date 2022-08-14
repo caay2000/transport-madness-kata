@@ -5,7 +5,7 @@ exercise)
 
 <kbd> <img src="exercise_5_header.png" /> </kbd>
 
-[Home](../README.md) | [Exercise 4 - Cities I](exercise-4.md)
+[Home](../README.md) | [Exercise 4 - Cities I](exercise-4.md) | [Exercise 6 - Transport II](exercise-6.md)
 
 ## Summary (Optional Part)
 

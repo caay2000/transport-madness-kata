@@ -7,7 +7,9 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.context.world.domain.WorldException
 import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import com.github.caay2000.ttk.pathfinding.PathfindingResult

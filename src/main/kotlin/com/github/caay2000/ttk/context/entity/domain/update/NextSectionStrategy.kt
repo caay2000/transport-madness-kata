@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.context.entity.domain.update
 
+import arrow.core.computations.ResultEffect.bind
 import arrow.core.flatMap
-import arrow.core.getOrHandle
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.world.domain.Position
@@ -22,7 +22,7 @@ sealed class NextSectionStrategy {
                 .flatMap { world -> world.findNextSection(entity.currentPosition, entity.route.currentDestination) }
                 .map { nextSection -> nextSection.removeFirstCell().path }
                 .map { path -> entity.copy(route = entity.route.updateNextSection(path)) }
-                .getOrHandle { entity }
+                .bind()
 
         private fun findWorld() = provider.get()
 

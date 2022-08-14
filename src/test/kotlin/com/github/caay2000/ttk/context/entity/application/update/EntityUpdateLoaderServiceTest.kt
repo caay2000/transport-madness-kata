@@ -8,6 +8,7 @@ import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
@@ -54,6 +55,35 @@ internal class EntityUpdateLoaderServiceTest {
     }
 
     @Test
+    fun `should not load passengers if entity is full`() {
+
+        val fullEntity = readyToLoadEntity.copy(
+            pax = readyToLoadEntity.entityType.passengerCapacity
+        )
+
+        `world exists`(fullEntity, crowdedLocation)
+
+        sut.invoke(fullEntity).shouldBeRight {
+            assertThat(it).isEqualTo(fullEntity)
+            verify(eventPublisher).publish(emptyList())
+        }
+    }
+
+    @Test
+    fun `should load passengers only until full capacity of entity`() {
+
+        val almostFullEntity = readyToLoadEntity.copy(
+            pax = readyToLoadEntity.entityType.passengerCapacity - 1
+        )
+        `world exists`(almostFullEntity, crowdedLocation)
+
+        sut.invoke(almostFullEntity).shouldBeRight {
+            assertThat(it.pax).isEqualTo(readyToLoadEntity.entityType.passengerCapacity)
+            listOf(EntityLoadedEvent(aggregateId = readyToLoadEntity.id, amount = 1, position = Position(3, 0)))
+        }
+    }
+
+    @Test
     fun `should publish EntityLoadedEvent when passengers are loaded`() {
 
         `world exists`(readyToLoadEntity, crowdedLocation)
@@ -82,6 +112,7 @@ internal class EntityUpdateLoaderServiceTest {
                 locations = mapOf(location.id to location)
             )
         )
+        provider.setConfiguration(ConfigurationMother.random())
     }
 
     private val readyToLoadEntity: Entity = EntityMother.random(
