@@ -3,6 +3,9 @@ package com.github.caay2000.ttk.integration
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.Application
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.entity.domain.EntityType
+import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
+import com.github.caay2000.ttk.context.entity.domain.Railcar
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
@@ -26,6 +29,7 @@ class ApplicationIntegrationTest {
 
         assertThat(
             sut.invoke(
+                entityType = PassengerTrain(3),
                 startPosition = startPosition,
                 paths = paths,
                 locations = setOf(
@@ -51,6 +55,7 @@ class ApplicationIntegrationTest {
         val locationC = Position(1, 4)
         assertThat(
             sut.invoke(
+                entityType = PassengerTrain(3),
                 startPosition = Position(0, 0),
                 paths = `path from 0,0 to 3,2 to 1,4 to 0,0`(),
                 locations = setOf((locationA to 500), (locationB to 1000), (locationC to 250)),
@@ -67,8 +72,9 @@ class ApplicationIntegrationTest {
         assertThat(world.getLocation(locationC).received).isEqualTo(14)
     }
 
-    @Test
-    fun `exercise 6`() {
+    @ParameterizedTest
+    @MethodSource("exercise 6 data")
+    fun `exercise 6`(entityType: EntityType, paxA: Int, receivedA: Int, paxB: Int, receivedB: Int) {
 
         val finishingTurn = 16
 
@@ -78,6 +84,7 @@ class ApplicationIntegrationTest {
         val locationB = Position(3, 0)
         assertThat(
             sut.invoke(
+                entityType = entityType,
                 startPosition = Position(0, 0),
                 paths = `path from 0,0 to 3,0`(),
                 locations = setOf((locationA to 5000), (locationB to 5000)),
@@ -87,10 +94,10 @@ class ApplicationIntegrationTest {
         ).isEqualTo(finishingTurn)
 
         val world = provider.get().bind()
-        assertThat(world.getLocation(locationA).pax).isEqualTo(21)
-        assertThat(world.getLocation(locationA).received).isEqualTo(20)
-        assertThat(world.getLocation(locationB).pax).isEqualTo(10)
-        assertThat(world.getLocation(locationB).received).isEqualTo(7)
+        assertThat(world.getLocation(locationA).pax).isEqualTo(paxA)
+        assertThat(world.getLocation(locationA).received).isEqualTo(receivedA)
+        assertThat(world.getLocation(locationB).pax).isEqualTo(paxB)
+        assertThat(world.getLocation(locationB).received).isEqualTo(receivedB)
     }
 
     companion object {
@@ -103,6 +110,14 @@ class ApplicationIntegrationTest {
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 21),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4`(), 17),
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4 to 3,2`(), 22)
+            )
+        }
+
+        @JvmStatic
+        fun `exercise 6 data`(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(PassengerTrain(3), 90, 110, 50, 70),
+                Arguments.of(Railcar(), 120, 60, 100, 40)
             )
         }
 

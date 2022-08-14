@@ -9,6 +9,7 @@ import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
 import com.github.caay2000.ttk.context.entity.application.EntityRouteAssignerService
 import com.github.caay2000.ttk.context.entity.domain.Entity
+import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityLoadedEventSubscriber
@@ -50,6 +51,7 @@ class Application(
     private val printer = ConsolePrinter(configuration)
 
     fun invoke(
+        entityType: EntityType,
         startPosition: Position,
         paths: Map<Position, List<Position>>,
         locations: Set<Pair<Position, Int>>,
@@ -65,7 +67,7 @@ class Application(
             worldLocationCreatorService.invoke(position, population).bind()
         }
         createAllConnections(paths)
-        entityCreatorService.invoke(startPosition).bind()
+        entityCreatorService.invoke(entityType, startPosition).bind()
         entityRouteAssignerService.invoke(entity.id, route).bind()
 
         printer.print(world)

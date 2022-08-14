@@ -2,12 +2,44 @@ package com.github.caay2000.ttk.context.entity.domain
 
 sealed class EntityType(
     val vehicleType: VehicleType
-)
+) {
+    abstract val numCoaches: Int
+    abstract val maxNumCoaches: Int
+    abstract val passengersPerCoach: Int
 
-sealed class TrainEntityType(
-    val maxNumCoaches: Int,
-    val passengersPerCoach: Int
-) : EntityType(vehicleType = VehicleType.TRAIN)
+    val passengerCapacity: Int
+        get() = passengersPerCoach * numCoaches
 
-object PassengerTrain : TrainEntityType(maxNumCoaches = 3, passengersPerCoach = 20)
-object Railcar : TrainEntityType(maxNumCoaches = 1, passengersPerCoach = 30)
+    val name: String = this::class.simpleName!!
+}
+
+sealed class TrainEntityType : EntityType(vehicleType = VehicleType.TRAIN) {
+
+    protected fun validate() {
+        if (numCoaches > maxNumCoaches) throw EntityInvalidNumOfCoachesException(numCoaches, this)
+    }
+}
+
+data class PassengerTrain private constructor(
+    override val numCoaches: Int,
+    override val maxNumCoaches: Int,
+    override val passengersPerCoach: Int
+) : TrainEntityType() {
+    constructor(numCoaches: Int = 3) : this(numCoaches = numCoaches, maxNumCoaches = 3, passengersPerCoach = 20)
+
+    init {
+        validate()
+    }
+}
+
+data class Railcar private constructor(
+    override val numCoaches: Int,
+    override val maxNumCoaches: Int,
+    override val passengersPerCoach: Int
+) : TrainEntityType() {
+    constructor() : this(numCoaches = 1, maxNumCoaches = 1, passengersPerCoach = 30)
+
+    init {
+        validate()
+    }
+}

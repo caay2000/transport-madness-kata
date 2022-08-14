@@ -4,6 +4,7 @@ import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.domain.InvalidEntityPositionException
+import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
@@ -28,7 +29,7 @@ internal class EntityCreatorServiceTest {
         provider.set(WorldMother.empty())
         provider.setConfiguration(ConfigurationMother.random())
 
-        sut.invoke(Position(1, 1)).shouldBeRight {
+        sut.invoke(PassengerTrain(3), Position(1, 1)).shouldBeRight {
             assertThat(provider.get().bind().entities).hasSize(1)
             assertThat(it).isEqualTo(provider.get().bind().entities.values.first())
         }
@@ -39,6 +40,6 @@ internal class EntityCreatorServiceTest {
     fun `entity added out of bounds throw exception`(x: Int, y: Int) {
         provider.set(WorldMother.empty(width = 1, height = 1))
 
-        sut.invoke(Position(x, y)).shouldBeLeftOfType<InvalidEntityPositionException>()
+        sut.invoke(PassengerTrain(), Position(x, y)).shouldBeLeftOfType<InvalidEntityPositionException>()
     }
 }

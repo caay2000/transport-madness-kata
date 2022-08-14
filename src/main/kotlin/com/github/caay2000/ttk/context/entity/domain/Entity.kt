@@ -11,6 +11,7 @@ import com.github.caay2000.ttk.shared.randomDomainId
 
 data class Entity(
     override val id: EntityId,
+    val entityType: EntityType,
     val currentPosition: Position,
     val currentDuration: Int,
     val route: Route,
@@ -19,8 +20,9 @@ data class Entity(
 ) : Aggregate() {
 
     companion object {
-        fun create(id: EntityId = randomDomainId(), position: Position): Entity = Entity(
-            id = id,
+        fun create(entityType: EntityType, position: Position): Entity = Entity(
+            id = randomDomainId(),
+            entityType = entityType,
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),

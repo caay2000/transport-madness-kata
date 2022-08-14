@@ -8,6 +8,9 @@ sealed class EntityException : RuntimeException {
     constructor(cause: Throwable) : super(cause)
 }
 
+data class EntityInvalidNumOfCoachesException(val amount: Int, val entityType: EntityType) :
+    EntityException("${entityType.name} cannot have $amount num of coaches, max is ${entityType.maxNumCoaches}")
+
 data class EntityNotFound(val entityId: EntityId) : EntityException("entity $entityId not found")
 data class InvalidRouteException(val stops: List<Position>) : EntityException("invalid route for $stops")
 data class InvalidEntityPositionException(val position: Position) : EntityException("invalid position $position")
