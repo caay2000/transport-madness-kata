@@ -16,13 +16,9 @@ we are going to have 2 different vehicle types, passenger train and a rail-car.
 
 So lets try this exercise:
 
-With a simple route from 0,0 to 3,0 (each location with population 5000)
+With a simple route from 0,0 to 3,0 (each location with population 5000), let's try to do 2 round trips
 
-    | CITY SIZE  | 1 turn | 5 turns | 10 turns |
-    |------------|--------|---------|----------|
-    |     5000   | 10 PAX |  50 PAX |  100 PAX |
-
-    | LOCATION   | 1 turn              | 7 turn | 12 turn | 17 turn | 22 turn |              
-    |------------|---------------------|--------|---------|---------|---------|
-    |    (0,0)   | 10 PAX / 0 Received |  6 / 0 | 11 / 0  | 16 / 0  | 21 / 20 | 
-    |    (3,0)   | 10 PAX / 0 Received | 14 / 1 | 10 / 1  | 20 / 7  | 10 / 7  |
+    | LOCATION   | 1 turn              |  4 turn |  5 turn |  8 turn |  9 turn | 12 turn | 13 turn | 16 turn |              
+    |------------|---------------------|---------|---------|---------|---------|---------|---------|---------|
+    |    (0,0)   | 10 PAX / 0 Received | 30 /  0 | 40 /  0 | 70 / 0  | 30 /  0 | 40 /  0 | 70 / 0  | 70 / 0  | 
+    |    (3,0)   | 10 PAX / 0 Received | 40 / 10 |  0 / 10 | 20 / 7  | 40 / 10 |  0 / 10 | 20 / 7  | 20 / 7  |
