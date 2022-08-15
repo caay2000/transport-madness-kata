@@ -15,10 +15,10 @@ class HexagonalConsolePrinter(val configuration: Configuration) : Printer {
                 val cell = world.getCell(Position(x, y))
                 val entity = world.entities.values.first()
                 when {
-                    entity.currentPosition == cell.position -> currentLine = "$currentLine @ "
-                    cell.locationId != null -> currentLine = "$currentLine O "
-                    cell.connected -> currentLine = "$currentLine x "
-                    cell.connected.not() -> currentLine = "$currentLine . "
+                    entity.currentPosition == cell.position -> currentLine = "$currentLine@ "
+                    cell.locationId != null -> currentLine = "${currentLine}O "
+                    cell.connected -> currentLine = "${currentLine}x "
+                    cell.connected.not() -> currentLine = "$currentLine. "
                 }
             }
             println(currentLine)
