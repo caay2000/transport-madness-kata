@@ -103,7 +103,7 @@ class ApplicationIntegrationTest {
     @Test
     fun `exercise 7`() {
 
-        val finishingTurn = 18
+        val finishingTurn = 186
 
         val configuration = ConfigurationMother.random(worldWidth = 40, worldHeight = 40)
         val sut = Application(configuration, provider)
@@ -133,12 +133,11 @@ class ApplicationIntegrationTest {
         ).isEqualTo(finishingTurn)
 
         val world = provider.get().bind()
-        assertThat(world.getLocation(locationA).pax).isEqualTo(17)
-        assertThat(world.getLocation(locationA).received).isEqualTo(16)
-        assertThat(world.getLocation(locationB).pax).isEqualTo(8)
-        assertThat(world.getLocation(locationB).received).isEqualTo(6)
-        assertThat(world.getLocation(locationC).pax).isEqualTo(4)
-        assertThat(world.getLocation(locationC).received).isEqualTo(12)
+        assertThat(world.getLocation(locationA).received).isEqualTo(67)
+        assertThat(world.getLocation(locationB).received).isEqualTo(1)
+        assertThat(world.getLocation(locationC).received).isEqualTo(164)
+        assertThat(world.getLocation(locationD).received).isEqualTo(34)
+        assertThat(world.getLocation(locationE).received).isEqualTo(26)
     }
 
     companion object {
