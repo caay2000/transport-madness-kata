@@ -30,7 +30,7 @@ class ApplicationIntegrationTest {
         assertThat(
             sut.invoke(
                 entityType = PassengerTrain(3),
-                startPosition = startPosition,
+                startPosition = listOf(startPosition),
                 paths = paths,
                 locations = setOf(
                     Position(0, 0) to 500,
@@ -56,7 +56,7 @@ class ApplicationIntegrationTest {
         assertThat(
             sut.invoke(
                 entityType = PassengerTrain(3),
-                startPosition = Position(0, 0),
+                startPosition = listOf(locationA),
                 paths = `path from 0,0 to 3,2 to 1,4 to 0,0`(),
                 locations = setOf((locationA to 500), (locationB to 1000), (locationC to 250)),
                 route = `route from 0,0 to 3,2 to 1,4 to 3,2`()
@@ -85,7 +85,7 @@ class ApplicationIntegrationTest {
         assertThat(
             sut.invoke(
                 entityType = entityType,
-                startPosition = Position(0, 0),
+                startPosition = listOf(locationA),
                 paths = `path from 0,0 to 3,0`(),
                 locations = setOf((locationA to 5000), (locationB to 5000)),
                 route = `route from 0,0 to 3,0`(),
@@ -99,6 +99,54 @@ class ApplicationIntegrationTest {
         assertThat(world.getLocation(locationB).pax).isEqualTo(paxB)
         assertThat(world.getLocation(locationB).received).isEqualTo(receivedB)
     }
+
+    @Test
+    fun `exercise 7`() {
+
+        val finishingTurn = 18
+
+        val configuration = ConfigurationMother.random(worldWidth = 40, worldHeight = 40)
+        val sut = Application(configuration, provider)
+
+        val locationA = Position(8, 4)
+        val locationB = Position(5, 25)
+        val locationC = Position(20, 25)
+        val locationD = Position(35, 5)
+        val locationE = Position(35, 35)
+        assertThat(
+            sut.invoke(
+                entityType = PassengerTrain(3),
+                startPosition = listOf(locationA),
+                paths = mapOf(
+                    locationA to listOf(locationB, locationC),
+                    locationC to listOf(locationD, locationE)
+                ),
+                locations = setOf(
+                    (locationA to 500),
+                    (locationB to 1000),
+                    (locationC to 250),
+                    (locationD to 500),
+                    (locationE to 750)
+                ),
+                route = listOf(locationA, locationB, locationA, locationC, locationD, locationC, locationE, locationC)
+            )
+        ).isEqualTo(finishingTurn)
+
+        val world = provider.get().bind()
+        assertThat(world.getLocation(locationA).pax).isEqualTo(17)
+        assertThat(world.getLocation(locationA).received).isEqualTo(16)
+        assertThat(world.getLocation(locationB).pax).isEqualTo(8)
+        assertThat(world.getLocation(locationB).received).isEqualTo(6)
+        assertThat(world.getLocation(locationC).pax).isEqualTo(4)
+        assertThat(world.getLocation(locationC).received).isEqualTo(12)
+    }
+    /*
+    (8, 4) 500 population - 141PAX waiting - 5 PAX Received
+(5, 25) 1000 population - 2PAX waiting - 367 PAX Received
+(20, 25) 250 population - 1PAX waiting - 253 PAX Received
+(35, 5) 500 population - 126PAX waiting - 1 PAX Received
+(35, 35) 750 population - 219PAX waiting - 1 PAX Received
+     */
 
     companion object {
         @JvmStatic

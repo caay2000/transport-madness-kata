@@ -52,7 +52,7 @@ class Application(
 
     fun invoke(
         entityType: EntityType,
-        startPosition: Position,
+        startPosition: List<Position>,
         paths: Map<Position, List<Position>>,
         locations: Set<Pair<Position, Int>>,
         route: List<Position>,
@@ -67,7 +67,9 @@ class Application(
             worldLocationCreatorService.invoke(position, population).bind()
         }
         createAllConnections(paths)
-        entityCreatorService.invoke(entityType, startPosition).bind()
+        startPosition.forEach {
+            entityCreatorService.invoke(entityType, it).bind()
+        }
         entityRouteAssignerService.invoke(entity.id, route).bind()
 
         printer.print(world)
@@ -76,8 +78,8 @@ class Application(
             worldUpdaterService.invoke().bind()
             printer.print(world)
 
-            if (checkRouteCompleted(startPosition)) completed++
-            if (world.currentTurn > 100)
+            if (checkRouteCompleted(startPosition.first())) completed++
+            if (world.currentTurn > 10000)
                 return -1
         }
         return world.currentTurn
@@ -91,7 +93,11 @@ class Application(
         }
     }
 
-    private fun checkRouteCompleted(startPosition: Position): Boolean = world.currentTurn > 1 && entity.currentPosition == startPosition && entity.currentDuration == 0
+    private fun checkRouteCompleted(startPosition: Position): Boolean =
+        world.currentTurn > 1 &&
+            entity.currentPosition == startPosition &&
+            entity.currentDuration == 0 &&
+            entity.route.stopIndex == 0
 
     private val world: World
         get() = provider.get().bind()
