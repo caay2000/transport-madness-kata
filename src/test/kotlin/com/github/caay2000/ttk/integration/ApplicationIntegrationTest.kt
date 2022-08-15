@@ -140,13 +140,6 @@ class ApplicationIntegrationTest {
         assertThat(world.getLocation(locationC).pax).isEqualTo(4)
         assertThat(world.getLocation(locationC).received).isEqualTo(12)
     }
-    /*
-    (8, 4) 500 population - 141PAX waiting - 5 PAX Received
-(5, 25) 1000 population - 2PAX waiting - 367 PAX Received
-(20, 25) 250 population - 1PAX waiting - 253 PAX Received
-(35, 5) 500 population - 126PAX waiting - 1 PAX Received
-(35, 35) 750 population - 219PAX waiting - 1 PAX Received
-     */
 
     companion object {
         @JvmStatic
