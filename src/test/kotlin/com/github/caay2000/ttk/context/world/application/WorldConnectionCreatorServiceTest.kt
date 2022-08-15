@@ -9,7 +9,7 @@ import com.github.caay2000.ttk.mother.WorldMother
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
 import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import io.kotest.assertions.arrow.either.shouldBeRight
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 
@@ -27,8 +27,8 @@ internal class WorldConnectionCreatorServiceTest {
 
         sut.invoke(Position(0, 0), Position(3, 2)).shouldBeRight {
 
-            Assertions.assertThat(it.connectedCells).isEqualTo(expectedPath)
-            Assertions.assertThat(it).isEqualTo(provider.get().bind())
+            assertThat(it.connectedCells).isEqualTo(expectedPath)
+            assertThat(it).isEqualTo(provider.get().bind())
         }
     }
 
@@ -39,7 +39,6 @@ internal class WorldConnectionCreatorServiceTest {
         Cell(position = Position(x = 1, y = 0), cost = 1),
         Cell(position = Position(x = 2, y = 0), cost = 1),
         Cell(position = Position(x = 2, y = 1), cost = 1),
-        Cell(position = Position(x = 3, y = 1), cost = 1),
         Cell(position = Position(x = 3, y = 2), cost = 1)
     )
 }
