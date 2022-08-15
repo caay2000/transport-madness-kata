@@ -44,8 +44,9 @@ So, the result for our exercise - 5 with A(0,0) B at (2,3) and C at (1,4) and co
 
 Another example with a bigger map (40x40) could be the following one:
 
-* Route from 8,4 to 5,25 and again from 8,4 to 20,25
-* Another Route from 20,25 to 35,5 and again from 20,25 to 35,35
+* Connection from 8,4 to 5,25 and also from 8,4 to 20,25
+* More connections are from 20,25 to 35,5 and again from 20,25 to 35,35
+* Entity route is A -> B -> A -> C -> D -> C -> E -> C
 * You can check population for each location below
 * Play a little with it, with different maps, and even, with multiple entities running at the same time!
 
@@ -55,8 +56,8 @@ Another example with a bigger map (40x40) could be the following one:
          . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
          . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-        . . . . . . . . @ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-         . . . . . . . x x . . . . . . . . . . . . . . . . . . . . . . . . . . O . . . .
+        . . . . . . . . A . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+         . . . . . . . x x . . . . . . . . . . . . . . . . . . . . . . . . . . D . . . .
         . . . . . . . x . x . . . . . . . . . . . . . . . . . . . . . . . . x x . . . .
          . . . . . . x . . x . . . . . . . . . . . . . . . . . . . . . . . x . . . . . .
         . . . . . . x . . . x . . . . . . . . . . . . . . . . . . . . . x x . . . . . .
@@ -76,7 +77,7 @@ Another example with a bigger map (40x40) could be the following one:
         . . . . . x . . . . . . . . . . . x x . . . x . . . . . . . . . . . . . . . . .
          . . . . . x . . . . . . . . . . . . x . . x . . . . . . . . . . . . . . . . . .
         . . . . . x . . . . . . . . . . . . . x x x . . . . . . . . . . . . . . . . . .
-         . . . . . O . . . . . . . . . . . . . . O . . . . . . . . . . . . . . . . . . .
+         . . . . . B . . . . . . . . . . . . . . C . . . . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . . . . . . . x x x x x x x . . . . . . . . . . . .
          . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . . . . . . . . . .
         . . . . . . . . . . . . . . . . . . . . . . . . . . . . x x . . . . . . . . . .
@@ -86,13 +87,13 @@ Another example with a bigger map (40x40) could be the following one:
         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x x . . . . . .
          . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x . . . . . .
         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . x x . . . .
-         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . O . . . .
+         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . E . . . .
         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
          . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
         . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
          . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-        (8, 4) 500 population - 141PAX waiting - 67 PAX Received
-        (5, 25) 1000 population - 326PAX waiting - 1 PAX Received
-        (20, 25) 250 population - 12PAX waiting - 164 PAX Received
-        (35, 5) 500 population - 126PAX waiting - 34 PAX Received
-        (35, 35) 750 population - 219PAX waiting - 26 PAX Received
+        A(8, 4) 500 population - 141PAX waiting - 67 PAX Received
+        B(5, 25) 1000 population - 326PAX waiting - 1 PAX Received
+        C(20, 25) 250 population - 12PAX waiting - 164 PAX Received
+        D(35, 5) 500 population - 126PAX waiting - 34 PAX Received
+        E(35, 35) 750 population - 219PAX waiting - 26 PAX Received
