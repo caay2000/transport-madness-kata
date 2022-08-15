@@ -57,3 +57,17 @@ Now that we move passengers, let's do it properly, with railcars and trains with
 Let's migrate our current map to an amazing hexagonal grid!
 
 ### [More to Come](README.md)
+
+- PAX demand on cities
+- Speed on entities
+- Async PAX demand
+- Terrains (forest, mountains, sea)
+- Money
+- Stops improvements
+- Other type of transports
+- Cargo & Industries
+- Cargo Demand on cities
+- Grow cities
+- Parallel tracks
+- Entities Collisions
+- Signaling
