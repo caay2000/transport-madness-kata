@@ -50,6 +50,10 @@ Let's try to put everything together and start moving passengers from one city t
 
 ### [Exercise 6 - Transport II](readme/exercise-6.md)
 
-Now that we move passengers, let's do it properly, with railcars and trains with engines and different coaches 
+Now that we move passengers, let's do it properly, with railcars and trains with engines and different coaches
+
+### [Exercise 7 - Map I](readme/exercise-7.md)
+
+Let's migrate our current map to an amazing hexagonal grid!
 
 ### [More to Come](README.md)
