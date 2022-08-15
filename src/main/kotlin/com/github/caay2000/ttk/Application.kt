@@ -20,7 +20,7 @@ import com.github.caay2000.ttk.context.world.application.WorldLocationCreatorSer
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
-import com.github.caay2000.ttk.infra.console.ConsolePrinter
+import com.github.caay2000.ttk.infra.console.HexagonalConsolePrinter
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventPublisher
 import com.github.caay2000.ttk.infra.eventbus.instantiateEventSubscriber
@@ -48,7 +48,7 @@ class Application(
     private val worldLocationCreatorService = WorldLocationCreatorService(provider, eventPublisher)
     private val entityCreatorService = EntityCreatorService(provider, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
-    private val printer = ConsolePrinter(configuration)
+    private val printer = HexagonalConsolePrinter(configuration)
 
     fun invoke(
         entityType: EntityType,

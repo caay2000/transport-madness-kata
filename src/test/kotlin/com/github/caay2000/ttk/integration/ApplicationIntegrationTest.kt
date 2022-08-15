@@ -46,7 +46,7 @@ class ApplicationIntegrationTest {
     @Test
     fun `exercise 5`() {
 
-        val finishingTurn = 22
+        val finishingTurn = 18
 
         val sut = Application(configuration, provider)
 
@@ -64,12 +64,12 @@ class ApplicationIntegrationTest {
         ).isEqualTo(finishingTurn)
 
         val world = provider.get().bind()
-        assertThat(world.getLocation(locationA).pax).isEqualTo(21)
-        assertThat(world.getLocation(locationA).received).isEqualTo(20)
-        assertThat(world.getLocation(locationB).pax).isEqualTo(10)
-        assertThat(world.getLocation(locationB).received).isEqualTo(7)
-        assertThat(world.getLocation(locationC).pax).isEqualTo(5)
-        assertThat(world.getLocation(locationC).received).isEqualTo(14)
+        assertThat(world.getLocation(locationA).pax).isEqualTo(17)
+        assertThat(world.getLocation(locationA).received).isEqualTo(16)
+        assertThat(world.getLocation(locationB).pax).isEqualTo(8)
+        assertThat(world.getLocation(locationB).received).isEqualTo(6)
+        assertThat(world.getLocation(locationC).pax).isEqualTo(4)
+        assertThat(world.getLocation(locationC).received).isEqualTo(12)
     }
 
     @ParameterizedTest
@@ -105,11 +105,11 @@ class ApplicationIntegrationTest {
         fun `exercise 3 data`(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(Position(0, 0), `path from 0,0 to 3,0`(), `route from 0,0 to 3,0`(), 8),
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2`(), `route from 0,0 to 3,2`(), 12),
-                Arguments.of(Position(0, 0), `path from 0,0 to 1,4`(), `route from 0,0 to 1,4`(), 12),
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 21),
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4`(), 17),
-                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4 to 3,2`(), 22)
+                Arguments.of(Position(0, 0), `path from 0,0 to 3,2`(), `route from 0,0 to 3,2`(), 10),
+                Arguments.of(Position(0, 0), `path from 0,0 to 1,4`(), `route from 0,0 to 1,4`(), 10),
+                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4`(), `route from 0,0 to 3,2 to 1,4`(), 17),
+                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4`(), 14),
+                Arguments.of(Position(0, 0), `path from 0,0 to 3,2 to 1,4 to 0,0`(), `route from 0,0 to 3,2 to 1,4 to 3,2`(), 18)
             )
         }
 
@@ -132,12 +132,12 @@ class ApplicationIntegrationTest {
         private fun `path from 0,0 to 1,4`() = mapOf(Position(0, 0) to listOf(Position(1, 4)))
         private fun `path from 0,0 to 3,2 to 1,4`() = mapOf(
             Position(0, 0) to listOf(Position(3, 2)),
-            Position(3, 2) to listOf(Position(1, 4))
+            Position(1, 4) to listOf(Position(3, 2))
         )
 
         private fun `path from 0,0 to 3,2 to 1,4 to 0,0`() = mapOf(
-            Position(0, 0) to listOf(Position(3, 2), Position(0, 4)),
-            Position(3, 2) to listOf(Position(1, 4))
+            Position(0, 0) to listOf(Position(3, 2)),
+            Position(1, 4) to listOf(Position(0, 0), Position(3, 2))
         )
     }
 }

@@ -20,23 +20,25 @@ Following Amit's page I will use an _“odd-r” horizontal layout_ in an offset
 The exercise will be to change our current squared grid for a hexagonal grid, and try to visualise it! I will propose
 the following visualisation:
 
-         . . . . . . .
-          . . . . . . .
-         . . . . . . .
-          . . . . . . .
-         . . . . . . .
-          . . . . . . .
-         . . . . . . .
+           0 1 2 3 4 5 6
+         0 . . . . . . .
+         1  . . . . . . .
+         2 . . . . . . .
+         3  . . . . . . .
+         4 . . . . . . .
+         5  . . . . . . .
+         6 . . . . . . .
 
 So, our current exercise with A(0,0) B at (2,3) and C at (1,4) and connections between them, will be represented like
 this:
 
-         A x x . . . .
-          x . x . . . .
-         x . . B . . .
-          x . x . . . .
-         . C x . . . .
-          . . . . . . .
-         . . . . . . .
+           0 1 2 3 4 5 6
+         0 A x x . . . .
+         1  x . x . . . .
+         2 x . . B . . .
+         3  x . x . . . .
+         4 . C x . . . .
+         5  . . . . . . .
+         6 . . . . . . .
 
 

@@ -9,17 +9,15 @@ class HexagonalConsolePrinter(val configuration: Configuration) : Printer {
     override fun print(world: World) {
         println("WORLD CURRENT TURN -> ${world.currentTurn} - ${world.entities.values.first()}")
 
-        printHeader()
         for (y in 0 until configuration.worldHeight) {
-            var currentLine = ""
+            var currentLine = if (y.mod(2) == 0) "" else " "
             for (x in 0 until configuration.worldWidth) {
-
                 val cell = world.getCell(Position(x, y))
                 val entity = world.entities.values.first()
                 when {
                     entity.currentPosition == cell.position -> currentLine = "$currentLine @ "
-                    cell.locationId != null -> currentLine = "$currentLine H "
-                    cell.connected -> currentLine = "$currentLine + "
+                    cell.locationId != null -> currentLine = "$currentLine O "
+                    cell.connected -> currentLine = "$currentLine x "
                     cell.connected.not() -> currentLine = "$currentLine . "
                 }
             }
@@ -31,7 +29,7 @@ class HexagonalConsolePrinter(val configuration: Configuration) : Printer {
     }
 
     private fun printHeader() {
-        var currentLine = "   - "
+        var currentLine = ""
         for (x in 0 until configuration.worldWidth) {
             currentLine = "$currentLine $x "
         }

@@ -47,14 +47,13 @@ internal class AStartPathfindingStrategyTest {
 
         sut.invoke(map, cell(0, 0), cell(3, 2)).shouldBeRight {
             assertThat(it.path)
-                .hasSize(6)
+                .hasSize(5)
                 .isEqualTo(
                     listOf(
                         Cell(x = 0, y = 0),
                         Cell(x = 1, y = 0),
                         Cell(x = 2, y = 0),
                         Cell(x = 2, y = 1),
-                        Cell(x = 3, y = 1),
                         Cell(x = 3, y = 2)
                     )
                 )

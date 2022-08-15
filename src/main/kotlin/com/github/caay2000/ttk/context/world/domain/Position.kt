@@ -16,8 +16,8 @@ data class Position(val x: Int, val y: Int) {
 
     private fun sum(position: Position): Position = copy(x = x + position.x, y = y + position.y)
 
-    val evenRow: Boolean
-        get() = x.mod(2) == 0
+    private val evenRow: Boolean
+        get() = y.mod(2) == 0
 
     val neighbours: Set<Position>
         get() = when {
@@ -44,5 +44,4 @@ data class Position(val x: Int, val y: Int) {
             this.sum(Position(0, 1)),
             this.sum(Position(1, 1))
         )
-
 }
