@@ -25,7 +25,7 @@ internal class WorldConnectionCreatorServiceTest {
 
         `world exists`()
 
-        sut.invoke(Position(0, 0), Position(4, 0)).shouldBeRight {
+        sut.invoke(Position(0, 0), Position(3, 2)).shouldBeRight {
 
             assertThat(it.connectedCells).isEqualTo(expectedPath)
             assertThat(it).isEqualTo(provider.get().bind())
@@ -38,7 +38,7 @@ internal class WorldConnectionCreatorServiceTest {
         Cell(position = Position(x = 0, y = 0), connection = Cell.CellConnection.CONNECTED),
         Cell(position = Position(x = 1, y = 0), connection = Cell.CellConnection.CONNECTED),
         Cell(position = Position(x = 2, y = 0), connection = Cell.CellConnection.CONNECTED),
-        Cell(position = Position(x = 3, y = 0), connection = Cell.CellConnection.CONNECTED),
-        Cell(position = Position(x = 4, y = 0), connection = Cell.CellConnection.CONNECTED)
+        Cell(position = Position(x = 2, y = 1), connection = Cell.CellConnection.CONNECTED),
+        Cell(position = Position(x = 3, y = 2), connection = Cell.CellConnection.CONNECTED)
     )
 }

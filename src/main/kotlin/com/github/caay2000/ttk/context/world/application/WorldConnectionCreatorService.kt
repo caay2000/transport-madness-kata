@@ -13,7 +13,6 @@ import com.github.caay2000.ttk.context.world.domain.WorldException
 import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import com.github.caay2000.ttk.pathfinding.PathfindingResult
-import com.github.caay2000.ttk.shared.mapToSet
 
 class WorldConnectionCreatorService(
     provider: Provider,
@@ -36,5 +35,5 @@ class WorldConnectionCreatorService(
             .mapLeft { error -> UnknownWorldException(error) }
 
     private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
-        this.path.mapToSet { cell -> cell.createConnection() }
+        this.path.map { cell -> cell.createConnection() }.toSet()
 }
