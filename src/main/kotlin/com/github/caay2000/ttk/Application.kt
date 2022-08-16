@@ -48,13 +48,13 @@ class Application(
     private val worldLocationCreatorService = WorldLocationCreatorService(provider, eventPublisher)
     private val entityCreatorService = EntityCreatorService(provider, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
-    private val printer = HexagonalConsolePrinter(configuration)
+    private val printer = HexagonalConsolePrinter(provider, configuration)
 
     fun invoke(
         entityType: EntityType,
         startPosition: List<Position>,
         paths: Map<Position, List<Position>>,
-        locations: Set<Pair<Position, Int>>,
+        locations: Set<LocationRequest>,
         route: List<Position>,
         timesToComplete: Int = 1
     ): Int {
@@ -63,8 +63,8 @@ class Application(
 
         configurationSetterService.invoke(configuration).bind()
         worldCreatorService.invoke().bind()
-        locations.forEach { (position, population) ->
-            worldLocationCreatorService.invoke(position, population).bind()
+        locations.forEach { (name, position, population) ->
+            worldLocationCreatorService.invoke(name, position, population).bind()
         }
         createAllConnections(paths)
         startPosition.forEach {
@@ -103,4 +103,6 @@ class Application(
         get() = provider.get().bind()
     private val entity: Entity
         get() = provider.get().bind().entities.values.first()
+
+    data class LocationRequest(val name: String, val position: Position, val population: Int)
 }

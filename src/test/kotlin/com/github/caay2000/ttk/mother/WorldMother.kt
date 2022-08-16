@@ -56,7 +56,7 @@ object WorldMother {
         val cells = mutableSetOf<Cell>()
         for (x in 0 until width) {
             for (y in 0 until height) {
-                cells.add(Cell(x, y, 0))
+                cells.add(Cell(x, y, Cell.CellConnection.NOT_CONNECTED))
             }
         }
         return cells
@@ -69,7 +69,7 @@ object WorldMother {
                 val path = pathfindingStrategy.invoke(this.cells, this.getCell(source), this.getCell(target)).bind().path
                 path.forEach { cell ->
                     updatedCells.removeIf { it.samePosition(cell) }
-                    updatedCells.add(CellMother.random(cell.position.x, cell.position.y, 1))
+                    updatedCells.add(CellMother.random(cell.position.x, cell.position.y, Cell.CellConnection.CONNECTED))
                 }
             }
         }

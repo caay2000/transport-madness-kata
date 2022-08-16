@@ -73,7 +73,7 @@ class AStartPathfindingStrategy(override val pathfindingConfiguration: Pathfindi
                 .toSet()
 
         fun moveCost(currentPos: Cell, neighbour: Cell): Int {
-            return currentPos.cost + neighbour.cost
+            return currentPos.connection.cost + neighbour.connection.cost
         }
     }
 

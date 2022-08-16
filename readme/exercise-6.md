@@ -1,4 +1,4 @@
-## Exercise 6 - Transport II
+## Exercise 6 - Transport Types I
 
 Now that we move passengers, let's do it properly, with railcars and trains with engines and different coaches
 

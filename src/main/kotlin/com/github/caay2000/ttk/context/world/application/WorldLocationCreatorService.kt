@@ -15,10 +15,10 @@ import com.github.caay2000.ttk.context.world.domain.World
 
 class WorldLocationCreatorService(provider: Provider, eventPublisher: EventPublisher<Event>) : WorldService(provider, eventPublisher) {
 
-    fun invoke(position: Position, population: Int): Either<Throwable, World> =
+    fun invoke(name: String, position: Position, population: Int): Either<Throwable, World> =
         findWorld()
             .flatMap { world -> world.guardMinimumDistance(position) }
-            .flatMap { world -> world.createLocation(position, population) }
+            .flatMap { world -> world.createLocation(name, position, population) }
             .flatMap { world -> world.save() }
             .flatMap { world -> world.publishEvents() }
 
@@ -29,15 +29,15 @@ class WorldLocationCreatorService(provider: Provider, eventPublisher: EventPubli
                 else this.right()
             }
 
-    private fun World.createLocation(position: Position, population: Int): Either<Throwable, World> =
+    private fun World.createLocation(name: String, position: Position, population: Int): Either<Throwable, World> =
         findConfiguration()
-            .map { configuration -> Location.create(position = position, population = population, configuration = configuration) }
+            .map { configuration -> Location.create(name = name, position = position, population = population, configuration = configuration) }
             .map { location -> addLocation(location) }
 
     private fun World.anyLocationTooClose(
         position: Position,
         configuration: Configuration
-    ) = locations.values.any { it.position.distanceTo(position) < configuration.minDistanceBetweenCities }
+    ) = locations.values.any { it.position.distance(position) < configuration.minDistanceBetweenCities.toDouble() }
 
     private fun tooCloseException(position: Position) = LocationsTooCloseException("Location $position is too close to another location").left()
 }

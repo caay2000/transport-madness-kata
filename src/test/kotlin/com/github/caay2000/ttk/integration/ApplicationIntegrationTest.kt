@@ -2,6 +2,7 @@ package com.github.caay2000.ttk.integration
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.Application
+import com.github.caay2000.ttk.Application.LocationRequest
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
@@ -33,10 +34,10 @@ class ApplicationIntegrationTest {
                 startPosition = listOf(startPosition),
                 paths = paths,
                 locations = setOf(
-                    Position(0, 0) to 500,
-                    Position(3, 0) to 100,
-                    Position(3, 2) to 1000,
-                    Position(1, 4) to 250
+                    LocationRequest("A", Position(0, 0), 500),
+                    LocationRequest("B", Position(3, 0), 100),
+                    LocationRequest("C", Position(3, 2), 1000),
+                    LocationRequest("D", Position(1, 4), 250)
                 ),
                 route = route
             )
@@ -58,7 +59,11 @@ class ApplicationIntegrationTest {
                 entityType = PassengerTrain(3),
                 startPosition = listOf(locationA),
                 paths = `path from 0,0 to 3,2 to 1,4 to 0,0`(),
-                locations = setOf((locationA to 500), (locationB to 1000), (locationC to 250)),
+                locations = setOf(
+                    LocationRequest("A", locationA, 500),
+                    LocationRequest("B", locationB, 1000),
+                    LocationRequest("C", locationC, 250)
+                ),
                 route = `route from 0,0 to 3,2 to 1,4 to 3,2`()
             )
         ).isEqualTo(finishingTurn)
@@ -87,7 +92,10 @@ class ApplicationIntegrationTest {
                 entityType = entityType,
                 startPosition = listOf(locationA),
                 paths = `path from 0,0 to 3,0`(),
-                locations = setOf((locationA to 5000), (locationB to 5000)),
+                locations = setOf(
+                    LocationRequest("A", locationA, 5000),
+                    LocationRequest("B", locationB, 5000)
+                ),
                 route = `route from 0,0 to 3,0`(),
                 timesToComplete = 2
             )
@@ -119,14 +127,14 @@ class ApplicationIntegrationTest {
                 startPosition = listOf(locationA),
                 paths = mapOf(
                     locationA to listOf(locationB, locationC),
-                    locationC to listOf(locationD, locationE)
+                    locationC to listOf(locationE, locationD)
                 ),
                 locations = setOf(
-                    (locationA to 500),
-                    (locationB to 1000),
-                    (locationC to 250),
-                    (locationD to 500),
-                    (locationE to 750)
+                    LocationRequest("A", locationA, 500),
+                    LocationRequest("B", locationB, 1000),
+                    LocationRequest("C", locationC, 250),
+                    LocationRequest("D", locationD, 500),
+                    LocationRequest("E", locationE, 750)
                 ),
                 route = listOf(locationA, locationB, locationA, locationC, locationD, locationC, locationE, locationC)
             )
