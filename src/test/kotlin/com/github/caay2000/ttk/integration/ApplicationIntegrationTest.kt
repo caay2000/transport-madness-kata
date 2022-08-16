@@ -188,33 +188,4 @@ class ApplicationIntegrationTest {
             Position(1, 4) to listOf(Position(0, 0), Position(3, 2))
         )
     }
-
-    @Test
-    fun `exercise pathfinding`() {
-
-        val configuration = ConfigurationMother.random(worldWidth = 40, worldHeight = 40)
-        val sut = Application(configuration, provider)
-
-        val locationA = Position(8, 4)
-        val locationB = Position(5, 25)
-        val locationC = Position(20, 25)
-        val locationD = Position(35, 5)
-        val locationE = Position(35, 35)
-        sut.invoke(
-            entityType = PassengerTrain(3),
-            startPosition = listOf(locationA),
-            paths = mapOf(
-                locationA to listOf(locationB, locationC),
-                locationC to listOf(locationE, locationD)
-            ),
-            locations = setOf(
-                LocationRequest("A", locationA, 500),
-                LocationRequest("B", locationB, 1000),
-                LocationRequest("C", locationC, 250),
-                LocationRequest("D", locationD, 500),
-                LocationRequest("E", locationE, 750)
-            ),
-            route = listOf(locationA, locationB)
-        )
-    }
 }
