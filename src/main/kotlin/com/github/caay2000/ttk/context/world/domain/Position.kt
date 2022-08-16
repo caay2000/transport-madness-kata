@@ -45,40 +45,4 @@ data class Position(val x: Int, val y: Int) {
         val pair = Pair((q - q1), (a.y - b.y))
         return (abs(pair.first) + abs(pair.first + pair.second) + abs(pair.second)) / 2
     }
-
-    private object HexagonalOperations {
-
-        private data class Axial(val q: Int, val r: Int)
-    }
-
-    private object HexagonalOperations222 {
-
-        fun distance(a: Position, b: Position): Double {
-            val ac = offsetToAxial(a)
-            println("$a -> $ac")
-            val bc = offsetToAxial(b)
-            println("$b -> $bc")
-            return axialDistance(ac, bc)
-        }
-
-        private data class Axial(val q: Double, val r: Double)
-
-        private fun axialSubtract(a: Axial, b: Axial): Axial =
-            Axial(a.q - b.q, a.r - b.r)
-
-        private fun axialDistance(a: Axial, b: Axial): Double {
-            var vec = axialSubtract(a, b)
-            return (
-                abs(vec.q) +
-                    abs(vec.q + vec.r) +
-                    abs(vec.r)
-                ) / 2
-        }
-
-        private fun offsetToAxial(hex: Position): Axial {
-            var q = hex.x - (hex.y - (hex.y.mod(2))) / 2
-            var r = hex.y
-            return Axial(q.toDouble(), r.toDouble())
-        }
-    }
 }
