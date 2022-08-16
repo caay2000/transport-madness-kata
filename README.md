@@ -48,7 +48,7 @@ Create cities in our map that generate passengers
 
 Let's try to put everything together and start moving passengers from one city to another (and an optional visualisation exercise)
 
-### [Exercise 6 - Transport II](readme/exercise-6.md)
+### [Exercise 6 - Transport Types I](readme/exercise-6.md)
 
 Now that we move passengers, let's do it properly, with railcars and trains with engines and different coaches
 
