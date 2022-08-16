@@ -48,7 +48,7 @@ Create cities in our map that generate passengers
 
 Let's try to put everything together and start moving passengers from one city to another (and an optional visualisation exercise)
 
-### [Exercise 6 - Transport II](readme/exercise-6.md)
+### [Exercise 6 - Transport Types I](readme/exercise-6.md)
 
 Now that we move passengers, let's do it properly, with railcars and trains with engines and different coaches
 
@@ -57,3 +57,17 @@ Now that we move passengers, let's do it properly, with railcars and trains with
 Let's migrate our current map to an amazing hexagonal grid!
 
 ### [More to Come](README.md)
+
+- PAX demand on cities
+- Speed on entities
+- Async PAX demand
+- Terrains (forest, mountains, sea)
+- Money
+- Stops improvements
+- Other type of transports
+- Cargo & Industries
+- Cargo Demand on cities
+- Grow cities
+- Parallel tracks
+- Entities Collisions
+- Signaling
