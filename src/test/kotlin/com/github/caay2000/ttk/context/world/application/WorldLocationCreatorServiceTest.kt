@@ -26,10 +26,11 @@ class WorldLocationCreatorServiceTest {
         provider.set(WorldMother.empty())
         provider.setConfiguration(configuration)
 
+        val name = "A"
         val position = Position(0, 0)
         val population = PopulationMother.random()
 
-        sut.invoke(position, population).shouldBeRight {
+        sut.invoke(name, position, population).shouldBeRight {
             assertThat(it.locations).hasSize(1)
             val location = it.locations.values.first()
             assertThat(location.position).isEqualTo(position)
@@ -43,7 +44,7 @@ class WorldLocationCreatorServiceTest {
         provider.set(WorldMother.empty())
         provider.setConfiguration(configuration)
 
-        sut.invoke(Position(0, 0), PopulationMother.random()).shouldBeRight()
-        sut.invoke(Position(0, 2), PopulationMother.random()).shouldBeLeftOfType<LocationsTooCloseException>()
+        sut.invoke("A", Position(0, 0), PopulationMother.random()).shouldBeRight()
+        sut.invoke("B", Position(0, 2), PopulationMother.random()).shouldBeLeftOfType<LocationsTooCloseException>()
     }
 }

@@ -9,6 +9,7 @@ import kotlin.math.floor
 
 data class Location(
     override val id: LocationId,
+    val name: String,
     val position: Position,
     val population: Int,
     val rawPAX: Double = 0.0,
@@ -17,8 +18,9 @@ data class Location(
 ) : Aggregate() {
 
     companion object {
-        fun create(position: Position, population: Int, rawPAX: Double = 0.0, configuration: Configuration) = Location(
+        fun create(name: String, position: Position, population: Int, rawPAX: Double = 0.0, configuration: Configuration) = Location(
             id = randomDomainId(),
+            name = name,
             position = position,
             population = population,
             rawPAX = rawPAX,

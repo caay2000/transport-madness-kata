@@ -77,7 +77,7 @@ internal class EntityUpdateStarterServiceTest {
 
     private val configuration = ConfigurationMother.random()
 
-    private val location = LocationMother.random(Position(3, 0))
+    private val location = LocationMother.random(position = Position(3, 0))
 
     private val routeToLastStop = RouteMother.random(stops = listOf(Position(3, 0), Position(3, 4)), stopIndex = 0)
     private val routeToInitialStop = routeToLastStop.copy(stopIndex = 1)

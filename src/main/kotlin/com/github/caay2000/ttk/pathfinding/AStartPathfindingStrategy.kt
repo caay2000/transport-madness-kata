@@ -3,6 +3,7 @@ package com.github.caay2000.ttk.pathfinding
 import arrow.core.Either
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.shared.mapToSet
 
 class AStartPathfindingStrategy(override val pathfindingConfiguration: PathfindingConfiguration) : PathfindingStrategy {
 
@@ -69,11 +70,10 @@ class AStartPathfindingStrategy(override val pathfindingConfiguration: Pathfindi
         fun getNeighbours(cell: Cell): Set<Cell> =
             cell.position.neighbours
                 .filter { cells.containsKey(it) }
-                .map { cells.getValue(it) }
-                .toSet()
+                .mapToSet { cells.getValue(it) }
 
         fun moveCost(currentPos: Cell, neighbour: Cell): Int {
-            return currentPos.cost + neighbour.cost
+            return currentPos.connection.cost + neighbour.connection.cost
         }
     }
 

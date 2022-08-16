@@ -1,10 +1,16 @@
 package com.github.caay2000.ttk.infra.console
 
+import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.shared.LocationId
 
-class HexagonalConsolePrinter(val configuration: Configuration) : Printer {
+class HexagonalConsolePrinter(val provider: Provider, val configuration: Configuration) : Printer {
+
+    val locations: Map<LocationId, String>
+        get() = provider.get().bind().locations.mapValues { it.value.name[0].toString() }
 
     override fun print(world: World) {
         println("WORLD CURRENT TURN -> ${world.currentTurn} - ${world.entities.values.first()}")
@@ -16,7 +22,7 @@ class HexagonalConsolePrinter(val configuration: Configuration) : Printer {
                 val entity = world.entities.values.first()
                 when {
                     entity.currentPosition == cell.position -> currentLine = "$currentLine@ "
-                    cell.locationId != null -> currentLine = "${currentLine}O "
+                    cell.locationId != null -> currentLine = "${currentLine}${locations[cell.locationId]} "
                     cell.connected -> currentLine = "${currentLine}x "
                     cell.connected.not() -> currentLine = "$currentLine. "
                 }

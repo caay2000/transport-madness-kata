@@ -1,18 +1,13 @@
 package com.github.caay2000.ttk.context.world.domain
 
-import kotlin.math.sqrt
+import com.github.caay2000.ttk.shared.mapToSet
+import kotlin.math.abs
 
 data class Position(val x: Int, val y: Int) {
 
     override fun toString(): String = "($x,$y)"
 
-    fun distance(destination: Position): Float {
-        val x = destination.x - x
-        val y = destination.y - y
-        return sqrt((x * x + y * y).toDouble()).toFloat()
-    }
-
-    infix fun distanceTo(a: Position) = this.distance(a)
+    fun distance(destination: Position): Int = axialDistance(this, destination)
 
     private fun sum(position: Position): Position = copy(x = x + position.x, y = y + position.y)
 
@@ -28,20 +23,27 @@ data class Position(val x: Int, val y: Int) {
     private val evenRowNeighbours: Set<Position>
         get() = setOf(
             this.sum(Position(1, 0)),
-            this.sum(Position(0, -1)),
-            this.sum(Position(-1, -1)),
             this.sum(Position(-1, 0)),
             this.sum(Position(-1, 1)),
-            this.sum(Position(0, 1))
+            this.sum(Position(-1, -1)),
+            this.sum(Position(0, 1)),
+            this.sum(Position(0, -1))
         )
 
     private val oddRowNeighbours: Set<Position>
         get() = setOf(
-            this.sum(Position(1, 0)),
-            this.sum(Position(1, -1)),
-            this.sum(Position(0, -1)),
             this.sum(Position(-1, 0)),
+            this.sum(Position(1, 0)),
+            this.sum(Position(1, 1)),
+            this.sum(Position(1, -1)),
             this.sum(Position(0, 1)),
-            this.sum(Position(1, 1))
+            this.sum(Position(0, -1))
         )
+
+    private fun axialDistance(a: Position, b: Position): Int {
+        val q = a.x - (a.y - (a.y and 1)) / 2
+        val q1 = b.x - (b.y - (b.y and 1)) / 2
+        val pair = Pair((q - q1), (a.y - b.y))
+        return (abs(pair.first) + abs(pair.first + pair.second) + abs(pair.second)) / 2
+    }
 }
