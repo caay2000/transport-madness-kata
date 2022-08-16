@@ -4,7 +4,7 @@ Let's migrate our current map to an amazing hexagonal grid!
 
 <kbd> <img src="exercise_7_header.png" /> </kbd>
 
-[Home](../README.md) | [Exercise 6 - Transport Types I](exercise-6.md)
+[Home](../README.md) | [Exercise 6 - Transport Types I](exercise-6.md) | [Exercise 8 - Companies I](exercise-8.md)
 
 ## Summary
 

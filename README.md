@@ -56,6 +56,10 @@ Now that we move passengers, let's do it properly, with railcars and trains with
 
 Let's migrate our current map to an amazing hexagonal grid!
 
+### [Exercise 8 - Companies I](readme/exercise-8.md)
+
+What about other people wanting to create their own transport madness net? Let's create companies for everyone!
+
 ### [More to Come](README.md)
 
 - PAX demand on cities
