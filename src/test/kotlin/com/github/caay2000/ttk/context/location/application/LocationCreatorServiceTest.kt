@@ -1,8 +1,8 @@
-package com.github.caay2000.ttk.context.world.application
+package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.provider.Provider
-import com.github.caay2000.ttk.context.world.domain.LocationsTooCloseException
+import com.github.caay2000.ttk.context.location.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
@@ -14,11 +14,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 
-class WorldLocationCreatorServiceTest {
+class LocationCreatorServiceTest {
 
     private val configuration = ConfigurationMother.random()
     private val provider: Provider = DefaultProvider()
-    private val sut = WorldLocationCreatorService(provider, mock())
+    private val sut = LocationCreatorService(provider, mock())
 
     @Test
     fun `city is created correctly`() {

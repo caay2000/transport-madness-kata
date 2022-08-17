@@ -1,6 +1,7 @@
 package com.github.caay2000.ttk.mother
 
 import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Cell
@@ -10,6 +11,7 @@ import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfiguratio
 import com.github.caay2000.ttk.mother.world.CellMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
 import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
+import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.WorldId
@@ -26,12 +28,14 @@ object WorldMother {
         id: WorldId = randomDomainId(),
         width: Int = DEFAULT_WIDTH,
         height: Int = DEFAULT_HEIGHT,
+        companies: Map<CompanyId, Company> = emptyMap(),
         entities: Map<EntityId, Entity> = emptyMap(),
         locations: Map<LocationId, Location> = emptyMap()
     ): World = World(
         id = id,
         currentTurn = 0,
         cells = createCells(width, height),
+        companies = companies,
         entities = entities,
         locations = emptyMap()
     ).let {

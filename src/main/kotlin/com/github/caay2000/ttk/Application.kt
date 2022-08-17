@@ -12,11 +12,11 @@ import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.context.location.application.LocationCreatorService
 import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityLoadedEventSubscriber
 import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityUnloadedEventSubscriber
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
-import com.github.caay2000.ttk.context.world.application.WorldLocationCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
@@ -45,7 +45,7 @@ class Application(
     private val worldCreatorService = WorldCreatorService(provider, eventPublisher)
     private val worldUpdaterService = WorldUpdaterService(provider, eventPublisher)
     private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, eventPublisher, createConnectionPathfindingConfiguration)
-    private val worldLocationCreatorService = WorldLocationCreatorService(provider, eventPublisher)
+    private val locationCreatorService = LocationCreatorService(provider, eventPublisher)
     private val entityCreatorService = EntityCreatorService(provider, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
     private val printer = HexagonalConsolePrinter(provider, configuration)
@@ -64,7 +64,7 @@ class Application(
         configurationSetterService.invoke(configuration).bind()
         worldCreatorService.invoke().bind()
         locations.forEach { (name, position, population) ->
-            worldLocationCreatorService.invoke(name, position, population).bind()
+            locationCreatorService.invoke(name, position, population).bind()
         }
         createAllConnections(paths)
         startPosition.forEach {

@@ -1,8 +1,10 @@
 package com.github.caay2000.ttk.context.world.domain
 
+import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.shared.Aggregate
+import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.WorldId
@@ -13,6 +15,7 @@ data class World(
     override val id: WorldId = randomDomainId(),
     val currentTurn: Int,
     val cells: Set<Cell>,
+    val companies: Map<CompanyId, Company>,
     val entities: Map<EntityId, Entity>,
     val locations: Map<LocationId, Location>
 ) : Aggregate() {
@@ -24,6 +27,7 @@ data class World(
         fun create(width: Int, height: Int) = World(
             currentTurn = 0,
             cells = createCells(width, height),
+            companies = emptyMap(),
             entities = emptyMap(),
             locations = emptyMap()
         )
@@ -52,6 +56,8 @@ data class World(
 
     fun updateLocation(location: Location): World =
         copy(locations = locations + (location.id to location))
+
+    fun addCompany(company: Company): World = copy(companies = companies + (company.id to company))
 
     fun update(): World = copy(currentTurn = currentTurn + 1)
 
