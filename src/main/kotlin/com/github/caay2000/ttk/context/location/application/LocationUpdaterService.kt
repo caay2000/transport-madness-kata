@@ -1,29 +1,26 @@
 package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.Either
+import arrow.core.computations.ResultEffect.bind
 import arrow.core.flatMap
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
+import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 
-class LocationUpdaterService(
-    provider: Provider,
-    eventPublisher: EventPublisher<Event>
-) : LocationService(provider, eventPublisher) {
+class LocationUpdaterService(locationRepository: LocationRepository, eventPublisher: EventPublisher<Event>) : LocationService(locationRepository, eventPublisher) {
 
     fun invoke(): Either<LocationException, Unit> =
         findAllLocations()
-            .tap { entities -> entities.forEach { it.updateLocation() } }
-            .void()
+            .map { entities -> entities.updateAll() }
 
-    private fun findAllLocations(): Either<LocationException, Collection<Location>> =
-        findWorld()
-            .map { world -> world.locations.values }
+    private fun List<Location>.updateAll(): Either<LocationException, Unit> =
+        Either.catch { forEach { it.updateLocation().bind() } }
+            .mapLeft { UnknownLocationException(it) }
 
     private fun Location.updateLocation(): Either<LocationException, Location> =
-        this.update().right()
+        update().right()
             .flatMap { location -> location.save() }
 }

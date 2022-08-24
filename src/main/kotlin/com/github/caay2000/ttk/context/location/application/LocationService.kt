@@ -1,33 +1,26 @@
 package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.Either
-import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.LocationNotFoundByPositionException
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 import com.github.caay2000.ttk.context.world.domain.Position
-import com.github.caay2000.ttk.context.world.domain.World
 
-abstract class LocationService(protected val provider: Provider, protected val eventPublisher: EventPublisher<Event>) {
+abstract class LocationService(private val locationRepository: LocationRepository, protected val eventPublisher: EventPublisher<Event>) {
 
-    protected fun findWorld(): Either<LocationException, World> =
-        provider.get()
-            .mapLeft { UnknownLocationException(it) }
-
-    protected fun World.findLocation(position: Position): Either<LocationException, Location> =
-        Either.catch { getCell(position) }
-            .flatMap { cell -> Either.catch { getLocation(cell.locationId!!) } }
+    protected fun findLocation(position: Position): Either<LocationException, Location> =
+        locationRepository.find(LocationRepository.FindLocationCriteria.ByPosition(position))
             .mapLeft { LocationNotFoundByPositionException(position) }
 
+    protected fun findAllLocations(): Either<LocationException, List<Location>> =
+        locationRepository.findAll()
+            .mapLeft { UnknownLocationException(it) }
+
     protected fun Location.save(): Either<LocationException, Location> =
-        provider.get()
-            .map { world -> world.updateLocation(this) }
-            .flatMap { world -> provider.set(world) }
-            .map { this }
+        locationRepository.save(this)
             .mapLeft { UnknownLocationException(it) }
 
     protected fun Location.publishEvents(): Either<LocationException, Location> =

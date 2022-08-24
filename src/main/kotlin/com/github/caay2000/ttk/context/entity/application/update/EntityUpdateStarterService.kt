@@ -10,10 +10,11 @@ import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.EntityUpdateStarterServiceException
 import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy
 import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy.SimpleShouldResumeRouteStrategy
+import com.github.caay2000.ttk.context.location.application.LocationRepository
 
-class EntityUpdateStarterService(provider: Provider, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
+class EntityUpdateStarterService(provider: Provider, locationRepository: LocationRepository, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
 
-    private val shouldResumeRouteStrategy: ShouldResumeRouteStrategy = SimpleShouldResumeRouteStrategy(provider)
+    private val shouldResumeRouteStrategy: ShouldResumeRouteStrategy = SimpleShouldResumeRouteStrategy(locationRepository)
 
     fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
         Either.catch { initialEntity.updateStart(shouldResumeRouteStrategy) }

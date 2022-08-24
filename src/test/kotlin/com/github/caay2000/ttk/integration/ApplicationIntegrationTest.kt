@@ -7,7 +7,10 @@ import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
 import com.github.caay2000.ttk.context.entity.domain.Railcar
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
+import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import org.assertj.core.api.Assertions.assertThat
@@ -21,12 +24,13 @@ class ApplicationIntegrationTest {
 
     private val configuration = ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1)
     private val provider: Provider = DefaultProvider()
+    private val inMemoryDatabase = InMemoryDatabase()
 
     @ParameterizedTest
     @MethodSource("exercise 3 data")
     fun `exercise 3`(startPosition: Position, paths: Map<Position, List<Position>>, route: List<Position>, turns: Int) {
 
-        val sut = Application(configuration, provider)
+        val sut = Application(configuration, provider, inMemoryDatabase)
 
         assertThat(
             sut.invoke(
@@ -49,7 +53,7 @@ class ApplicationIntegrationTest {
 
         val finishingTurn = 18
 
-        val sut = Application(configuration, provider)
+        val sut = Application(configuration, provider, inMemoryDatabase)
 
         val locationA = Position(0, 0)
         val locationB = Position(3, 2)
@@ -68,13 +72,12 @@ class ApplicationIntegrationTest {
             )
         ).isEqualTo(finishingTurn)
 
-        val world = provider.get().bind()
-        assertThat(world.getLocation(locationA).pax).isEqualTo(17)
-        assertThat(world.getLocation(locationA).received).isEqualTo(16)
-        assertThat(world.getLocation(locationB).pax).isEqualTo(8)
-        assertThat(world.getLocation(locationB).received).isEqualTo(6)
-        assertThat(world.getLocation(locationC).pax).isEqualTo(4)
-        assertThat(world.getLocation(locationC).received).isEqualTo(12)
+        assertThat(getLocation(locationA).pax).isEqualTo(17)
+        assertThat(getLocation(locationA).received).isEqualTo(16)
+        assertThat(getLocation(locationB).pax).isEqualTo(8)
+        assertThat(getLocation(locationB).received).isEqualTo(6)
+        assertThat(getLocation(locationC).pax).isEqualTo(4)
+        assertThat(getLocation(locationC).received).isEqualTo(12)
     }
 
     @ParameterizedTest
@@ -83,7 +86,7 @@ class ApplicationIntegrationTest {
 
         val finishingTurn = 16
 
-        val sut = Application(configuration, provider)
+        val sut = Application(configuration, provider, inMemoryDatabase)
 
         val locationA = Position(0, 0)
         val locationB = Position(3, 0)
@@ -101,11 +104,10 @@ class ApplicationIntegrationTest {
             )
         ).isEqualTo(finishingTurn)
 
-        val world = provider.get().bind()
-        assertThat(world.getLocation(locationA).pax).isEqualTo(paxA)
-        assertThat(world.getLocation(locationA).received).isEqualTo(receivedA)
-        assertThat(world.getLocation(locationB).pax).isEqualTo(paxB)
-        assertThat(world.getLocation(locationB).received).isEqualTo(receivedB)
+        assertThat(getLocation(locationA).pax).isEqualTo(paxA)
+        assertThat(getLocation(locationA).received).isEqualTo(receivedA)
+        assertThat(getLocation(locationB).pax).isEqualTo(paxB)
+        assertThat(getLocation(locationB).received).isEqualTo(receivedB)
     }
 
     @Test
@@ -114,7 +116,7 @@ class ApplicationIntegrationTest {
         val finishingTurn = 186
 
         val configuration = ConfigurationMother.random(worldWidth = 40, worldHeight = 40)
-        val sut = Application(configuration, provider)
+        val sut = Application(configuration, provider, inMemoryDatabase)
 
         val locationA = Position(8, 4)
         val locationB = Position(5, 25)
@@ -140,12 +142,11 @@ class ApplicationIntegrationTest {
             )
         ).isEqualTo(finishingTurn)
 
-        val world = provider.get().bind()
-        assertThat(world.getLocation(locationA).received).isEqualTo(67)
-        assertThat(world.getLocation(locationB).received).isEqualTo(1)
-        assertThat(world.getLocation(locationC).received).isEqualTo(164)
-        assertThat(world.getLocation(locationD).received).isEqualTo(34)
-        assertThat(world.getLocation(locationE).received).isEqualTo(26)
+        assertThat(getLocation(locationA).received).isEqualTo(67)
+        assertThat(getLocation(locationB).received).isEqualTo(1)
+        assertThat(getLocation(locationC).received).isEqualTo(164)
+        assertThat(getLocation(locationD).received).isEqualTo(34)
+        assertThat(getLocation(locationE).received).isEqualTo(26)
     }
 
     companion object {
@@ -188,4 +189,7 @@ class ApplicationIntegrationTest {
             Position(1, 4) to listOf(Position(0, 0), Position(3, 2))
         )
     }
+
+    private fun getLocation(position: Position) =
+        InMemoryLocationRepository(inMemoryDatabase).find(ByPosition(position)).bind()
 }

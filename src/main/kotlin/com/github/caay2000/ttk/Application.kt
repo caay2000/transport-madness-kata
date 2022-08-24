@@ -13,14 +13,17 @@ import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.location.application.LocationCreatorService
-import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityLoadedEventSubscriber
-import com.github.caay2000.ttk.context.location.event.UpdateLocationOnEntityUnloadedEventSubscriber
+import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.location.primary.UpdateLocationOnEntityLoadedEventSubscriber
+import com.github.caay2000.ttk.context.location.primary.UpdateLocationOnEntityUnloadedEventSubscriber
+import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.infra.console.HexagonalConsolePrinter
+import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventPublisher
 import com.github.caay2000.ttk.infra.eventbus.instantiateEventSubscriber
@@ -29,26 +32,28 @@ import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 
 class Application(
     private val configuration: Configuration,
-    private val provider: Provider = DefaultProvider()
+    private val provider: Provider = DefaultProvider(),
+    inMemoryDatabase: InMemoryDatabase
 ) {
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
+    private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
 
     init {
         KTEventBus.init<Event>()
-        instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(provider, eventPublisher))
-        instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(provider, eventPublisher))
+        instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher))
+        instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher))
     }
 
     private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)
 
     private val configurationSetterService = ConfigurationSetterService(provider)
     private val worldCreatorService = WorldCreatorService(provider, eventPublisher)
-    private val worldUpdaterService = WorldUpdaterService(provider, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(provider, locationRepository, eventPublisher)
     private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, eventPublisher, createConnectionPathfindingConfiguration)
-    private val locationCreatorService = LocationCreatorService(provider, eventPublisher)
+    private val locationCreatorService = LocationCreatorService(provider, locationRepository, eventPublisher)
     private val entityCreatorService = EntityCreatorService(provider, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
-    private val printer = HexagonalConsolePrinter(provider, configuration)
+    private val printer = HexagonalConsolePrinter(provider, locationRepository, configuration)
 
     fun invoke(
         entityType: EntityType,

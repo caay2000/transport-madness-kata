@@ -10,10 +10,12 @@ import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.EntityUpdateLoaderServiceException
 import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
+import com.github.caay2000.ttk.context.location.application.LocationRepository
 
-class EntityUpdateLoaderService(provider: Provider, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
+class EntityUpdateLoaderService(provider: Provider, locationRepository: LocationRepository, eventPublisher: EventPublisher<Event>) :
+    EntityService(provider, eventPublisher) {
 
-    private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(provider)
+    private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(locationRepository)
 
     fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
         Either.catch { initialEntity.updateLoad(loadPassengersStrategy) }

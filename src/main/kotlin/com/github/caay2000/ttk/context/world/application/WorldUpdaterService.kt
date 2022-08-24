@@ -7,16 +7,17 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.application.update.EntityUpdaterService
+import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.location.application.LocationUpdaterService
 import com.github.caay2000.ttk.context.world.domain.EntitiesUpdateWorldException
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
 
-class WorldUpdaterService(provider: Provider, eventPublisher: EventPublisher<Event>) : WorldService(provider, eventPublisher) {
+class WorldUpdaterService(provider: Provider, locationRepository: LocationRepository, eventPublisher: EventPublisher<Event>) : WorldService(provider, eventPublisher) {
 
-    private val entityUpdaterService = EntityUpdaterService(provider, eventPublisher)
-    private val locationUpdaterService = LocationUpdaterService(provider, eventPublisher)
+    private val entityUpdaterService = EntityUpdaterService(provider, locationRepository, eventPublisher)
+    private val locationUpdaterService = LocationUpdaterService(locationRepository, eventPublisher)
 
     fun invoke(): Either<WorldException, World> =
         Unit.right()

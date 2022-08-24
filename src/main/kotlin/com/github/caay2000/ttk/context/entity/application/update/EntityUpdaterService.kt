@@ -10,16 +10,18 @@ import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.application.EntityService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
+import com.github.caay2000.ttk.context.location.application.LocationRepository
 
 class EntityUpdaterService(
     provider: Provider,
+    locationRepository: LocationRepository,
     eventPublisher: EventPublisher<Event>
 ) : EntityService(provider, eventPublisher) {
 
-    private val loaderService = EntityUpdateLoaderService(provider, eventPublisher)
+    private val loaderService = EntityUpdateLoaderService(provider, locationRepository, eventPublisher)
     private val unloaderService = EntityUpdateUnloaderService(provider, eventPublisher)
     private val moverService = EntityUpdateMoverService(provider, eventPublisher)
-    private val starterService = EntityUpdateStarterService(provider, eventPublisher)
+    private val starterService = EntityUpdateStarterService(provider, locationRepository, eventPublisher)
     private val stopperService = EntityUpdateStopperService(provider, eventPublisher)
 
     fun invoke(): Either<EntityException, Unit> =

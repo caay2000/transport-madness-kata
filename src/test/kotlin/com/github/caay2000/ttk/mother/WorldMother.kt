@@ -36,11 +36,13 @@ object WorldMother {
         currentTurn = 0,
         cells = createCells(width, height),
         companies = companies,
-        entities = entities,
-        locations = emptyMap()
-    ).let {
-        locations.values.fold(it) { world, location -> world.addLocation(location) }
-    }
+        entities = entities
+    )
+//        ,
+//        locations = emptyMap()
+//    ).let {
+//        locations.values.fold(it) { world, location -> world.addLocation(location) }
+//    }
 
     fun random(
         width: Int = DEFAULT_WIDTH,
