@@ -5,7 +5,6 @@ import arrow.core.flatMap
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.update.EntityUpdaterService
@@ -17,14 +16,14 @@ import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
 
 class WorldUpdaterService(
-    provider: Provider,
+    worldRepository: WorldRepository,
     configurationRepository: ConfigurationRepository,
     locationRepository: LocationRepository,
     entityRepository: EntityRepository,
     eventPublisher: EventPublisher<Event>
-) : WorldService(provider, configurationRepository, eventPublisher) {
+) : WorldService(worldRepository, configurationRepository, eventPublisher) {
 
-    private val entityUpdaterService = EntityUpdaterService(provider, entityRepository, locationRepository, eventPublisher)
+    private val entityUpdaterService = EntityUpdaterService(worldRepository, entityRepository, locationRepository, eventPublisher)
     private val locationUpdaterService = LocationUpdaterService(locationRepository, eventPublisher)
 
     fun invoke(): Either<WorldException, World> =

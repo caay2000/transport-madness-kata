@@ -3,7 +3,6 @@ package com.github.caay2000.ttk
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
@@ -23,25 +22,26 @@ import com.github.caay2000.ttk.context.location.primary.UpdateLocationOnEntityUn
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
+import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
 import com.github.caay2000.ttk.infra.console.HexagonalConsolePrinter
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventPublisher
 import com.github.caay2000.ttk.infra.eventbus.instantiateEventSubscriber
-import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 
 class Application(
     private val configuration: Configuration,
-    private val provider: Provider = DefaultProvider(),
     inMemoryDatabase: InMemoryDatabase
 ) {
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
     private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
     private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
+    private val worldRepository: WorldRepository = InMemoryWorldRepository(inMemoryDatabase)
     private val configurationRepository: ConfigurationRepository = InMemoryConfigurationRepository(inMemoryDatabase)
 
     init {
@@ -53,13 +53,13 @@ class Application(
     private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)
 
     private val configurationSetterService = ConfigurationSetterService(configurationRepository)
-    private val worldCreatorService = WorldCreatorService(provider, configurationRepository, eventPublisher)
-    private val worldUpdaterService = WorldUpdaterService(provider, configurationRepository, locationRepository, entityRepository, eventPublisher)
-    private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, configurationRepository, eventPublisher, createConnectionPathfindingConfiguration)
-    private val locationCreatorService = LocationCreatorService(provider, configurationRepository, locationRepository, eventPublisher)
-    private val entityCreatorService = EntityCreatorService(provider, entityRepository, eventPublisher)
+    private val worldCreatorService = WorldCreatorService(worldRepository, configurationRepository, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(worldRepository, configurationRepository, locationRepository, entityRepository, eventPublisher)
+    private val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, configurationRepository, eventPublisher, createConnectionPathfindingConfiguration)
+    private val locationCreatorService = LocationCreatorService(configurationRepository, locationRepository, eventPublisher)
+    private val entityCreatorService = EntityCreatorService(worldRepository, entityRepository, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(entityRepository, eventPublisher)
-    private val printer = HexagonalConsolePrinter(provider, locationRepository, entityRepository, configuration)
+    private val printer = HexagonalConsolePrinter(locationRepository, entityRepository, configuration)
 
     fun invoke(
         entityType: EntityType,
@@ -111,7 +111,7 @@ class Application(
             entity.route.stopIndex == 0
 
     private val world: World
-        get() = provider.get().bind()
+        get() = worldRepository.get().bind()
     private val entity: Entity
         get() = entityRepository.findAll().bind().first()
 

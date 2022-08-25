@@ -6,16 +6,16 @@ import arrow.core.flatMap
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.EntityService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.world.application.WorldRepository
 
 class EntityUpdaterService(
-    provider: Provider,
+    worldRepository: WorldRepository,
     entityRepository: EntityRepository,
     locationRepository: LocationRepository,
     eventPublisher: EventPublisher<Event>
@@ -23,7 +23,7 @@ class EntityUpdaterService(
 
     private val loaderService = EntityUpdateLoaderService(locationRepository, entityRepository, eventPublisher)
     private val unloaderService = EntityUpdateUnloaderService(entityRepository, eventPublisher)
-    private val moverService = EntityUpdateMoverService(provider, entityRepository, eventPublisher)
+    private val moverService = EntityUpdateMoverService(worldRepository, entityRepository, eventPublisher)
     private val starterService = EntityUpdateStarterService(locationRepository, entityRepository, eventPublisher)
     private val stopperService = EntityUpdateStopperService(entityRepository, eventPublisher)
 

@@ -3,7 +3,6 @@ package com.github.caay2000.ttk.integration
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.Application
 import com.github.caay2000.ttk.Application.LocationRequest
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
 import com.github.caay2000.ttk.context.entity.domain.Railcar
@@ -11,7 +10,6 @@ import com.github.caay2000.ttk.context.location.application.LocationRepository.F
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
-import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -23,14 +21,13 @@ import java.util.stream.Stream
 class ApplicationIntegrationTest {
 
     private val configuration = ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1)
-    private val provider: Provider = DefaultProvider()
     private val inMemoryDatabase = InMemoryDatabase()
 
     @ParameterizedTest
     @MethodSource("exercise 3 data")
     fun `exercise 3`(startPosition: Position, paths: Map<Position, List<Position>>, route: List<Position>, turns: Int) {
 
-        val sut = Application(configuration, provider, inMemoryDatabase)
+        val sut = Application(configuration, inMemoryDatabase)
 
         assertThat(
             sut.invoke(
@@ -53,7 +50,7 @@ class ApplicationIntegrationTest {
 
         val finishingTurn = 18
 
-        val sut = Application(configuration, provider, inMemoryDatabase)
+        val sut = Application(configuration, inMemoryDatabase)
 
         val locationA = Position(0, 0)
         val locationB = Position(3, 2)
@@ -86,7 +83,7 @@ class ApplicationIntegrationTest {
 
         val finishingTurn = 16
 
-        val sut = Application(configuration, provider, inMemoryDatabase)
+        val sut = Application(configuration, inMemoryDatabase)
 
         val locationA = Position(0, 0)
         val locationB = Position(3, 0)
@@ -116,7 +113,7 @@ class ApplicationIntegrationTest {
         val finishingTurn = 186
 
         val configuration = ConfigurationMother.random(worldWidth = 40, worldHeight = 40)
-        val sut = Application(configuration, provider, inMemoryDatabase)
+        val sut = Application(configuration, inMemoryDatabase)
 
         val locationA = Position(8, 4)
         val locationB = Position(5, 25)

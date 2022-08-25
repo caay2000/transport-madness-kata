@@ -4,17 +4,17 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.domain.InvalidEntityPositionException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
+import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 
 class EntityCreatorService(
-    private val provider: Provider,
+    private val worldRepository: WorldRepository,
     entityRepository: EntityRepository,
     eventPublisher: EventPublisher<Event>
 ) : EntityService(entityRepository, eventPublisher) {
@@ -27,7 +27,7 @@ class EntityCreatorService(
             .flatMap { entity -> entity.publishEvents() }
 
     private fun findWorld(): Either<EntityException, World> =
-        provider.get()
+        worldRepository.get()
             .mapLeft { UnknownEntityException(it) }
 
     private fun createEntity(entityType: EntityType, position: Position): Either<EntityException, Entity> =

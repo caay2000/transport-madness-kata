@@ -14,12 +14,9 @@ class InMemoryWorldRepository(private val db: InMemoryDatabase) : WorldRepositor
         Either.catch { db.getById<World>(TABLE_NAME, WORLD_ID) }
             .flatMap { it?.right() ?: NoSuchElementException().left() }
 
-    override fun findAll(): Either<Throwable, List<World>> =
-        Either.catch { db.getAll(TABLE_NAME) }
-
     override fun save(world: World): Either<Throwable, World> =
         Either.catch {
-            db.save(TABLE_NAME, world.id.rawId, world)
+            db.save(TABLE_NAME, WORLD_ID, world)
         }.map { world }
 
     companion object {
