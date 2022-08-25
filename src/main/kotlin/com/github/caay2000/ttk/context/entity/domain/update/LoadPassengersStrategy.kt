@@ -14,7 +14,7 @@ sealed class LoadPassengersStrategy {
     class SimpleLoadPassengersStrategy(private val locationRepository: LocationRepository) : LoadPassengersStrategy() {
 
         override fun invoke(entity: Entity): Entity =
-            locationRepository.find(LocationRepository.FindLocationCriteria.ByPosition(entity.currentPosition))
+            locationRepository.find(LocationRepository.FindLocationCriteria.ByPositionCriteria(entity.currentPosition))
                 .map { location -> entity.checkAmountToLoad(location) }
                 .map { amount -> entity.loadPassengers(amount) }
                 .bind()

@@ -12,7 +12,7 @@ import com.github.caay2000.ttk.context.world.domain.Position
 abstract class LocationService(private val locationRepository: LocationRepository, protected val eventPublisher: EventPublisher<Event>) {
 
     protected fun findLocation(position: Position): Either<LocationException, Location> =
-        locationRepository.find(LocationRepository.FindLocationCriteria.ByPosition(position))
+        locationRepository.find(LocationRepository.FindLocationCriteria.ByPositionCriteria(position))
             .mapLeft { LocationNotFoundByPositionException(position) }
 
     protected fun findAllLocations(): Either<LocationException, List<Location>> =

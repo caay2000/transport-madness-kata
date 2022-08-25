@@ -18,6 +18,6 @@ class InMemoryDatabase {
 
     fun exists(table: String, key: String) = database[table]?.containsKey(key) ?: false
 
-    fun <T> getById(table: String, id: String): T = database[table]?.getValue(id) as T
+    fun <T> getById(table: String, id: String): T? = database[table]?.getValue(id) as T
     fun <T> getAll(table: String): List<T> = (database[table]?.values?.toList() ?: emptyList()) as List<T>
 }

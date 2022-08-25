@@ -7,7 +7,7 @@ import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
 import com.github.caay2000.ttk.context.entity.domain.Railcar
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
@@ -191,5 +191,5 @@ class ApplicationIntegrationTest {
     }
 
     private fun getLocation(position: Position) =
-        InMemoryLocationRepository(inMemoryDatabase).find(ByPosition(position)).bind()
+        InMemoryLocationRepository(inMemoryDatabase).find(ByPositionCriteria(position)).bind()
 }

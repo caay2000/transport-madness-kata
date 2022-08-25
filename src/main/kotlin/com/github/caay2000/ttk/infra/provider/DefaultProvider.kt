@@ -8,9 +8,7 @@ import com.github.caay2000.ttk.api.provider.Provider.ProviderException.Configura
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException.UnknownProviderException
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException.WorldNotFoundProviderException
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
-import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.world.domain.World
-import com.github.caay2000.ttk.shared.EntityId
 
 class DefaultProvider : Provider {
 
@@ -30,10 +28,10 @@ class DefaultProvider : Provider {
 //            .mapCatch { world -> world.locations.values.first { it.position == position } }
 //            .mapLeft { ProviderException.LocationNotFoundByPositionException(position) }
 
-    override fun getEntity(entityId: EntityId): Either<ProviderException, Entity> =
-        get()
-            .map { world -> world.entities.values.first { it.id == entityId } }
-            .mapLeft { ProviderException.EntityNotFoundException(entityId) }
+//    override fun getEntity(entityId: EntityId): Either<ProviderException, Entity> =
+//        get()
+//            .map { world -> world.entities.values.first { it.id == entityId } }
+//            .mapLeft { ProviderException.EntityNotFoundException(entityId) }
 
     override fun getConfiguration(): Either<ProviderException, Configuration> =
         configuration.rightIfNotNull { ConfigurationNotFoundProviderException }

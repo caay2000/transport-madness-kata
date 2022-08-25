@@ -19,7 +19,7 @@ sealed class ShouldResumeRouteStrategy {
                 .bind()
 
         private fun findLocation(currentPosition: Position) =
-            locationRepository.find(LocationRepository.FindLocationCriteria.ByPosition(currentPosition))
+            locationRepository.find(LocationRepository.FindLocationCriteria.ByPositionCriteria(currentPosition))
 
         private fun Entity.updateEntity(location: Location) =
             if (shouldResumeRoute(location)) copy(route = route.nextStop(), status = IN_ROUTE, currentDuration = 0)

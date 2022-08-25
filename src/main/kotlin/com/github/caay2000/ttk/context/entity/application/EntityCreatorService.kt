@@ -13,7 +13,11 @@ import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 
-class EntityCreatorService(provider: Provider, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
+class EntityCreatorService(
+    private val provider: Provider,
+    entityRepository: EntityRepository,
+    eventPublisher: EventPublisher<Event>
+) : EntityService(entityRepository, eventPublisher) {
 
     fun invoke(entityType: EntityType, position: Position): Either<EntityException, Entity> =
         findWorld()
@@ -21,6 +25,10 @@ class EntityCreatorService(provider: Provider, eventPublisher: EventPublisher<Ev
             .flatMap { createEntity(entityType = entityType, position = position) }
             .flatMap { entity -> entity.save() }
             .flatMap { entity -> entity.publishEvents() }
+
+    private fun findWorld(): Either<EntityException, World> =
+        provider.get()
+            .mapLeft { UnknownEntityException(it) }
 
     private fun createEntity(entityType: EntityType, position: Position): Either<EntityException, Entity> =
         Either.catch { Entity.create(entityType = entityType, position = position) }

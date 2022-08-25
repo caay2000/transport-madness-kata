@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.EntityService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
@@ -12,8 +12,11 @@ import com.github.caay2000.ttk.context.entity.domain.EntityUpdateLoaderServiceEx
 import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
 import com.github.caay2000.ttk.context.location.application.LocationRepository
 
-class EntityUpdateLoaderService(provider: Provider, locationRepository: LocationRepository, eventPublisher: EventPublisher<Event>) :
-    EntityService(provider, eventPublisher) {
+class EntityUpdateLoaderService(
+    locationRepository: LocationRepository,
+    entityRepository: EntityRepository,
+    eventPublisher: EventPublisher<Event>
+) : EntityService(entityRepository, eventPublisher) {
 
     private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(locationRepository)
 

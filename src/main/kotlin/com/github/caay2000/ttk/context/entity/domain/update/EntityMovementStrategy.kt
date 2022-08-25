@@ -7,7 +7,7 @@ sealed class EntityMovementStrategy {
 
     abstract fun invoke(entity: Entity): Entity
 
-    class SimpleEntityMovementStrategy(private val provider: Provider) : EntityMovementStrategy() {
+    class SimpleEntityMovementStrategy(provider: Provider) : EntityMovementStrategy() {
 
         private val nextSectionStrategy: NextSectionStrategy = NextSectionStrategy.SimpleNextSectionStrategy(provider)
 

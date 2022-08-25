@@ -1,10 +1,8 @@
 package com.github.caay2000.ttk.context.world.domain
 
 import com.github.caay2000.ttk.context.company.domain.Company
-import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.shared.Aggregate
 import com.github.caay2000.ttk.shared.CompanyId
-import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.WorldId
 import com.github.caay2000.ttk.shared.randomDomainId
 import com.github.caay2000.ttk.shared.replace
@@ -13,8 +11,8 @@ data class World(
     override val id: WorldId = randomDomainId(),
     val currentTurn: Int,
     val cells: Set<Cell>,
-    val companies: Map<CompanyId, Company>,
-    val entities: Map<EntityId, Entity>
+    val companies: Map<CompanyId, Company>
+//    val entities: Map<EntityId, Entity>
 //    ,
 //    val locations: Map<LocationId, Location>
 ) : Aggregate() {
@@ -26,8 +24,8 @@ data class World(
         fun create(width: Int, height: Int) = World(
             currentTurn = 0,
             cells = createCells(width, height),
-            companies = emptyMap(),
-            entities = emptyMap()
+            companies = emptyMap()
+//            entities = emptyMap()
 //            ,
 //            locations = emptyMap()
         )
@@ -45,8 +43,8 @@ data class World(
 
     fun getCell(position: Position): Cell = cells.first { it.position == position }
 
-    fun getEntity(id: EntityId): Entity = entities.getValue(id)
-    fun putEntity(entity: Entity): World = copy(entities = entities + (entity.id to entity))
+//    fun getEntity(id: EntityId): Entity = entities.getValue(id)
+//    fun putEntity(entity: Entity): World = copy(entities = entities + (entity.id to entity))
 
 //    fun getLocation(id: LocationId): Location = locations.getValue(id)
 //    fun getLocation(position: Position): Location = locations.values.first { it.position == position }

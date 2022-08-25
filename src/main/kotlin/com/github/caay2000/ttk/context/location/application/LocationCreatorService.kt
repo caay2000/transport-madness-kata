@@ -8,6 +8,7 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.ConfigurationNotFoundException
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationAlreadyExists
@@ -26,7 +27,7 @@ class LocationCreatorService(private val provider: Provider, private val locatio
             .flatMap { location -> location.publishEvents() }
 
     private fun guardPositionEmpty(position: Position): Either<LocationException, Unit> =
-        if (locationRepository.exists(LocationRepository.FindLocationCriteria.ByPosition(position)))
+        if (locationRepository.exists(ByPositionCriteria(position)))
             LocationAlreadyExists(position).left()
         else Unit.right()
 

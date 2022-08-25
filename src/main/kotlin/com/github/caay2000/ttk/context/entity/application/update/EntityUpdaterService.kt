@@ -7,22 +7,25 @@ import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.EntityService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
+import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.location.application.LocationRepository
 
 class EntityUpdaterService(
     provider: Provider,
+    entityRepository: EntityRepository,
     locationRepository: LocationRepository,
     eventPublisher: EventPublisher<Event>
-) : EntityService(provider, eventPublisher) {
+) : EntityService(entityRepository, eventPublisher) {
 
-    private val loaderService = EntityUpdateLoaderService(provider, locationRepository, eventPublisher)
-    private val unloaderService = EntityUpdateUnloaderService(provider, eventPublisher)
-    private val moverService = EntityUpdateMoverService(provider, eventPublisher)
-    private val starterService = EntityUpdateStarterService(provider, locationRepository, eventPublisher)
-    private val stopperService = EntityUpdateStopperService(provider, eventPublisher)
+    private val loaderService = EntityUpdateLoaderService(locationRepository, entityRepository, eventPublisher)
+    private val unloaderService = EntityUpdateUnloaderService(entityRepository, eventPublisher)
+    private val moverService = EntityUpdateMoverService(provider, entityRepository, eventPublisher)
+    private val starterService = EntityUpdateStarterService(locationRepository, entityRepository, eventPublisher)
+    private val stopperService = EntityUpdateStopperService(entityRepository, eventPublisher)
 
     fun invoke(): Either<EntityException, Unit> =
         findAllEntities()
@@ -30,8 +33,8 @@ class EntityUpdaterService(
             .void()
 
     private fun findAllEntities(): Either<EntityException, Collection<Entity>> =
-        findWorld()
-            .map { world -> world.entities.values }
+        entityRepository.findAll()
+            .mapLeft { UnknownEntityException(it) }
 
     private fun Entity.updateEntity(): Entity =
         this.update().right()

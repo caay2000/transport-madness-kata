@@ -3,25 +3,36 @@ package com.github.caay2000.ttk.infra.console
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.entity.application.EntityRepository
+import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.LocationId
 
-class HexagonalConsolePrinter(val provider: Provider, private val locationRepository: LocationRepository, val configuration: Configuration) : Printer {
+class HexagonalConsolePrinter(
+    val provider: Provider,
+    private val locationRepository: LocationRepository,
+    private val entityRepository: EntityRepository,
+    val configuration: Configuration
+) : Printer {
 
     val locations: Map<LocationId, Location>
         get() = locationRepository.findAll().bind().associateBy { it.id }
 
+    val entities: Map<EntityId, Entity>
+        get() = entityRepository.findAll().bind().associateBy { it.id }
+
     override fun print(world: World) {
-        println("WORLD CURRENT TURN -> ${world.currentTurn} - ${world.entities.values.first()}")
+        println("WORLD CURRENT TURN -> ${world.currentTurn} - ${entities.values.first()}")
 
         for (y in 0 until configuration.worldHeight) {
             var currentLine = if (y.mod(2) == 0) "" else " "
             for (x in 0 until configuration.worldWidth) {
                 val cell = world.getCell(Position(x, y))
-                val entity = world.entities.values.first()
+                val entity = entities.values.first()
                 when {
                     entity.currentPosition == cell.position -> currentLine = "$currentLine@ "
                     cell.locationId != null -> currentLine = "${currentLine}${locations[cell.locationId]!!.name[0]} "

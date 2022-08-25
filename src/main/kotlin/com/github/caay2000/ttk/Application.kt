@@ -7,11 +7,13 @@ import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
+import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.EntityRouteAssignerService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.context.entity.secondary.InMemoryEntityRepository
 import com.github.caay2000.ttk.context.location.application.LocationCreatorService
 import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.location.primary.UpdateLocationOnEntityLoadedEventSubscriber
@@ -37,6 +39,7 @@ class Application(
 ) {
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
     private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
+    private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
 
     init {
         KTEventBus.init<Event>()
@@ -48,12 +51,12 @@ class Application(
 
     private val configurationSetterService = ConfigurationSetterService(provider)
     private val worldCreatorService = WorldCreatorService(provider, eventPublisher)
-    private val worldUpdaterService = WorldUpdaterService(provider, locationRepository, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(provider, locationRepository, entityRepository, eventPublisher)
     private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, eventPublisher, createConnectionPathfindingConfiguration)
     private val locationCreatorService = LocationCreatorService(provider, locationRepository, eventPublisher)
-    private val entityCreatorService = EntityCreatorService(provider, eventPublisher)
-    private val entityRouteAssignerService = EntityRouteAssignerService(provider, eventPublisher)
-    private val printer = HexagonalConsolePrinter(provider, locationRepository, configuration)
+    private val entityCreatorService = EntityCreatorService(provider, entityRepository, eventPublisher)
+    private val entityRouteAssignerService = EntityRouteAssignerService(entityRepository, eventPublisher)
+    private val printer = HexagonalConsolePrinter(provider, locationRepository, entityRepository, configuration)
 
     fun invoke(
         entityType: EntityType,
@@ -107,7 +110,7 @@ class Application(
     private val world: World
         get() = provider.get().bind()
     private val entity: Entity
-        get() = provider.get().bind().entities.values.first()
+        get() = entityRepository.findAll().bind().first()
 
     data class LocationRequest(val name: String, val position: Position, val population: Int)
 }

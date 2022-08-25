@@ -35,8 +35,8 @@ object WorldMother {
         id = id,
         currentTurn = 0,
         cells = createCells(width, height),
-        companies = companies,
-        entities = entities
+        companies = companies
+//        entities = entities
     )
 //        ,
 //        locations = emptyMap()

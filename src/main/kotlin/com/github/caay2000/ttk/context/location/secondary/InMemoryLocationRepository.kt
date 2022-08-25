@@ -1,6 +1,9 @@
 package com.github.caay2000.ttk.context.location.secondary
 
 import arrow.core.Either
+import arrow.core.flatMap
+import arrow.core.left
+import arrow.core.right
 import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Position
@@ -12,17 +15,22 @@ class InMemoryLocationRepository(private val db: InMemoryDatabase) : LocationRep
     private val byPositionIndex: MutableMap<Position, LocationId> = mutableMapOf()
 
     override fun exists(criteria: LocationRepository.FindLocationCriteria): Boolean =
-        find(criteria).fold(ifLeft = { false }, ifRight = { true })
+        when (criteria) {
+            is LocationRepository.FindLocationCriteria.ByIdCriteria ->
+                db.exists(TABLE_NAME, criteria.id.rawId)
+            is LocationRepository.FindLocationCriteria.ByPositionCriteria ->
+                db.exists(TABLE_NAME, byPositionIndex[criteria.position]?.rawId ?: "")
+        }
 
     override fun find(criteria: LocationRepository.FindLocationCriteria): Either<Throwable, Location> =
-        when (criteria) {
-            is LocationRepository.FindLocationCriteria.ById -> Either.catch {
-                db.getById(TABLE_NAME, criteria.id.rawId)
+        Either.catch {
+            when (criteria) {
+                is LocationRepository.FindLocationCriteria.ByIdCriteria ->
+                    db.getById<Location>(TABLE_NAME, criteria.id.rawId)
+                is LocationRepository.FindLocationCriteria.ByPositionCriteria ->
+                    db.getById(TABLE_NAME, byPositionIndex[criteria.position]?.rawId ?: "")
             }
-            is LocationRepository.FindLocationCriteria.ByPosition -> Either.catch {
-                db.getById(TABLE_NAME, byPositionIndex.getValue(criteria.position).rawId)
-            }
-        }
+        }.flatMap { it?.right() ?: NoSuchElementException().left() }
 
     override fun findAll(): Either<Throwable, List<Location>> =
         Either.catch { db.getAll(TABLE_NAME) }
