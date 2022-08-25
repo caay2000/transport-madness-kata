@@ -2,6 +2,7 @@ package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.infra.provider.DefaultProvider
@@ -16,9 +17,15 @@ import org.mockito.kotlin.mock
 internal class WorldConnectionCreatorServiceTest {
 
     private val provider: Provider = DefaultProvider()
+    private val configurationRepository: ConfigurationRepository = mock()
     private val pathfindingConfiguration: PathfindingConfiguration = PathfindingConfigurationMother.default(needConnection = false)
 
-    private val sut = WorldConnectionCreatorService(provider = provider, eventPublisher = mock(), pathfindingConfiguration = pathfindingConfiguration)
+    private val sut = WorldConnectionCreatorService(
+        provider = provider,
+        configurationRepository = configurationRepository,
+        eventPublisher = mock(),
+        pathfindingConfiguration = pathfindingConfiguration
+    )
 
     @Test
     fun `should create connection when it does not exists`() {

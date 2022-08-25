@@ -4,8 +4,10 @@ import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.configuration.secondary.InMemoryConfigurationRepository
 import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.EntityRouteAssignerService
@@ -40,6 +42,7 @@ class Application(
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
     private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
     private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
+    private val configurationRepository: ConfigurationRepository = InMemoryConfigurationRepository(inMemoryDatabase)
 
     init {
         KTEventBus.init<Event>()
@@ -49,11 +52,11 @@ class Application(
 
     private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)
 
-    private val configurationSetterService = ConfigurationSetterService(provider)
-    private val worldCreatorService = WorldCreatorService(provider, eventPublisher)
-    private val worldUpdaterService = WorldUpdaterService(provider, locationRepository, entityRepository, eventPublisher)
-    private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, eventPublisher, createConnectionPathfindingConfiguration)
-    private val locationCreatorService = LocationCreatorService(provider, locationRepository, eventPublisher)
+    private val configurationSetterService = ConfigurationSetterService(configurationRepository)
+    private val worldCreatorService = WorldCreatorService(provider, configurationRepository, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(provider, configurationRepository, locationRepository, entityRepository, eventPublisher)
+    private val worldConnectionCreatorService = WorldConnectionCreatorService(provider, configurationRepository, eventPublisher, createConnectionPathfindingConfiguration)
+    private val locationCreatorService = LocationCreatorService(provider, configurationRepository, locationRepository, eventPublisher)
     private val entityCreatorService = EntityCreatorService(provider, entityRepository, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(entityRepository, eventPublisher)
     private val printer = HexagonalConsolePrinter(provider, locationRepository, entityRepository, configuration)

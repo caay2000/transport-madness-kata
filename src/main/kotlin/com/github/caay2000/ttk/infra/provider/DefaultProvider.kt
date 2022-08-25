@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.rightIfNotNull
 import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException
-import com.github.caay2000.ttk.api.provider.Provider.ProviderException.ConfigurationNotFoundProviderException
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException.UnknownProviderException
 import com.github.caay2000.ttk.api.provider.Provider.ProviderException.WorldNotFoundProviderException
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
@@ -33,11 +32,11 @@ class DefaultProvider : Provider {
 //            .map { world -> world.entities.values.first { it.id == entityId } }
 //            .mapLeft { ProviderException.EntityNotFoundException(entityId) }
 
-    override fun getConfiguration(): Either<ProviderException, Configuration> =
-        configuration.rightIfNotNull { ConfigurationNotFoundProviderException }
-
-    override fun setConfiguration(configuration: Configuration): Either<ProviderException, Configuration> =
-        Either.catch { this.configuration = configuration }
-            .map { configuration }
-            .mapLeft { UnknownProviderException(it) }
+//    override fun getConfiguration(): Either<ProviderException, Configuration> =
+//        configuration.rightIfNotNull { ConfigurationNotFoundProviderException }
+//
+//    override fun setConfiguration(configuration: Configuration): Either<ProviderException, Configuration> =
+//        Either.catch { this.configuration = configuration }
+//            .map { configuration }
+//            .mapLeft { UnknownProviderException(it) }
 }

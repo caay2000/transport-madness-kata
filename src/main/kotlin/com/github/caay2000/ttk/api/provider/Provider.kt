@@ -1,7 +1,6 @@
 package com.github.caay2000.ttk.api.provider
 
 import arrow.core.Either
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.shared.EntityId
@@ -15,8 +14,8 @@ interface Provider {
 //    fun getLocation(position: Position): Either<ProviderException, Location>
 //    fun getEntity(entityId: EntityId): Either<ProviderException, Entity>
 
-    fun getConfiguration(): Either<ProviderException, Configuration>
-    fun setConfiguration(configuration: Configuration): Either<ProviderException, Configuration>
+//    fun getConfiguration(): Either<ProviderException, Configuration>
+//    fun setConfiguration(configuration: Configuration): Either<ProviderException, Configuration>
 
     sealed class ProviderException : RuntimeException {
         constructor() : super()

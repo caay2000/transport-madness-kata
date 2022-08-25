@@ -7,6 +7,7 @@ import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.ConfigurationNotFoundException
@@ -16,8 +17,12 @@ import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.context.world.domain.Position
 
-class LocationCreatorService(private val provider: Provider, private val locationRepository: LocationRepository, eventPublisher: EventPublisher<Event>) :
-    LocationService(locationRepository, eventPublisher) {
+class LocationCreatorService(
+    private val provider: Provider,
+    private val configurationRepository: ConfigurationRepository,
+    private val locationRepository: LocationRepository,
+    eventPublisher: EventPublisher<Event>
+) : LocationService(locationRepository, eventPublisher) {
 
     fun invoke(name: String, position: Position, population: Int): Either<LocationException, Location> =
         guardPositionEmpty(position)
@@ -40,7 +45,7 @@ class LocationCreatorService(private val provider: Provider, private val locatio
             .map { configuration -> Location.create(name = name, position = position, population = population, configuration = configuration) }
 
     private fun findConfiguration(): Either<LocationException, Configuration> =
-        provider.getConfiguration()
+        configurationRepository.get()
             .mapLeft { ConfigurationNotFoundException(it) }
 
     private fun anyLocationTooClose(position: Position, configuration: Configuration): Either<LocationException, Unit> =

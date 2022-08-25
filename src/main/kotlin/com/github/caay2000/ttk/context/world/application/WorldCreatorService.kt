@@ -5,12 +5,17 @@ import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
 
-class WorldCreatorService(provider: Provider, eventPublisher: EventPublisher<Event>) : WorldService(provider, eventPublisher) {
+class WorldCreatorService(
+    provider: Provider,
+    configurationRepository: ConfigurationRepository,
+    eventPublisher: EventPublisher<Event>
+) : WorldService(provider, configurationRepository, eventPublisher) {
 
     fun invoke(): Either<WorldException, World> =
         findConfiguration()

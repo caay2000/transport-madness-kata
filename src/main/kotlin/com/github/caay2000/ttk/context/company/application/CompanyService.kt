@@ -8,17 +8,15 @@ import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.context.company.domain.CompanyException
 import com.github.caay2000.ttk.context.company.domain.UnknownCompanyException
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.world.domain.World
 
-abstract class CompanyService(private val provider: Provider, private val eventBus: EventPublisher<Event>) {
+abstract class CompanyService(
+    private val provider: Provider,
+    private val eventBus: EventPublisher<Event>
+) {
 
     protected fun findWorld(): Either<CompanyException, World> =
         provider.get()
-            .mapLeft { UnknownCompanyException(it) }
-
-    protected fun findConfiguration(): Either<CompanyException, Configuration> =
-        provider.getConfiguration()
             .mapLeft { UnknownCompanyException(it) }
 
     protected fun Company.save(): Either<CompanyException, Company> =
