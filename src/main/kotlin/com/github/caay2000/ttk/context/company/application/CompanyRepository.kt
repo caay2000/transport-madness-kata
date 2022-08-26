@@ -13,6 +13,6 @@ interface CompanyRepository {
 
     sealed class FindCompanyCriteria {
 
-        class ByIdCriteria(val id: CompanyId) : FindCompanyCriteria()
+        data class ByIdCriteria(val id: CompanyId) : FindCompanyCriteria()
     }
 }

@@ -3,6 +3,9 @@ package com.github.caay2000.ttk
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.company.application.CompanyCreatorService
+import com.github.caay2000.ttk.context.company.application.CompanyRepository
+import com.github.caay2000.ttk.context.company.secondary.InMemoryCompanyRepository
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
@@ -37,6 +40,7 @@ class Application(
 ) {
     private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
     private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
+    private val companyRepository: CompanyRepository = InMemoryCompanyRepository(inMemoryDatabase)
     private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
     private val worldRepository: WorldRepository = InMemoryWorldRepository(inMemoryDatabase)
 
@@ -47,11 +51,12 @@ class Application(
     }
 
     private val configurationSetterService = ConfigurationSetterService()
+    private val companyCreatorService = CompanyCreatorService(companyRepository, eventPublisher)
     private val worldCreatorService = WorldCreatorService(worldRepository, eventPublisher)
     private val worldUpdaterService = WorldUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
     private val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, eventPublisher)
     private val locationCreatorService = LocationCreatorService(locationRepository, eventPublisher)
-    private val entityCreatorService = EntityCreatorService(worldRepository, entityRepository, eventPublisher)
+    private val entityCreatorService = EntityCreatorService(worldRepository, companyRepository, entityRepository, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(entityRepository, eventPublisher)
     private val printer = HexagonalConsolePrinter(locationRepository, entityRepository, configuration)
 
@@ -67,13 +72,14 @@ class Application(
         var completed = 0
 
         configurationSetterService.invoke(configuration).bind()
+        val company = companyCreatorService.invoke("Company").bind()
         worldCreatorService.invoke().bind()
         locations.forEach { (name, position, population) ->
             locationCreatorService.invoke(name, position, population).bind()
         }
         createAllConnections(paths)
         startPosition.forEach {
-            entityCreatorService.invoke(entityType, it).bind()
+            entityCreatorService.invoke(company.id, entityType, it).bind()
         }
         entityRouteAssignerService.invoke(entity.id, route).bind()
 

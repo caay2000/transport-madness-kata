@@ -3,14 +3,17 @@ package com.github.caay2000.ttk.context.entity.domain
 import com.github.caay2000.ttk.context.entity.domain.update.EntityMovementStrategy
 import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
 import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy
+import com.github.caay2000.ttk.context.entity.event.EntityCreatedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
+import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 
 data class Entity(
     override val id: EntityId,
+    val companyId: CompanyId,
     val entityType: EntityType,
     val currentPosition: Position,
     val currentDuration: Int,
@@ -20,14 +23,17 @@ data class Entity(
 ) : Aggregate() {
 
     companion object {
-        fun create(entityType: EntityType, position: Position): Entity = Entity(
+        fun create(companyId: CompanyId, entityType: EntityType, position: Position): Entity = Entity(
             id = randomDomainId(),
+            companyId = companyId,
             entityType = entityType,
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),
             pax = 0
-        )
+        ).also {
+            it.pushEvent(EntityCreatedEvent(aggregateId = it.id, companyId = it.companyId, entityType = it.entityType))
+        }
     }
 
     private val currentDestination: Position

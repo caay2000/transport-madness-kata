@@ -1,6 +1,7 @@
 package com.github.caay2000.ttk.context.entity.domain
 
 import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.EntityId
 
 sealed class EntityException : RuntimeException {
@@ -11,6 +12,7 @@ sealed class EntityException : RuntimeException {
 data class EntityInvalidNumOfCoachesException(val amount: Int, val entityType: EntityType) :
     EntityException("${entityType.name} cannot have $amount num of coaches, max is ${entityType.maxNumCoaches}")
 
+data class CompanyNotFound(val companyId: CompanyId) : EntityException("companyId $companyId not found")
 data class EntityNotFound(val entityId: EntityId) : EntityException("entity $entityId not found")
 data class InvalidRouteException(val stops: List<Position>) : EntityException("invalid route for $stops")
 data class InvalidEntityPositionException(val position: Position) : EntityException("invalid position $position")

@@ -19,7 +19,7 @@ class WorldConnectionCreatorService(
     private val eventPublisher: EventPublisher<Event>
 ) {
 
-    private val pathfinding = AStartPathfindingStrategy(PathfindingConfiguration.getCreteConnectionStrategyConfiguration())
+    private val pathfinding by lazy { AStartPathfindingStrategy(PathfindingConfiguration.getCreteConnectionStrategyConfiguration()) }
 
     fun invoke(source: Position, target: Position): Either<WorldException, World> =
         findWorld()
