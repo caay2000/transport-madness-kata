@@ -7,7 +7,6 @@ import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
-import com.github.caay2000.ttk.context.entity.application.EntityService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
@@ -16,16 +15,16 @@ import com.github.caay2000.ttk.context.world.application.WorldRepository
 
 class EntityUpdaterService(
     worldRepository: WorldRepository,
-    entityRepository: EntityRepository,
     locationRepository: LocationRepository,
+    private val entityRepository: EntityRepository,
     eventPublisher: EventPublisher<Event>
-) : EntityService(entityRepository, eventPublisher) {
+) {
 
     private val loaderService = EntityUpdateLoaderService(locationRepository, eventPublisher)
-    private val unloaderService = EntityUpdateUnloaderService(entityRepository, eventPublisher)
+    private val unloaderService = EntityUpdateUnloaderService(eventPublisher)
     private val moverService = EntityUpdateMoverService(worldRepository, eventPublisher)
-    private val starterService = EntityUpdateStarterService(locationRepository, entityRepository, eventPublisher)
-    private val stopperService = EntityUpdateStopperService(entityRepository, eventPublisher)
+    private val starterService = EntityUpdateStarterService(locationRepository, eventPublisher)
+    private val stopperService = EntityUpdateStopperService(eventPublisher)
 
     fun invoke(): Either<EntityException, Unit> =
         findAllEntities()
@@ -45,4 +44,9 @@ class EntityUpdaterService(
             .flatMap { entity -> unloaderService.invoke(entity) }
             .flatMap { entity -> entity.save() }
             .bind()
+
+    private fun Entity.save(): Either<EntityException, Entity> =
+        entityRepository.save(this)
+            .map { this }
+            .mapLeft { UnknownEntityException(it) }
 }

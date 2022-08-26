@@ -15,6 +15,7 @@ import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 internal class EntityUpdateMoverServiceTest {
@@ -61,6 +62,16 @@ internal class EntityUpdateMoverServiceTest {
 
         sut.invoke(movingEntityWithoutNextSection).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(1, 0))
+        }
+    }
+
+    @Test
+    fun `service does not publish any event`() {
+
+        `world exists`()
+
+        sut.invoke(movingEntityWithoutNextSection).shouldBeRight {
+            verify(eventPublisher).publish(emptyList())
         }
     }
 

@@ -15,9 +15,9 @@ import com.github.caay2000.ttk.context.world.domain.World
 
 class EntityCreatorService(
     private val worldRepository: WorldRepository,
-    entityRepository: EntityRepository,
-    eventPublisher: EventPublisher<Event>
-) : EntityService(entityRepository, eventPublisher) {
+    private val entityRepository: EntityRepository,
+    private val eventPublisher: EventPublisher<Event>
+) {
 
     fun invoke(entityType: EntityType, position: Position): Either<EntityException, Entity> =
         findWorld()
@@ -38,4 +38,13 @@ class EntityCreatorService(
         Either.catch { getCell(position) }
             .map { this }
             .mapLeft { InvalidEntityPositionException(position) }
+
+    private fun Entity.save(): Either<EntityException, Entity> =
+        entityRepository.save(this)
+            .map { this }
+            .mapLeft { UnknownEntityException(it) }
+
+    private fun Entity.publishEvents(): Either<EntityException, Entity> =
+        Either.catch { eventPublisher.publish(pullEvents()).let { this } }
+            .mapLeft { UnknownEntityException(it) }
 }

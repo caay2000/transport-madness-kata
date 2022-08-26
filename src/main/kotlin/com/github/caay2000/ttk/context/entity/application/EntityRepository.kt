@@ -13,6 +13,6 @@ interface EntityRepository {
 
     sealed class FindEntityCriteria {
 
-        class ByIdCriteria(val id: EntityId) : FindEntityCriteria()
+        data class ByIdCriteria(val id: EntityId) : FindEntityCriteria()
     }
 }

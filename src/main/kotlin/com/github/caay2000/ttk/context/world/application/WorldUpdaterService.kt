@@ -21,7 +21,7 @@ class WorldUpdaterService(
     eventPublisher: EventPublisher<Event>
 ) : WorldService(worldRepository, eventPublisher) {
 
-    private val entityUpdaterService = EntityUpdaterService(worldRepository, entityRepository, locationRepository, eventPublisher)
+    private val entityUpdaterService = EntityUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
     private val locationUpdaterService = LocationUpdaterService(locationRepository, eventPublisher)
 
     fun invoke(): Either<WorldException, World> =
