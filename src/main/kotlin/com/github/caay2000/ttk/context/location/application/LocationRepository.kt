@@ -14,7 +14,7 @@ interface LocationRepository {
 
     sealed class FindLocationCriteria {
 
-        class ByIdCriteria(val id: LocationId) : FindLocationCriteria()
-        class ByPositionCriteria(val position: Position) : FindLocationCriteria()
+        data class ByIdCriteria(val id: LocationId) : FindLocationCriteria()
+        data class ByPositionCriteria(val position: Position) : FindLocationCriteria()
     }
 }

@@ -1,29 +1,45 @@
-// package com.github.caay2000.ttk.context.location.application
-//
-// import arrow.core.computations.ResultEffect.bind
-// import com.github.caay2000.ttk.infra.provider.DefaultProvider
-// import com.github.caay2000.ttk.mother.WorldMother
-// import com.github.caay2000.ttk.mother.world.location.LocationMother
-// import io.kotest.assertions.arrow.either.shouldBeRight
-// import org.assertj.core.api.Assertions.assertThat
-// import org.junit.jupiter.api.Test
-// import org.mockito.kotlin.mock
-//
-// internal class LocationCargoLoaderServiceTest {
-//
-//    private val provider = DefaultProvider()
-//    private val sut = LocationCargoLoaderService(provider, mock())
-//
-//    @Test
-//    fun `should remove the amount passengers from station`() {
-//
-//        val world = WorldMother.oneLocation(LocationMother.random(rawPAX = 20.0))
-//        provider.set(world)
-//        val location = world.locations.values.first()
-//
-//        sut.invoke(location.position, 10).shouldBeRight {
-//            assertThat(it.rawPAX).isEqualTo(10.0)
-//            assertThat(it).isEqualTo(provider.get().bind().getLocation(location.id))
-//        }
-//    }
-// }
+package com.github.caay2000.ttk.context.location.application
+
+import arrow.core.right
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
+import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.extension.thenReturnFirstArgument
+import com.github.caay2000.ttk.mother.world.location.LocationMother
+import io.kotest.assertions.arrow.either.shouldBeRight
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+
+internal class LocationCargoLoaderServiceTest {
+
+    private val locationRepository: LocationRepository = mock()
+    private val eventPublisher: EventPublisher<Event> = mock()
+    private val sut = LocationCargoLoaderService(locationRepository, eventPublisher)
+
+    @Test
+    fun `should remove the amount passengers from station`() {
+
+        `location exists`()
+        `location will be updated`()
+
+        sut.invoke(location.position, 10).shouldBeRight {
+            verify(locationRepository).save(it)
+            assertThat(it.rawPAX).isEqualTo(10.0)
+        }
+    }
+
+    private fun `location exists`() {
+        whenever(locationRepository.find(ByPositionCriteria(location.position))).thenReturn(location.right())
+    }
+
+    private fun `location will be updated`() {
+        whenever(locationRepository.save(any())).thenReturnFirstArgument<Location> { it.right() }
+    }
+
+    private val location = LocationMother.random(rawPAX = 20.0)
+}

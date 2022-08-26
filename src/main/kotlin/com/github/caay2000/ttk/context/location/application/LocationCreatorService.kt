@@ -9,6 +9,7 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationAlreadyExists
+import com.github.caay2000.ttk.context.location.domain.LocationConfiguration
 import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
@@ -16,8 +17,8 @@ import com.github.caay2000.ttk.context.world.domain.Position
 
 class LocationCreatorService(
     private val locationRepository: LocationRepository,
-    eventPublisher: EventPublisher<Event>
-) : LocationService(locationRepository, eventPublisher) {
+    private val eventPublisher: EventPublisher<Event>
+) {
 
     fun invoke(name: String, position: Position, population: Int): Either<LocationException, Location> =
         guardPositionEmpty(position)
@@ -37,6 +38,18 @@ class LocationCreatorService(
 
     private fun guardMinimumDistance(position: Position): Either<LocationException, Unit> =
         findAllLocations()
-            .map { locations -> locations.any { it.position.distance(position) < configuration.minDistanceBetweenCities } }
+            .map { locations -> locations.any { it.position.distance(position) < LocationConfiguration.get().minDistanceBetweenCities } }
             .flatMap { anyLocationTooClose -> if (anyLocationTooClose) LocationsTooCloseException(position).left() else Unit.right() }
+
+    private fun findAllLocations(): Either<LocationException, List<Location>> =
+        locationRepository.findAll()
+            .mapLeft { UnknownLocationException(it) }
+
+    private fun Location.save(): Either<LocationException, Location> =
+        locationRepository.save(this)
+            .mapLeft { UnknownLocationException(it) }
+
+    private fun Location.publishEvents(): Either<LocationException, Location> =
+        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
+            .mapLeft { UnknownLocationException(it) }
 }
