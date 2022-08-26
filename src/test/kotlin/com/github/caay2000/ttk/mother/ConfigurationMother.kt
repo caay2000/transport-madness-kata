@@ -1,5 +1,6 @@
 package com.github.caay2000.ttk.mother
 
+import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import java.util.Random
 
@@ -18,4 +19,9 @@ object ConfigurationMother {
         minDistanceBetweenCities = minDistanceBetweenCities,
         cityPAXPercentage = cityPAXPercentage
     )
+}
+
+fun Configuration.set(): Configuration {
+    ConfigurationSetterService().invoke(this)
+    return this
 }

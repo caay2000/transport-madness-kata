@@ -19,7 +19,6 @@ object LocationMother {
         name = name,
         position = position,
         population = population,
-        rawPAX = rawPAX,
-        configuration
+        rawPAX = rawPAX
     )
 }

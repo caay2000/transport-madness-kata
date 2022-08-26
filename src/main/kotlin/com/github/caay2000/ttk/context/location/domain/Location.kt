@@ -1,6 +1,5 @@
 package com.github.caay2000.ttk.context.location.domain
 
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
 import com.github.caay2000.ttk.shared.LocationId
@@ -13,20 +12,21 @@ data class Location(
     val position: Position,
     val population: Int,
     val rawPAX: Double = 0.0,
-    val received: Int = 0,
-    val configuration: LocationConfiguration
+    val received: Int = 0
 ) : Aggregate() {
 
     companion object {
-        fun create(name: String, position: Position, population: Int, rawPAX: Double = 0.0, configuration: Configuration) = Location(
+        fun create(name: String, position: Position, population: Int, rawPAX: Double = 0.0) = Location(
             id = randomDomainId(),
             name = name,
             position = position,
             population = population,
-            rawPAX = rawPAX,
-            configuration = LocationConfiguration.fromConfiguration(configuration)
+            rawPAX = rawPAX
         )
     }
+
+    val configuration: LocationConfiguration
+        get() = LocationConfiguration.get()
 
     val pax: Int
         get() = floor(rawPAX).toInt()

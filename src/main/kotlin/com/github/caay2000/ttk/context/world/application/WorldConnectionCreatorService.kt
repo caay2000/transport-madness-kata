@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
@@ -16,10 +15,9 @@ import com.github.caay2000.ttk.pathfinding.PathfindingResult
 
 class WorldConnectionCreatorService(
     worldRepository: WorldRepository,
-    configurationRepository: ConfigurationRepository,
     eventPublisher: EventPublisher<Event>,
     pathfindingConfiguration: PathfindingConfiguration
-) : WorldService(worldRepository, configurationRepository, eventPublisher) {
+) : WorldService(worldRepository, eventPublisher) {
 
     private val pathfinding = AStartPathfindingStrategy(pathfindingConfiguration)
 

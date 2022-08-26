@@ -12,9 +12,6 @@ data class World(
     val currentTurn: Int,
     val cells: Set<Cell>,
     val companies: Map<CompanyId, Company>
-//    val entities: Map<EntityId, Entity>
-//    ,
-//    val locations: Map<LocationId, Location>
 ) : Aggregate() {
 
     val connectedCells: Set<Cell>
@@ -25,9 +22,6 @@ data class World(
             currentTurn = 0,
             cells = createCells(width, height),
             companies = emptyMap()
-//            entities = emptyMap()
-//            ,
-//            locations = emptyMap()
         )
 
         private fun createCells(width: Int, height: Int): Set<Cell> {
@@ -42,20 +36,6 @@ data class World(
     }
 
     fun getCell(position: Position): Cell = cells.first { it.position == position }
-
-//    fun getEntity(id: EntityId): Entity = entities.getValue(id)
-//    fun putEntity(entity: Entity): World = copy(entities = entities + (entity.id to entity))
-
-//    fun getLocation(id: LocationId): Location = locations.getValue(id)
-//    fun getLocation(position: Position): Location = locations.values.first { it.position == position }
-//    fun addLocation(location: Location): World =
-//        updateCell { getCell(location.position).updateLocationId(location.id) }
-//            .copy(locations = locations + (location.id to location))
-//
-//    fun updateLocation(location: Location): World =
-//        copy(locations = locations + (location.id to location))
-
-    fun addCompany(company: Company): World = copy(companies = companies + (company.id to company))
 
     fun update(): World = copy(currentTurn = currentTurn + 1)
 

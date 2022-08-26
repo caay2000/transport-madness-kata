@@ -21,9 +21,9 @@ class EntityUpdaterService(
     eventPublisher: EventPublisher<Event>
 ) : EntityService(entityRepository, eventPublisher) {
 
-    private val loaderService = EntityUpdateLoaderService(locationRepository, entityRepository, eventPublisher)
+    private val loaderService = EntityUpdateLoaderService(locationRepository, eventPublisher)
     private val unloaderService = EntityUpdateUnloaderService(entityRepository, eventPublisher)
-    private val moverService = EntityUpdateMoverService(worldRepository, entityRepository, eventPublisher)
+    private val moverService = EntityUpdateMoverService(worldRepository, eventPublisher)
     private val starterService = EntityUpdateStarterService(locationRepository, entityRepository, eventPublisher)
     private val stopperService = EntityUpdateStopperService(entityRepository, eventPublisher)
 

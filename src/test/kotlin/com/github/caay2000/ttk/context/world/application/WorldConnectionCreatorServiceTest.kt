@@ -1,7 +1,6 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.right
-import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
@@ -20,12 +19,10 @@ import org.mockito.kotlin.whenever
 internal class WorldConnectionCreatorServiceTest {
 
     private val worldRepository: WorldRepository = mock()
-    private val configurationRepository: ConfigurationRepository = mock()
     private val pathfindingConfiguration: PathfindingConfiguration = PathfindingConfigurationMother.default(needConnection = false)
 
     private val sut = WorldConnectionCreatorService(
         worldRepository = worldRepository,
-        configurationRepository = configurationRepository,
         eventPublisher = mock(),
         pathfindingConfiguration = pathfindingConfiguration
     )

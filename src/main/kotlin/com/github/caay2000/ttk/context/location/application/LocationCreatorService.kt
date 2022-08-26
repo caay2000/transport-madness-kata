@@ -6,18 +6,15 @@ import arrow.core.left
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.configuration.application.ConfigurationRepository
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
-import com.github.caay2000.ttk.context.location.domain.ConfigurationNotFoundException
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationAlreadyExists
 import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.LocationsTooCloseException
+import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 import com.github.caay2000.ttk.context.world.domain.Position
 
 class LocationCreatorService(
-    private val configurationRepository: ConfigurationRepository,
     private val locationRepository: LocationRepository,
     eventPublisher: EventPublisher<Event>
 ) : LocationService(locationRepository, eventPublisher) {
@@ -34,20 +31,12 @@ class LocationCreatorService(
             LocationAlreadyExists(position).left()
         else Unit.right()
 
-    private fun guardMinimumDistance(position: Position): Either<LocationException, Unit> =
-        findConfiguration()
-            .flatMap { configuration -> anyLocationTooClose(position, configuration) }
-
     private fun createLocation(name: String, position: Position, population: Int): Either<LocationException, Location> =
-        findConfiguration()
-            .map { configuration -> Location.create(name = name, position = position, population = population, configuration = configuration) }
+        Either.catch { Location.create(name = name, position = position, population = population) }
+            .mapLeft { UnknownLocationException(it) }
 
-    private fun findConfiguration(): Either<LocationException, Configuration> =
-        configurationRepository.get()
-            .mapLeft { ConfigurationNotFoundException(it) }
-
-    private fun anyLocationTooClose(position: Position, configuration: Configuration): Either<LocationException, Unit> =
+    private fun guardMinimumDistance(position: Position): Either<LocationException, Unit> =
         findAllLocations()
-            .map { locations -> locations.any { it.position.distance(position) < configuration.minDistanceBetweenCities.toDouble() } }
+            .map { locations -> locations.any { it.position.distance(position) < configuration.minDistanceBetweenCities } }
             .flatMap { anyLocationTooClose -> if (anyLocationTooClose) LocationsTooCloseException(position).left() else Unit.right() }
 }

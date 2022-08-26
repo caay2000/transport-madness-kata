@@ -18,14 +18,10 @@ internal class CompanyCreatorServiceTest {
     @Test
     fun `company is created correctly`() {
 
-//        `world exists`()
-
         sut.invoke(expectedName).shouldBeRight { company ->
             assertThat(company.name).isEqualTo(expectedName)
         }
     }
 
     private val expectedName = "companyName"
-
-//    private fun `world exists`() = provider.set(WorldMother.random())
 }
