@@ -20,7 +20,7 @@ sealed class TrainEntityType : EntityType(vehicleType = VehicleType.TRAIN) {
     }
 }
 
-data class PassengerTrain private constructor(
+data class PassengerTrain constructor(
     override val numCoaches: Int,
     override val maxNumCoaches: Int,
     override val passengersPerCoach: Int
@@ -32,7 +32,7 @@ data class PassengerTrain private constructor(
     }
 }
 
-data class Railcar private constructor(
+data class Railcar constructor(
     override val numCoaches: Int,
     override val maxNumCoaches: Int,
     override val passengersPerCoach: Int

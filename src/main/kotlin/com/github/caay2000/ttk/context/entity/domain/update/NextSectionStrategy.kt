@@ -15,7 +15,7 @@ sealed class NextSectionStrategy {
 
     class SimpleNextSectionStrategy(private val worldRepository: WorldRepository) : NextSectionStrategy() {
 
-        private val pathfindingStrategy = AStartPathfindingStrategy(PathfindingConfiguration())
+        private val pathfindingStrategy = AStartPathfindingStrategy(PathfindingConfiguration.getRouteStrategyConfiguration())
 
         override fun invoke(entity: Entity): Entity =
             findWorld()

@@ -13,13 +13,14 @@ import com.github.caay2000.ttk.context.world.domain.EntitiesUpdateWorldException
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
+import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 
 class WorldUpdaterService(
-    worldRepository: WorldRepository,
+    private val worldRepository: WorldRepository,
     locationRepository: LocationRepository,
     entityRepository: EntityRepository,
-    eventPublisher: EventPublisher<Event>
-) : WorldService(worldRepository, eventPublisher) {
+    private val eventPublisher: EventPublisher<Event>
+) {
 
     private val entityUpdaterService = EntityUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
     private val locationUpdaterService = LocationUpdaterService(locationRepository, eventPublisher)
@@ -32,6 +33,10 @@ class WorldUpdaterService(
             .flatMap { world -> world.save() }
             .flatMap { world -> world.publishEvents() }
 
+    private fun findWorld(): Either<WorldException, World> =
+        worldRepository.get()
+            .mapLeft { WorldNotFoundWorldException(it) }
+
     private fun updateAllLocations(): Either<WorldException, Unit> =
         locationUpdaterService.invoke()
             .mapLeft { UnknownWorldException(it) }
@@ -43,4 +48,12 @@ class WorldUpdaterService(
     private fun updateWorld(): Either<WorldException, World> =
         findWorld()
             .map { world -> world.update() }
+
+    private fun World.save(): Either<WorldException, World> =
+        worldRepository.save(this)
+            .mapLeft { UnknownWorldException(it) }
+
+    private fun World.publishEvents(): Either<WorldException, World> =
+        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
+            .mapLeft { UnknownWorldException(it) }
 }

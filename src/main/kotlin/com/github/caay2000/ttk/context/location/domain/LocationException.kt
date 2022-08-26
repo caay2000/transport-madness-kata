@@ -10,7 +10,6 @@ sealed class LocationException : RuntimeException {
 
 data class LocationAlreadyExists(val position: Position) : LocationException("Location $position already exists")
 data class LocationsTooCloseException(val position: Position) : LocationException("Location $position is too close to another location")
-data class ConfigurationNotFoundException(override val cause: Throwable) : LocationException(cause)
 data class LocationNotFoundByPositionException(val position: Position) : LocationException("location in position $position not found")
 data class LocationNotFoundByLocationIdException(val locationId: LocationId) : LocationException("location $locationId not found")
 data class UnknownLocationException(override val cause: Throwable) : LocationException(cause)

@@ -6,8 +6,6 @@ import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.extension.thenReturnFirstArgument
 import com.github.caay2000.ttk.mother.WorldMother
-import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
-import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -19,12 +17,10 @@ import org.mockito.kotlin.whenever
 internal class WorldConnectionCreatorServiceTest {
 
     private val worldRepository: WorldRepository = mock()
-    private val pathfindingConfiguration: PathfindingConfiguration = PathfindingConfigurationMother.default(needConnection = false)
 
     private val sut = WorldConnectionCreatorService(
         worldRepository = worldRepository,
-        eventPublisher = mock(),
-        pathfindingConfiguration = pathfindingConfiguration
+        eventPublisher = mock()
     )
 
     @Test

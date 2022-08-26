@@ -6,7 +6,6 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationsTooCloseException
 import com.github.caay2000.ttk.extension.thenReturnFirstArgument
-import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.set
 import com.github.caay2000.ttk.mother.world.location.LocationMother
 import io.kotest.assertions.arrow.either.shouldBeLeftOfType
@@ -21,7 +20,6 @@ import org.mockito.kotlin.whenever
 
 class LocationCreatorServiceTest {
 
-    private val configuration = ConfigurationMother.random().set()
     private val locationRepository: LocationRepository = mock()
     private val eventPublisher: EventPublisher<Event> = mock()
     private val sut = LocationCreatorService(locationRepository, eventPublisher)

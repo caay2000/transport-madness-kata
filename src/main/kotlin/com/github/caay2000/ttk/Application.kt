@@ -30,7 +30,6 @@ import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventPublisher
 import com.github.caay2000.ttk.infra.eventbus.instantiateEventSubscriber
-import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 
 class Application(
     private val configuration: Configuration,
@@ -47,12 +46,10 @@ class Application(
         instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher))
     }
 
-    private val createConnectionPathfindingConfiguration = PathfindingConfiguration(needConnection = false)
-
     private val configurationSetterService = ConfigurationSetterService()
     private val worldCreatorService = WorldCreatorService(worldRepository, eventPublisher)
     private val worldUpdaterService = WorldUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
-    private val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, eventPublisher, createConnectionPathfindingConfiguration)
+    private val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, eventPublisher)
     private val locationCreatorService = LocationCreatorService(locationRepository, eventPublisher)
     private val entityCreatorService = EntityCreatorService(worldRepository, entityRepository, eventPublisher)
     private val entityRouteAssignerService = EntityRouteAssignerService(entityRepository, eventPublisher)

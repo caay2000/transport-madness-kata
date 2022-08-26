@@ -9,17 +9,17 @@ import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
+import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import com.github.caay2000.ttk.pathfinding.PathfindingResult
 
 class WorldConnectionCreatorService(
-    worldRepository: WorldRepository,
-    eventPublisher: EventPublisher<Event>,
-    pathfindingConfiguration: PathfindingConfiguration
-) : WorldService(worldRepository, eventPublisher) {
+    private val worldRepository: WorldRepository,
+    private val eventPublisher: EventPublisher<Event>
+) {
 
-    private val pathfinding = AStartPathfindingStrategy(pathfindingConfiguration)
+    private val pathfinding = AStartPathfindingStrategy(PathfindingConfiguration.getCreteConnectionStrategyConfiguration())
 
     fun invoke(source: Position, target: Position): Either<WorldException, World> =
         findWorld()
@@ -35,4 +35,16 @@ class WorldConnectionCreatorService(
 
     private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
         this.path.map { cell -> cell.createConnection() }.toSet()
+
+    private fun findWorld(): Either<WorldException, World> =
+        worldRepository.get()
+            .mapLeft { WorldNotFoundWorldException(it) }
+
+    private fun World.save(): Either<WorldException, World> =
+        worldRepository.save(this)
+            .mapLeft { UnknownWorldException(it) }
+
+    private fun World.publishEvents(): Either<WorldException, World> =
+        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
+            .mapLeft { UnknownWorldException(it) }
 }
