@@ -14,7 +14,7 @@ class LocationUpdaterService(private val locationRepository: LocationRepository,
 
     fun invoke(): Either<LocationException, Unit> =
         findAllLocations()
-            .tap { entities -> entities.updateAll() }
+            .flatMap { locations -> locations.updateAll() }
             .void()
 
     private fun List<Location>.updateAll(): Either<LocationException, Unit> =

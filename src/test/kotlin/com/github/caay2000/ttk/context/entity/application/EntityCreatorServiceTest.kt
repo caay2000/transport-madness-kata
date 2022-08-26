@@ -10,9 +10,7 @@ import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.extension.thenReturnFirstArgument
-import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.WorldMother
-import com.github.caay2000.ttk.mother.set
 import io.kotest.assertions.arrow.either.shouldBeLeftOfType
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.junit.jupiter.api.Test
@@ -31,8 +29,6 @@ internal class EntityCreatorServiceTest {
     private val eventPublisher: EventPublisher<Event> = mock()
     private val sut = EntityCreatorService(worldRepository, entityRepository, eventPublisher)
 
-    private val configuration = ConfigurationMother.random().set()
-
     @Test
     fun `entity is added to world correctly`() {
 
@@ -41,8 +37,6 @@ internal class EntityCreatorServiceTest {
 
         sut.invoke(PassengerTrain(3), Position(1, 1)).shouldBeRight {
             verify(entityRepository).save(any())
-//            assertThat(provider.get().bind().entities).hasSize(1)
-//            assertThat(it).isEqualTo(provider.get().bind().entities.values.first())
         }
     }
 

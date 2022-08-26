@@ -28,10 +28,14 @@ class EntityUpdaterService(
 
     fun invoke(): Either<EntityException, Unit> =
         findAllEntities()
-            .tap { entities -> entities.forEach { it.updateEntity() } }
+            .flatMap { entities -> entities.updateAll() }
             .void()
 
-    private fun findAllEntities(): Either<EntityException, Collection<Entity>> =
+    private fun List<Entity>.updateAll(): Either<EntityException, Unit> =
+        Either.catch { forEach { it.updateEntity() } }
+            .mapLeft { UnknownEntityException(it) }
+
+    private fun findAllEntities(): Either<EntityException, List<Entity>> =
         entityRepository.findAll()
             .mapLeft { UnknownEntityException(it) }
 
