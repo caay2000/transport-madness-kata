@@ -1,39 +1,26 @@
 package com.github.caay2000.ttk.context.world.application
 
-import arrow.core.right
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
-import com.github.caay2000.ttk.context.world.domain.World
-import com.github.caay2000.ttk.extension.thenReturnFirstArgument
-import com.github.caay2000.ttk.mother.ConfigurationMother
-import com.github.caay2000.ttk.mother.WorldMother
-import com.github.caay2000.ttk.mother.set
+import arrow.core.computations.ResultEffect.bind
+import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
+import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 
 internal class WorldCreatorServiceTest {
 
-    private val worldRepository: WorldRepository = mock()
-    private val sut = WorldCreatorService(worldRepository, mock())
-
-    private val configuration: Configuration = ConfigurationMother.random().set()
+    private val worldRepository: WorldRepository = InMemoryWorldRepository(InMemoryDatabase())
+    private val eventPublisher: EventPublisher<Event> = mock()
+    private val sut = WorldCreatorService(worldRepository, eventPublisher)
 
     @Test
     fun `world is created correctly`() {
 
-        `world will be saved`()
-
         sut.invoke().shouldBeRight {
-            assertThat(it).isEqualTo(WorldMother.empty(id = it.id, width = configuration.worldWidth, height = configuration.worldHeight))
-            verify(worldRepository).save(it)
+            assertThat(it).isEqualTo(worldRepository.get().bind())
         }
-    }
-
-    private fun `world will be saved`() {
-        whenever(worldRepository.save(any())).thenReturnFirstArgument<World> { it.right() }
     }
 }
