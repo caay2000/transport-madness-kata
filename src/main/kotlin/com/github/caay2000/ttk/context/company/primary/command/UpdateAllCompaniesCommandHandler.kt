@@ -1,0 +1,24 @@
+// package com.github.caay2000.ttk.context.company.primary.command
+//
+// import arrow.core.computations.ResultEffect.bind
+// import com.github.caay2000.ttk.api.event.Command
+// import com.github.caay2000.ttk.api.event.CommandHandler
+// import com.github.caay2000.ttk.api.event.Event
+// import com.github.caay2000.ttk.api.event.EventPublisher
+// import com.github.caay2000.ttk.context.location.application.LocationRepository
+// import com.github.caay2000.ttk.context.location.application.LocationUpdaterService
+// import java.util.UUID
+//
+// class UpdateAllCompaniesCommandHandler(
+//    locationRepository: LocationRepository,
+//    eventPublisher: EventPublisher<Event>
+// ) : CommandHandler<UpdateAllLocationsCommand> {
+//
+//    private val locationUpdaterService = LocationUpdaterService(locationRepository, eventPublisher)
+//
+//    override fun invoke(command: UpdateAllLocationsCommand) =
+//        locationUpdaterService.invoke().bind()
+//
+// }
+//
+// data class UpdateAllCompaniesCommand(override val commandId: UUID = UUID.randomUUID()) : Command

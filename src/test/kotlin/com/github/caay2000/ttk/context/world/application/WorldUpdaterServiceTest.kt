@@ -1,19 +1,25 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.right
+import com.github.caay2000.ttk.api.event.Command
+import com.github.caay2000.ttk.api.event.CommandBus
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
+import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommand
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.extension.thenReturnFirstArgument
 import com.github.caay2000.ttk.mother.WorldMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -22,8 +28,9 @@ internal class WorldUpdaterServiceTest {
     private val worldRepository: WorldRepository = mock()
     private val locationRepository: LocationRepository = mock()
     private val entityRepository: EntityRepository = mock()
+    private val commandBus: CommandBus<Command> = mock()
     private val eventPublisher: EventPublisher<Event> = mock()
-    private val sut = WorldUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
+    private val sut = WorldUpdaterService(worldRepository, locationRepository, entityRepository, commandBus, eventPublisher)
 
     @Test
     fun `turn is updated correctly`() {
@@ -36,6 +43,18 @@ internal class WorldUpdaterServiceTest {
         sut.invoke().shouldBeRight {
             verify(worldRepository).save(world.copy(currentTurn = 1))
         }
+    }
+
+    @Test
+    fun `should fail if location command fails`() {
+
+        `world exists`()
+        `updateAllLocationsCommand will fail`()
+
+        assertThrows<UnknownLocationException> {
+            sut.invoke()
+        }
+        verify(worldRepository, never()).save(any())
     }
 
     private fun `world exists`() {
@@ -52,6 +71,10 @@ internal class WorldUpdaterServiceTest {
 
     private fun `no entities exists`() {
         whenever(entityRepository.findAll()).thenReturn(emptyList<Entity>().right())
+    }
+
+    private fun `updateAllLocationsCommand will fail`() {
+        whenever(commandBus.publish(any<UpdateAllLocationsCommand>())).thenThrow(UnknownLocationException(RuntimeException()))
     }
 
     private val world = WorldMother.random()

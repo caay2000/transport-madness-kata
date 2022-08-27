@@ -1,17 +1,18 @@
 package com.github.caay2000.ttk.infra.eventbus
 
+import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventSubscriber
 import kotlin.reflect.KClass
 
-abstract class KTEventSubscriber<in EVENT>(type: KClass<*>) {
+abstract class KTEventSubscriber<in EVENT : Event>(type: KClass<*>) {
 
     init {
         subscribeTo(type)
     }
 
     private fun subscribeTo(type: KClass<*>) {
-        KTEventBus.getInstance<EVENT>().subscribe(this, type)
+        KTEventBus.getInstance<Command, EVENT>().subscribe(this, type)
     }
 
     internal fun execute(event: Any) {
