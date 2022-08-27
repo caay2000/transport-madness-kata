@@ -4,6 +4,7 @@ import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandBus
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Query
 import com.github.caay2000.ttk.context.company.application.CompanyCreatorService
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
@@ -60,7 +61,7 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
     private val updateAllCompanyVehiclesCommandHandler = UpdateAllCompanyVehiclesCommandHandler(worldRepository, locationRepository, entityRepository, eventPublisher)
 
     init {
-        KTEventBus.init<Command, Event>()
+        KTEventBus.init<Command, Query, Event>()
         instantiateEventSubscriber(LocationCreatedEvent::class, addLocationToWorldOnLocationCreatedEventSubscriber)
         instantiateEventSubscriber(EntityCreatedEvent::class, addEntityToCompanyOnEntityCreatedEventSubscriber)
         instantiateEventSubscriber(EntityUnloadedEvent::class, updateLocationOnEntityUnloadedEventSubscriber)

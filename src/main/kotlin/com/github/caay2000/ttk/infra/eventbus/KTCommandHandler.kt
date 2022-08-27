@@ -3,16 +3,17 @@ package com.github.caay2000.ttk.infra.eventbus
 import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandHandler
 import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.Query
 import kotlin.reflect.KClass
 
-abstract class KTCommandHandler<in COMMAND : Command>(type: KClass<*>) : CommandHandler<COMMAND> {
+abstract class KTCommandHandler<in COMMAND : Command>(type: KClass<COMMAND>) : CommandHandler<COMMAND> {
 
     init {
         subscribeTo(type)
     }
 
-    private fun subscribeTo(type: KClass<*>) {
-        KTEventBus.getInstance<COMMAND, Event>().subscribe(this, type)
+    private fun subscribeTo(type: KClass<COMMAND>) {
+        KTEventBus.getInstance<COMMAND, Query, Event>().subscribe(this, type)
     }
 
     internal fun execute(command: Any) {

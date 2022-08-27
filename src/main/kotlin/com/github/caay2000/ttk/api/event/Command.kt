@@ -6,6 +6,4 @@ interface Command {
 
     val commandId: UUID
     fun type(): String = this::class.java.simpleName
-
-    fun randomUUID(): UUID = UUID.randomUUID()
 }

@@ -2,6 +2,7 @@ package com.github.caay2000.ttk.infra.eventbus
 
 import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.Event
+import com.github.caay2000.ttk.api.event.Query
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +14,7 @@ internal class EventBusTest {
     @Test
     internal fun `subscribers receive the published event`() {
 
-        KTEventBus.init<Command, Event>()
+        KTEventBus.init<Command, Query, Event>()
         val sut = StringSubscriber()
         val event = StringTestEvent(value = "hi")
         KTEventPublisher<Event>().publish(listOf(event))
@@ -24,7 +25,7 @@ internal class EventBusTest {
     @Test
     internal fun `multiple subscribers receive the published event`() {
 
-        KTEventBus.init<Command, Event>()
+        KTEventBus.init<Command, Query, Event>()
         val subscriber1 = StringSubscriber()
         val subscriber2 = StringSubscriber()
         val event = StringTestEvent(value = "hi")
@@ -37,7 +38,7 @@ internal class EventBusTest {
     @Test
     internal fun `subscriber of different type does not receive the event`() {
 
-        KTEventBus.init<Command, Event>()
+        KTEventBus.init<Command, Query, Event>()
         val sut = IntSubscriber()
         KTEventPublisher<Event>().publish(listOf(StringTestEvent(value = "hi")))
 
