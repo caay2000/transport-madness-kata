@@ -24,6 +24,6 @@ interface ApplicationServiceApi {
     fun createEntity(companyId: CompanyId, entityType: EntityType, position: Position): Entity
     fun assignRoute(entityId: EntityId, route: List<Position>): Entity
 
-    fun passTurn(print: Boolean = false) : World
+    fun passTurn(print: Boolean = false): World
     fun printWorld()
 }
