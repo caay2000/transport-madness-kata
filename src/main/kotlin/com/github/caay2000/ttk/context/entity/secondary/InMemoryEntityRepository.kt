@@ -24,8 +24,15 @@ class InMemoryEntityRepository(private val db: InMemoryDatabase) : EntityReposit
             }
         }.flatMap { it?.right() ?: NoSuchElementException().left() }
 
-    override fun findAll(): Either<Throwable, List<Entity>> =
-        Either.catch { db.getAll(TABLE_NAME) }
+    override fun findAll(): Either<Throwable, List<Entity>> = Either.catch { db.getAll(TABLE_NAME) }
+
+    override fun findAll(criteria: EntityRepository.FindAllCriteria): Either<Throwable, List<Entity>> =
+        Either.catch {
+            when (criteria) {
+                is EntityRepository.FindAllCriteria.ByCompanyId ->
+                    db.getAll<Entity>(TABLE_NAME).filter { it.companyId == criteria.companyId }
+            }
+        }
 
     override fun save(entity: Entity): Either<Throwable, Entity> =
         Either.catch {

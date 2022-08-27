@@ -10,7 +10,7 @@ import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 
-class LocationUpdaterService(private val locationRepository: LocationRepository, private val eventPublisher: EventPublisher<Event>) {
+class AllLocationsUpdaterService(private val locationRepository: LocationRepository, private val eventPublisher: EventPublisher<Event>) {
 
     fun invoke(): Either<LocationException, Unit> =
         findAllLocations()
@@ -24,6 +24,7 @@ class LocationUpdaterService(private val locationRepository: LocationRepository,
     private fun Location.updateLocation(): Either<LocationException, Location> =
         update().right()
             .flatMap { location -> location.save() }
+            .flatMap { location -> location.publishEvents() }
 
     private fun findAllLocations(): Either<LocationException, List<Location>> =
         locationRepository.findAll()
@@ -31,5 +32,9 @@ class LocationUpdaterService(private val locationRepository: LocationRepository,
 
     private fun Location.save(): Either<LocationException, Location> =
         locationRepository.save(this)
+            .mapLeft { UnknownLocationException(it) }
+
+    private fun Location.publishEvents(): Either<LocationException, Location> =
+        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
             .mapLeft { UnknownLocationException(it) }
 }

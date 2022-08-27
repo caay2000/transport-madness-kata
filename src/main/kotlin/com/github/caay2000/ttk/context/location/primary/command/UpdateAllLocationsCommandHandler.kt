@@ -5,8 +5,8 @@ import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandHandler
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.location.application.AllLocationsUpdaterService
 import com.github.caay2000.ttk.context.location.application.LocationRepository
-import com.github.caay2000.ttk.context.location.application.LocationUpdaterService
 import java.util.UUID
 
 class UpdateAllLocationsCommandHandler(
@@ -14,10 +14,10 @@ class UpdateAllLocationsCommandHandler(
     eventPublisher: EventPublisher<Event>
 ) : CommandHandler<UpdateAllLocationsCommand> {
 
-    private val locationUpdaterService = LocationUpdaterService(locationRepository, eventPublisher)
+    private val allLocationsUpdaterService = AllLocationsUpdaterService(locationRepository, eventPublisher)
 
     override fun invoke(command: UpdateAllLocationsCommand) =
-        locationUpdaterService.invoke().bind()
+        allLocationsUpdaterService.invoke().bind()
 }
 
 data class UpdateAllLocationsCommand(override val commandId: UUID = UUID.randomUUID()) : Command

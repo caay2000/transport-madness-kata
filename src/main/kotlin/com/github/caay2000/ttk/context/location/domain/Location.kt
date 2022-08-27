@@ -1,5 +1,6 @@
 package com.github.caay2000.ttk.context.location.domain
 
+import com.github.caay2000.ttk.context.location.event.LocationCreatedEvent
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
 import com.github.caay2000.ttk.shared.LocationId
@@ -22,7 +23,7 @@ data class Location(
             position = position,
             population = population,
             rawPAX = rawPAX
-        )
+        ).also { it.pushEvent(LocationCreatedEvent(it.id, it.name, it.position)) }
     }
 
     val configuration: LocationConfiguration

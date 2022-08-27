@@ -21,4 +21,6 @@ data class Company(
 
     fun addEntity(entityId: EntityId): Company =
         copy(entities = entities + entityId)
+
+    fun update() = this
 }

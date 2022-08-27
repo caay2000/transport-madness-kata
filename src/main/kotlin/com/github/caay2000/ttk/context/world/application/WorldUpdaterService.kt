@@ -7,11 +7,8 @@ import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandBus
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.entity.application.EntityRepository
-import com.github.caay2000.ttk.context.entity.application.update.EntityUpdaterService
-import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
 import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommand
-import com.github.caay2000.ttk.context.world.domain.EntitiesUpdateWorldException
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
@@ -19,18 +16,14 @@ import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 
 class WorldUpdaterService(
     private val worldRepository: WorldRepository,
-    locationRepository: LocationRepository,
-    entityRepository: EntityRepository,
     private val commandBus: CommandBus<Command>,
     private val eventPublisher: EventPublisher<Event>
 ) {
 
-    private val entityUpdaterService = EntityUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
-
     fun invoke(): Either<WorldException, World> =
         Unit.right()
             .flatMap { updateAllLocations() }
-            .flatMap { updateAllEntities() }
+            .flatMap { updateAllCompanies() }
             .flatMap { updateWorld() }
             .flatMap { world -> world.save() }
             .flatMap { world -> world.publishEvents() }
@@ -42,9 +35,8 @@ class WorldUpdaterService(
     private fun updateAllLocations(): Either<WorldException, Unit> =
         commandBus.publish(UpdateAllLocationsCommand()).right()
 
-    private fun updateAllEntities(): Either<WorldException, Unit> =
-        entityUpdaterService.invoke()
-            .mapLeft { EntitiesUpdateWorldException(it) }
+    private fun updateAllCompanies(): Either<WorldException, Unit> =
+        commandBus.publish(UpdateAllCompaniesCommand()).right()
 
     private fun updateWorld(): Either<WorldException, World> =
         findWorld()

@@ -3,6 +3,7 @@ package com.github.caay2000.ttk.context.world.domain
 import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.shared.Aggregate
 import com.github.caay2000.ttk.shared.CompanyId
+import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.WorldId
 import com.github.caay2000.ttk.shared.randomDomainId
 import com.github.caay2000.ttk.shared.replace
@@ -41,6 +42,9 @@ data class World(
 
     fun createConnection(path: Set<Cell>): World =
         path.fold(initial = this) { world, cell -> world.updateCell { cell } }
+
+    fun addLocation(locationId: LocationId, position: Position): World =
+        updateCell { getCell(position).updateLocationId(locationId) }
 
     private fun updateCell(cell: () -> Cell): World = cell().let { newCell ->
         copy(cells = cells.replace(predicate = { it.samePosition(newCell) }, operation = { newCell }).toSet())

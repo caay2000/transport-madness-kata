@@ -19,11 +19,11 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-internal class LocationUpdaterServiceTest {
+internal class AllLocationsUpdaterServiceTest {
 
     private val locationRepository: LocationRepository = mock()
     private val eventPublisher: EventPublisher<Event> = mock()
-    private val sut = LocationUpdaterService(locationRepository, eventPublisher)
+    private val sut = AllLocationsUpdaterService(locationRepository, eventPublisher)
 
     @ParameterizedTest(name = "location with {0} population updated its rawPAX correctly")
     @CsvSource(value = ["1000,2.0", "500,1.0", "250,0.5"])

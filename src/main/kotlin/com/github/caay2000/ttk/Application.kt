@@ -7,6 +7,8 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyCreatorService
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
+import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
+import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommandHandler
 import com.github.caay2000.ttk.context.company.primary.event.AddEntityToCompanyOnEntityCreatedEventSubscriber
 import com.github.caay2000.ttk.context.company.secondary.InMemoryCompanyRepository
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
@@ -19,9 +21,12 @@ import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.event.EntityCreatedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.context.entity.primary.command.UpdateAllCompanyVehiclesCommand
+import com.github.caay2000.ttk.context.entity.primary.command.UpdateAllCompanyVehiclesCommandHandler
 import com.github.caay2000.ttk.context.entity.secondary.InMemoryEntityRepository
 import com.github.caay2000.ttk.context.location.application.LocationCreatorService
 import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.location.event.LocationCreatedEvent
 import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommand
 import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommandHandler
 import com.github.caay2000.ttk.context.location.primary.event.UpdateLocationOnEntityLoadedEventSubscriber
@@ -33,6 +38,7 @@ import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.context.world.primary.AddLocationToWorldOnLocationCreatedEventSubscriber
 import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
 import com.github.caay2000.ttk.infra.console.HexagonalConsolePrinter
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
@@ -53,18 +59,29 @@ class Application(
     private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
     private val worldRepository: WorldRepository = InMemoryWorldRepository(inMemoryDatabase)
 
+    private val addLocationToWorldOnLocationCreatedEventSubscriber = AddLocationToWorldOnLocationCreatedEventSubscriber(worldRepository, eventPublisher)
+    private val addEntityToCompanyOnEntityCreatedEventSubscriber = AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher)
+    private val updateLocationOnEntityUnloadedEventSubscriber = UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher)
+    private val updateLocationOnEntityLoadedEventSubscriber = UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher)
+    private val updateAllLocationsCommandHandler = UpdateAllLocationsCommandHandler(locationRepository, eventPublisher)
+    private val updateAllCompaniesCommandHandler = UpdateAllCompaniesCommandHandler(companyRepository, commandBus, eventPublisher)
+    private val updateAllCompanyVehiclesCommandHandler = UpdateAllCompanyVehiclesCommandHandler(worldRepository, locationRepository, entityRepository, eventPublisher)
+
     init {
         KTEventBus.init<Command, Event>()
-        instantiateEventSubscriber(EntityCreatedEvent::class, AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher))
-        instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher))
-        instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher))
-        instantiateCommandHandler(UpdateAllLocationsCommand::class, UpdateAllLocationsCommandHandler(locationRepository, eventPublisher))
+        instantiateEventSubscriber(LocationCreatedEvent::class, addLocationToWorldOnLocationCreatedEventSubscriber)
+        instantiateEventSubscriber(EntityCreatedEvent::class, addEntityToCompanyOnEntityCreatedEventSubscriber)
+        instantiateEventSubscriber(EntityUnloadedEvent::class, updateLocationOnEntityUnloadedEventSubscriber)
+        instantiateEventSubscriber(EntityLoadedEvent::class, updateLocationOnEntityLoadedEventSubscriber)
+        instantiateCommandHandler(UpdateAllLocationsCommand::class, updateAllLocationsCommandHandler)
+        instantiateCommandHandler(UpdateAllCompaniesCommand::class, updateAllCompaniesCommandHandler)
+        instantiateCommandHandler(UpdateAllCompanyVehiclesCommand::class, updateAllCompanyVehiclesCommandHandler)
     }
 
     private val configurationSetterService = ConfigurationSetterService()
     private val companyCreatorService = CompanyCreatorService(companyRepository, eventPublisher)
     private val worldCreatorService = WorldCreatorService(worldRepository, eventPublisher)
-    private val worldUpdaterService = WorldUpdaterService(worldRepository, locationRepository, entityRepository, commandBus, eventPublisher)
+    private val worldUpdaterService = WorldUpdaterService(worldRepository, commandBus, eventPublisher)
     private val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, eventPublisher)
     private val locationCreatorService = LocationCreatorService(locationRepository, eventPublisher)
     private val entityCreatorService = EntityCreatorService(worldRepository, companyRepository, entityRepository, eventPublisher)
