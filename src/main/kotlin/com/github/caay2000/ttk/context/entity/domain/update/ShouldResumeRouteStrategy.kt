@@ -4,6 +4,7 @@ import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus.IN_ROUTE
 import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.world.domain.Position
 
@@ -19,7 +20,7 @@ sealed class ShouldResumeRouteStrategy {
                 .bind()
 
         private fun findLocation(currentPosition: Position) =
-            locationRepository.find(LocationRepository.FindLocationCriteria.ByPositionCriteria(currentPosition))
+            locationRepository.find(ByPositionCriteria(currentPosition))
 
         private fun Entity.updateEntity(location: Location) =
             if (shouldResumeRoute(location)) copy(route = route.nextStop(), status = IN_ROUTE, currentDuration = 0)

@@ -10,7 +10,10 @@ import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 
-class AllLocationsUpdaterService(private val locationRepository: LocationRepository, private val eventPublisher: EventPublisher<Event>) {
+class AllLocationsUpdaterService(
+    private val locationRepository: LocationRepository,
+    private val eventPublisher: EventPublisher<Event>
+) {
 
     fun invoke(): Either<LocationException, Unit> =
         findAllLocations()

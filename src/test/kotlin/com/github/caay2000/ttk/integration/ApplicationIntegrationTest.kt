@@ -1,14 +1,15 @@
 package com.github.caay2000.ttk.integration
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.Application
-import com.github.caay2000.ttk.Application.LocationRequest
+import com.github.caay2000.ttk.ApplicationService
+import com.github.caay2000.ttk.ApplicationServiceApi
 import com.github.caay2000.ttk.context.entity.domain.EntityType
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
 import com.github.caay2000.ttk.context.entity.domain.Railcar
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import org.assertj.core.api.Assertions.assertThat
@@ -20,29 +21,39 @@ import java.util.stream.Stream
 
 class ApplicationIntegrationTest {
 
-    private val configuration = ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1)
     private val inMemoryDatabase = InMemoryDatabase()
 
     @ParameterizedTest
     @MethodSource("exercise 3 data")
-    fun `exercise 3`(startPosition: Position, paths: Map<Position, List<Position>>, route: List<Position>, turns: Int) {
+    fun `exercise 3`(startPosition: Position, paths: Map<Position, List<Position>>, route: List<Position>, finishingTurn: Int) {
 
-        val sut = Application(configuration, inMemoryDatabase)
+        val sut: ApplicationServiceApi = ApplicationService(inMemoryDatabase)
+        sut.setConfiguration(ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1))
 
-        assertThat(
-            sut.invoke(
-                entityType = PassengerTrain(3),
-                startPosition = listOf(startPosition),
-                paths = paths,
-                locations = setOf(
-                    LocationRequest("A", Position(0, 0), 500),
-                    LocationRequest("B", Position(3, 0), 100),
-                    LocationRequest("C", Position(3, 2), 1000),
-                    LocationRequest("D", Position(1, 4), 250)
-                ),
-                route = route
-            )
-        ).isEqualTo(turns)
+        val locationA = Position(0, 0)
+        val locationB = Position(3, 0)
+        val locationC = Position(3, 2)
+        val locationD = Position(1, 4)
+
+        sut.createWorld()
+        sut.createLocation("A", locationA, 500)
+        sut.createLocation("B", locationB, 100)
+        sut.createLocation("C", locationC, 1000)
+        sut.createLocation("D", locationD, 250)
+
+        paths.forEach { (source, destinations) ->
+            destinations.forEach { destination -> sut.createConnection(source, destination) }
+        }
+
+        val companyA = sut.createCompany("company A")
+        val entityA = sut.createEntity(companyA.id, PassengerTrain(3), startPosition)
+        sut.assignRoute(entityA.id, route)
+
+        repeat(finishingTurn) {
+            sut.passTurn()
+        }
+
+        assertThat(getWorld().currentTurn).isEqualTo(finishingTurn)
     }
 
     @Test
@@ -50,24 +61,29 @@ class ApplicationIntegrationTest {
 
         val finishingTurn = 18
 
-        val sut = Application(configuration, inMemoryDatabase)
+        val sut: ApplicationServiceApi = ApplicationService(inMemoryDatabase)
+        sut.setConfiguration(ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1))
 
         val locationA = Position(0, 0)
         val locationB = Position(3, 2)
         val locationC = Position(1, 4)
-        assertThat(
-            sut.invoke(
-                entityType = PassengerTrain(3),
-                startPosition = listOf(locationA),
-                paths = `path from 0,0 to 3,2 to 1,4 to 0,0`(),
-                locations = setOf(
-                    LocationRequest("A", locationA, 500),
-                    LocationRequest("B", locationB, 1000),
-                    LocationRequest("C", locationC, 250)
-                ),
-                route = `route from 0,0 to 3,2 to 1,4 to 3,2`()
-            )
-        ).isEqualTo(finishingTurn)
+
+        sut.createWorld()
+        sut.createLocation("A", locationA, 500)
+        sut.createLocation("B", locationB, 1000)
+        sut.createLocation("C", locationC, 250)
+
+        sut.createConnection(locationA, locationB)
+        sut.createConnection(locationB, locationC)
+        sut.createConnection(locationC, locationA)
+
+        val companyA = sut.createCompany("company A")
+        val entityA = sut.createEntity(companyA.id, PassengerTrain(3), locationA)
+        sut.assignRoute(entityA.id, listOf(locationA, locationB, locationC, locationB))
+
+        repeat(finishingTurn) {
+            sut.passTurn()
+        }
 
         assertThat(getLocation(locationA).pax).isEqualTo(17)
         assertThat(getLocation(locationA).received).isEqualTo(16)
@@ -83,61 +99,64 @@ class ApplicationIntegrationTest {
 
         val finishingTurn = 16
 
-        val sut = Application(configuration, inMemoryDatabase)
+        val sut: ApplicationServiceApi = ApplicationService(inMemoryDatabase)
+        sut.setConfiguration(ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1))
 
         val locationA = Position(0, 0)
         val locationB = Position(3, 0)
-        assertThat(
-            sut.invoke(
-                entityType = entityType,
-                startPosition = listOf(locationA),
-                paths = `path from 0,0 to 3,0`(),
-                locations = setOf(
-                    LocationRequest("A", locationA, 5000),
-                    LocationRequest("B", locationB, 5000)
-                ),
-                route = `route from 0,0 to 3,0`(),
-                timesToComplete = 2
-            )
-        ).isEqualTo(finishingTurn)
 
-        assertThat(getLocation(locationA).pax).isEqualTo(paxA)
-        assertThat(getLocation(locationA).received).isEqualTo(receivedA)
-        assertThat(getLocation(locationB).pax).isEqualTo(paxB)
-        assertThat(getLocation(locationB).received).isEqualTo(receivedB)
+        sut.createWorld()
+        sut.createLocation("A", locationA, 5000)
+        sut.createLocation("B", locationB, 5000)
+
+        sut.createConnection(locationA, locationB)
+
+        val companyA = sut.createCompany("company A")
+        val entityA = sut.createEntity(companyA.id, entityType, locationA)
+        sut.assignRoute(entityA.id, listOf(locationA, locationB))
+
+        repeat(finishingTurn) {
+            sut.passTurn()
+        }
+
+        ConfigurationMother.random(worldWidth = 4, worldHeight = 6, minDistanceBetweenCities = 1)
     }
 
     @Test
-    fun `exercise 7`() {
+    fun `exercise 7 with service api`() {
 
         val finishingTurn = 186
 
-        val configuration = ConfigurationMother.random(worldWidth = 40, worldHeight = 40)
-        val sut = Application(configuration, inMemoryDatabase)
+        val sut: ApplicationServiceApi = ApplicationService(inMemoryDatabase)
+        sut.setConfiguration(ConfigurationMother.random(worldWidth = 40, worldHeight = 40))
 
         val locationA = Position(8, 4)
         val locationB = Position(5, 25)
         val locationC = Position(20, 25)
         val locationD = Position(35, 5)
         val locationE = Position(35, 35)
-        assertThat(
-            sut.invoke(
-                entityType = PassengerTrain(3),
-                startPosition = listOf(locationA),
-                paths = mapOf(
-                    locationA to listOf(locationB, locationC),
-                    locationC to listOf(locationE, locationD)
-                ),
-                locations = setOf(
-                    LocationRequest("A", locationA, 500),
-                    LocationRequest("B", locationB, 1000),
-                    LocationRequest("C", locationC, 250),
-                    LocationRequest("D", locationD, 500),
-                    LocationRequest("E", locationE, 750)
-                ),
-                route = listOf(locationA, locationB, locationA, locationC, locationD, locationC, locationE, locationC)
-            )
-        ).isEqualTo(finishingTurn)
+
+        sut.createWorld()
+        sut.createLocation("A", locationA, 500)
+        sut.createLocation("B", locationB, 1000)
+        sut.createLocation("C", locationC, 250)
+        sut.createLocation("D", locationD, 500)
+        sut.createLocation("E", locationE, 750)
+
+        sut.createConnection(locationA, locationB)
+        sut.createConnection(locationA, locationC)
+        sut.createConnection(locationC, locationE)
+        sut.createConnection(locationC, locationD)
+
+        val companyA = sut.createCompany("company A")
+        val entityA = sut.createEntity(companyA.id, PassengerTrain(3), locationA)
+        sut.assignRoute(entityA.id, listOf(locationA, locationB, locationA, locationC, locationD, locationC, locationE, locationC))
+
+        repeat(finishingTurn) {
+            sut.passTurn()
+        }
+
+        sut.printWorld()
 
         assertThat(getLocation(locationA).received).isEqualTo(67)
         assertThat(getLocation(locationB).received).isEqualTo(1)
@@ -186,6 +205,9 @@ class ApplicationIntegrationTest {
             Position(1, 4) to listOf(Position(0, 0), Position(3, 2))
         )
     }
+
+    private fun getWorld() =
+        InMemoryWorldRepository(inMemoryDatabase).get().bind()
 
     private fun getLocation(position: Position) =
         InMemoryLocationRepository(inMemoryDatabase).find(ByPositionCriteria(position)).bind()
