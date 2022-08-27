@@ -4,22 +4,26 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
 import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.context.company.domain.CompanyException
 import com.github.caay2000.ttk.context.company.domain.UnknownCompanyException
+import com.github.caay2000.ttk.shared.CompanyId
+import com.github.caay2000.ttk.shared.EntityId
 
-class CompanyCreatorService(
+class CompanyEntityAdderService(
     private val companyRepository: CompanyRepository,
     private val eventPublisher: EventPublisher<Event>
 ) {
 
-    fun invoke(name: String) =
-        createCompany(name)
+    fun invoke(companyId: CompanyId, entityId: EntityId): Either<CompanyException, Company> =
+        findCompany(companyId)
+            .map { company -> company.addEntity(entityId) }
             .flatMap { company -> company.save() }
             .flatMap { company -> company.publishEvents() }
 
-    private fun createCompany(name: String): Either<CompanyException, Company> =
-        Either.catch { Company.create(name) }
+    private fun findCompany(companyId: CompanyId): Either<CompanyException, Company> =
+        companyRepository.find(ByIdCriteria(companyId))
             .mapLeft { UnknownCompanyException(it) }
 
     private fun Company.save(): Either<CompanyException, Company> =

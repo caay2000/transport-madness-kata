@@ -5,6 +5,7 @@ import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyCreatorService
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
+import com.github.caay2000.ttk.context.company.primary.AddEntityToCompanyOnEntityCreatedEventSubscriber
 import com.github.caay2000.ttk.context.company.secondary.InMemoryCompanyRepository
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
@@ -13,6 +14,7 @@ import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.entity.application.EntityRouteAssignerService
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityType
+import com.github.caay2000.ttk.context.entity.event.EntityCreatedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.entity.secondary.InMemoryEntityRepository
@@ -46,6 +48,7 @@ class Application(
 
     init {
         KTEventBus.init<Event>()
+        instantiateEventSubscriber(EntityCreatedEvent::class, AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher))
         instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher))
         instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher))
     }
