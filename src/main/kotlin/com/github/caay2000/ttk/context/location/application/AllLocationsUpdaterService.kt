@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.computations.ResultEffect.bind
 import arrow.core.flatMap
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
@@ -12,7 +11,7 @@ import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 
 class AllLocationsUpdaterService(
     private val locationRepository: LocationRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(): Either<LocationException, Unit> =

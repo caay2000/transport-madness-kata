@@ -1,7 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
 import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
@@ -31,7 +30,7 @@ internal class EntityCreatorServiceTest {
     private val worldRepository: WorldRepository = mock()
     private val companyRepository: CompanyRepository = mock()
     private val entityRepository: EntityRepository = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val eventPublisher: EventPublisher = mock()
     private val sut = EntityCreatorService(worldRepository, companyRepository, entityRepository, eventPublisher)
 
     @Test

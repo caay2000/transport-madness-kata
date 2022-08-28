@@ -1,7 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
@@ -21,7 +20,7 @@ import org.mockito.kotlin.whenever
 internal class EntityUpdateMoverServiceTest {
 
     private val worldRepository: WorldRepository = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val eventPublisher: EventPublisher = mock()
 
     private val sut = EntityUpdateMoverService(worldRepository, eventPublisher)
 

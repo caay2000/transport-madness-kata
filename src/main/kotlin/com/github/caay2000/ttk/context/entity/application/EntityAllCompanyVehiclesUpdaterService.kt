@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.computations.ResultEffect.bind
 import arrow.core.flatMap
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.application.EntityRepository.FindAllCriteria.ByCompanyId
 import com.github.caay2000.ttk.context.entity.application.update.EntityUpdateLoaderService
 import com.github.caay2000.ttk.context.entity.application.update.EntityUpdateMoverService
@@ -23,13 +23,14 @@ class EntityAllCompanyVehiclesUpdaterService(
     worldRepository: WorldRepository,
     locationRepository: LocationRepository,
     private val entityRepository: EntityRepository,
-    eventPublisher: EventPublisher<Event>
+    queryExecutor: QueryExecutor,
+    eventPublisher: EventPublisher
 ) {
 
-    private val loaderService = EntityUpdateLoaderService(locationRepository, eventPublisher)
+    private val loaderService = EntityUpdateLoaderService(queryExecutor, eventPublisher)
     private val unloaderService = EntityUpdateUnloaderService(eventPublisher)
     private val moverService = EntityUpdateMoverService(worldRepository, eventPublisher)
-    private val starterService = EntityUpdateStarterService(locationRepository, eventPublisher)
+    private val starterService = EntityUpdateStarterService(queryExecutor, eventPublisher)
     private val stopperService = EntityUpdateStopperService(eventPublisher)
 
     fun invoke(companyId: CompanyId): Either<EntityException, Unit> =

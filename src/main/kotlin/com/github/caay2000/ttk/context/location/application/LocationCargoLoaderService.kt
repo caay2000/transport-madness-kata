@@ -2,19 +2,19 @@ package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
-import com.github.caay2000.ttk.context.location.domain.LocationNotFoundByPositionException
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
 import com.github.caay2000.ttk.context.world.domain.Position
 
 class LocationCargoLoaderService(
     private val locationRepository: LocationRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
+
+    private val locationFinder = LocationFinder(locationRepository)
 
     fun invoke(position: Position, amountLoaded: Int): Either<LocationException, Location> =
         findLocation(position)
@@ -23,8 +23,7 @@ class LocationCargoLoaderService(
             .flatMap { location -> location.publishEvents() }
 
     private fun findLocation(position: Position): Either<LocationException, Location> =
-        locationRepository.find(ByPositionCriteria(position))
-            .mapLeft { LocationNotFoundByPositionException(position) }
+        locationFinder.invoke(ByPositionCriteria(position))
 
     private fun Location.save(): Either<LocationException, Location> =
         locationRepository.save(this)

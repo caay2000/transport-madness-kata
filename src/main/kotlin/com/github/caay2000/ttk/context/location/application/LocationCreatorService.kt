@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.Location
@@ -17,7 +16,7 @@ import com.github.caay2000.ttk.context.world.domain.Position
 
 class LocationCreatorService(
     private val locationRepository: LocationRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(name: String, position: Position, population: Int): Either<LocationException, Location> =

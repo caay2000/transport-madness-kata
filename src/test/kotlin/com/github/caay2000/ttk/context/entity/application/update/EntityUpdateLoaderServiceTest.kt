@@ -1,13 +1,13 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
-import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQuery
+import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
@@ -21,10 +21,10 @@ import org.mockito.kotlin.whenever
 
 internal class EntityUpdateLoaderServiceTest {
 
-    private val locationRepository: LocationRepository = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val queryExecutor: QueryExecutor = mock()
+    private val eventPublisher: EventPublisher = mock()
 
-    private val sut = EntityUpdateLoaderService(locationRepository, eventPublisher)
+    private val sut = EntityUpdateLoaderService(queryExecutor, eventPublisher)
 
     @Test
     fun `should do nothing if entity is IN_ROUTE`() {
@@ -105,7 +105,7 @@ internal class EntityUpdateLoaderServiceTest {
     }
 
     private fun `location exists`(location: Location = crowdedLocation) {
-        whenever(locationRepository.find(any())).thenReturn(location.right())
+        whenever(queryExecutor.execute<LocationFinderQuery, LocationFinderQueryResponse>(any())).thenReturn(LocationFinderQueryResponse(location))
     }
 
     private val readyToLoadEntity: Entity = EntityMother.random(

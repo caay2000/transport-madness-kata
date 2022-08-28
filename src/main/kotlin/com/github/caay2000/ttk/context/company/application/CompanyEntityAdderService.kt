@@ -2,7 +2,6 @@ package com.github.caay2000.ttk.context.company.application
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
 import com.github.caay2000.ttk.context.company.domain.Company
@@ -13,7 +12,7 @@ import com.github.caay2000.ttk.shared.EntityId
 
 class CompanyEntityAdderService(
     private val companyRepository: CompanyRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(companyId: CompanyId, entityId: EntityId): Either<CompanyException, Company> =

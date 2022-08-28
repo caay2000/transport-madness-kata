@@ -1,7 +1,6 @@
 package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationsTooCloseException
@@ -21,7 +20,7 @@ import org.mockito.kotlin.whenever
 class LocationCreatorServiceTest {
 
     private val locationRepository: LocationRepository = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val eventPublisher: EventPublisher = mock()
     private val sut = LocationCreatorService(locationRepository, eventPublisher)
 
     @Test

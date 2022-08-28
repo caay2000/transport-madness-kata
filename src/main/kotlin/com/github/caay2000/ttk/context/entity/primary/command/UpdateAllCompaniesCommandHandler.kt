@@ -3,8 +3,8 @@ package com.github.caay2000.ttk.context.entity.primary.command
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandHandler
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.application.EntityAllCompanyVehiclesUpdaterService
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
 import com.github.caay2000.ttk.context.location.application.LocationRepository
@@ -16,10 +16,17 @@ class UpdateAllCompanyVehiclesCommandHandler(
     worldRepository: WorldRepository,
     locationRepository: LocationRepository,
     entityRepository: EntityRepository,
-    eventPublisher: EventPublisher<Event>
+    queryExecutor: QueryExecutor,
+    eventPublisher: EventPublisher
 ) : CommandHandler<UpdateAllCompanyVehiclesCommand> {
 
-    private val entityAllCompanyVehiclesUpdaterService = EntityAllCompanyVehiclesUpdaterService(worldRepository, locationRepository, entityRepository, eventPublisher)
+    private val entityAllCompanyVehiclesUpdaterService = EntityAllCompanyVehiclesUpdaterService(
+        worldRepository,
+        locationRepository,
+        entityRepository,
+        queryExecutor,
+        eventPublisher
+    )
 
     override fun invoke(command: UpdateAllCompanyVehiclesCommand) =
         entityAllCompanyVehiclesUpdaterService.invoke(command.companyId).bind()

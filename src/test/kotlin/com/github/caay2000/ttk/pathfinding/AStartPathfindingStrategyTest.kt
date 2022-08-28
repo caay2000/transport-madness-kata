@@ -60,6 +60,6 @@ internal class AStartPathfindingStrategyTest {
         }
     }
 
-    private val map = WorldMother.empty(width = 4, height = 4).cells
+    private val map = WorldMother.empty(width = 4, height = 4).cells.values.toSet()
     private fun cell(x: Int, y: Int): Cell = map.first { cell -> cell.position == Position(x, y) }
 }

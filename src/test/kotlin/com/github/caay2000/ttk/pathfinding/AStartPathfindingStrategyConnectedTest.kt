@@ -54,7 +54,7 @@ internal class AStartPathfindingStrategyConnectedTest {
         width = 4,
         height = 4,
         connectedPaths = mapOf(Position(0, 0) to listOf(Position(0, 2), Position(3, 2)))
-    ).cells
+    ).cells.values.toSet()
 
     private fun cell(x: Int, y: Int): Cell = map.first { cell -> cell.position == Position(x, y) }
 }

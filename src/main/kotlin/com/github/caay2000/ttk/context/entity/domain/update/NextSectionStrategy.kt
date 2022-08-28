@@ -28,7 +28,7 @@ sealed class NextSectionStrategy {
 
         private fun World.findNextSection(source: Position, target: Position) =
             pathfindingStrategy.invoke(
-                cells = connectedCells,
+                cells = cells.values.filter { it.connected }.toSet(),
                 source = getCell(source),
                 target = getCell(target)
             )

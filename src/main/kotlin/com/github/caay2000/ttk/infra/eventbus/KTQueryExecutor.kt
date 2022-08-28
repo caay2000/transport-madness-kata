@@ -6,8 +6,8 @@ import com.github.caay2000.ttk.api.event.Query
 import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.api.event.QueryResponse
 
-class KTQueryExecutor<in QUERY : Query, out RESPONSE : QueryResponse> : QueryExecutor<QUERY, RESPONSE> {
+class KTQueryExecutor : QueryExecutor {
 
-    override fun <QUERY_1 : QUERY, RESPONSE_1 : @UnsafeVariance RESPONSE> execute(query: QUERY_1): RESPONSE_1 =
+    override fun <QUERY : Query, RESPONSE : QueryResponse> execute(query: QUERY): RESPONSE =
         KTEventBus.getInstance<Command, QUERY, Event>().executeQuery(query)
 }

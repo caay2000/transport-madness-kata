@@ -1,9 +1,7 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandBus
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.domain.UnknownCompanyException
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
@@ -24,8 +22,8 @@ import org.mockito.kotlin.whenever
 internal class WorldUpdaterServiceTest {
 
     private val worldRepository: WorldRepository = mock()
-    private val commandBus: CommandBus<Command> = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val commandBus: CommandBus = mock()
+    private val eventPublisher: EventPublisher = mock()
     private val sut = WorldUpdaterService(worldRepository, commandBus, eventPublisher)
 
     @Test

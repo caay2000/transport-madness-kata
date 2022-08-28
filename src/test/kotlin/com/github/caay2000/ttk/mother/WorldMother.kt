@@ -37,24 +37,24 @@ object WorldMother {
         connectedPaths: Map<Position, List<Position>> = emptyMap()
     ): World = empty(width = width, height = height).connectPath(connectedPaths)
 
-    private fun createCells(width: Int, height: Int): Set<Cell> {
-        val cells = mutableSetOf<Cell>()
+    private fun createCells(width: Int, height: Int): Map<Position, Cell> {
+        val cells = mutableMapOf<Position, Cell>()
         for (x in 0 until width) {
             for (y in 0 until height) {
-                cells.add(Cell(x, y, Cell.CellConnection.NOT_CONNECTED))
+                cells[Position(x, y)] = Cell(x, y, Cell.CellConnection.NOT_CONNECTED)
             }
         }
         return cells
     }
 
     private fun World.connectPath(paths: Map<Position, List<Position>>): World {
-        val updatedCells = this.cells as MutableSet
+        val updatedCells: MutableMap<Position, Cell> = mutableMapOf()
+        this.cells.toMap(updatedCells)
         paths.forEach { (source, targets) ->
             targets.forEach { target ->
-                val path = pathfindingStrategy.invoke(this.cells, this.getCell(source), this.getCell(target)).bind().path
+                val path = pathfindingStrategy.invoke(this.cells.values.toSet(), this.getCell(source), this.getCell(target)).bind().path
                 path.forEach { cell ->
-                    updatedCells.removeIf { it.samePosition(cell) }
-                    updatedCells.add(CellMother.random(cell.position.x, cell.position.y, Cell.CellConnection.CONNECTED))
+                    updatedCells[cell.position] = CellMother.random(cell.position.x, cell.position.y, Cell.CellConnection.CONNECTED)
                 }
             }
         }

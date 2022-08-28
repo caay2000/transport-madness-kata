@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
 import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
@@ -23,7 +22,7 @@ class EntityCreatorService(
     private val worldRepository: WorldRepository,
     private val companyRepository: CompanyRepository,
     private val entityRepository: EntityRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(companyId: CompanyId, entityType: EntityType, position: Position): Either<EntityException, Entity> =

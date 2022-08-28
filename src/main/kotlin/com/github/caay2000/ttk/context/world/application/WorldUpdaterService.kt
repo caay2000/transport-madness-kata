@@ -3,9 +3,7 @@ package com.github.caay2000.ttk.context.world.application
 import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandBus
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
 import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommand
@@ -16,8 +14,8 @@ import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 
 class WorldUpdaterService(
     private val worldRepository: WorldRepository,
-    private val commandBus: CommandBus<Command>,
-    private val eventPublisher: EventPublisher<Event>
+    private val commandBus: CommandBus,
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(): Either<WorldException, World> =

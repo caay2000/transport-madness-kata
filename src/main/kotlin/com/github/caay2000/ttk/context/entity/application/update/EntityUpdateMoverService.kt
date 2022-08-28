@@ -2,7 +2,6 @@ package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
@@ -13,7 +12,7 @@ import com.github.caay2000.ttk.context.world.application.WorldRepository
 
 class EntityUpdateMoverService(
     worldRepository: WorldRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
 
     private val entityMovementStrategy = EntityMovementStrategy.SimpleEntityMovementStrategy(worldRepository)

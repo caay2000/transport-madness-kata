@@ -18,8 +18,8 @@ internal class QueryBusTest {
 
         val queryTrue = TestQuery(value = true)
         val queryFalse = TestQuery(value = false)
-        val resultTrue = KTQueryExecutor<TestQuery, QueryResponse>().execute<TestQuery, TestQueryResponse>(queryTrue)
-        val resultFalse = KTQueryExecutor<TestQuery, QueryResponse>().execute<TestQuery, TestQueryResponse>(queryFalse)
+        val resultTrue = KTQueryExecutor().execute<TestQuery, TestQueryResponse>(queryTrue)
+        val resultFalse = KTQueryExecutor().execute<TestQuery, TestQueryResponse>(queryFalse)
 
         assertThat(resultTrue.value).isEqualTo("true")
         assertThat(resultTrue.queryId).isEqualTo(queryTrue.queryId)

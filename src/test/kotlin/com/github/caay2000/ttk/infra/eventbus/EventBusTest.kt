@@ -17,7 +17,7 @@ internal class EventBusTest {
         KTEventBus.init<Command, Query, Event>()
         val sut = StringSubscriber()
         val event = StringTestEvent(value = "hi")
-        KTEventPublisher<Event>().publish(listOf(event))
+        KTEventPublisher().publish(listOf(event))
 
         assertThat(sut.events).isEqualTo(listOf(event))
     }
@@ -29,7 +29,7 @@ internal class EventBusTest {
         val subscriber1 = StringSubscriber()
         val subscriber2 = StringSubscriber()
         val event = StringTestEvent(value = "hi")
-        KTEventPublisher<Event>().publish(listOf(event))
+        KTEventPublisher().publish(listOf(event))
 
         assertThat(subscriber1.events).isEqualTo(listOf(event))
         assertThat(subscriber2.events).isEqualTo(listOf(event))
@@ -40,7 +40,7 @@ internal class EventBusTest {
 
         KTEventBus.init<Command, Query, Event>()
         val sut = IntSubscriber()
-        KTEventPublisher<Event>().publish(listOf(StringTestEvent(value = "hi")))
+        KTEventPublisher().publish(listOf(StringTestEvent(value = "hi")))
 
         assertThat(sut.events).hasSize(0)
     }

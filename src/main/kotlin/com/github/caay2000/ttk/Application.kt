@@ -5,6 +5,7 @@ import com.github.caay2000.ttk.api.event.CommandBus
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.event.Query
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.company.application.CompanyCreatorService
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
@@ -28,6 +29,8 @@ import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocatio
 import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommandHandler
 import com.github.caay2000.ttk.context.location.primary.event.UpdateLocationOnEntityLoadedEventSubscriber
 import com.github.caay2000.ttk.context.location.primary.event.UpdateLocationOnEntityUnloadedEventSubscriber
+import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQuery
+import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryHandler
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
@@ -40,13 +43,16 @@ import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.infra.eventbus.KTCommandBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventBus
 import com.github.caay2000.ttk.infra.eventbus.KTEventPublisher
+import com.github.caay2000.ttk.infra.eventbus.KTQueryExecutor
 import com.github.caay2000.ttk.infra.eventbus.instantiateCommandHandler
 import com.github.caay2000.ttk.infra.eventbus.instantiateEventSubscriber
+import com.github.caay2000.ttk.infra.eventbus.instantiateQueryHandler
 
 internal class Application(inMemoryDatabase: InMemoryDatabase) {
 
-    private val eventPublisher: EventPublisher<Event> = KTEventPublisher()
-    private val commandBus: CommandBus<Command> = KTCommandBus()
+    private val commandBus: CommandBus = KTCommandBus()
+    private val queryExecutor: QueryExecutor = KTQueryExecutor()
+    private val eventPublisher: EventPublisher = KTEventPublisher()
     private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
     private val companyRepository: CompanyRepository = InMemoryCompanyRepository(inMemoryDatabase)
     private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
@@ -56,9 +62,11 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
     private val addEntityToCompanyOnEntityCreatedEventSubscriber = AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher)
     private val updateLocationOnEntityUnloadedEventSubscriber = UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher)
     private val updateLocationOnEntityLoadedEventSubscriber = UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher)
+    private val locationFinderQueryHandler = LocationFinderQueryHandler(locationRepository)
     private val updateAllLocationsCommandHandler = UpdateAllLocationsCommandHandler(locationRepository, eventPublisher)
     private val updateAllCompaniesCommandHandler = UpdateAllCompaniesCommandHandler(companyRepository, commandBus, eventPublisher)
-    private val updateAllCompanyVehiclesCommandHandler = UpdateAllCompanyVehiclesCommandHandler(worldRepository, locationRepository, entityRepository, eventPublisher)
+    private val updateAllCompanyVehiclesCommandHandler =
+        UpdateAllCompanyVehiclesCommandHandler(worldRepository, locationRepository, entityRepository, queryExecutor, eventPublisher)
 
     init {
         KTEventBus.init<Command, Query, Event>()
@@ -66,6 +74,7 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
         instantiateEventSubscriber(EntityCreatedEvent::class, addEntityToCompanyOnEntityCreatedEventSubscriber)
         instantiateEventSubscriber(EntityUnloadedEvent::class, updateLocationOnEntityUnloadedEventSubscriber)
         instantiateEventSubscriber(EntityLoadedEvent::class, updateLocationOnEntityLoadedEventSubscriber)
+        instantiateQueryHandler(LocationFinderQuery::class, locationFinderQueryHandler)
         instantiateCommandHandler(UpdateAllLocationsCommand::class, updateAllLocationsCommandHandler)
         instantiateCommandHandler(UpdateAllCompaniesCommand::class, updateAllCompaniesCommandHandler)
         instantiateCommandHandler(UpdateAllCompanyVehiclesCommand::class, updateAllCompanyVehiclesCommandHandler)

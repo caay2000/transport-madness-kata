@@ -1,6 +1,5 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
@@ -15,7 +14,7 @@ import org.mockito.kotlin.verify
 
 internal class EntityUpdateUnloaderServiceTest {
 
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val eventPublisher: EventPublisher = mock()
     private val sut = EntityUpdateUnloaderService(eventPublisher)
 
     @Test

@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.api.event
 
-interface CommandBus<in COMMAND : Command> {
+interface CommandBus {
 
-    fun publish(command: COMMAND)
+    fun <COMMAND : Command> publish(command: COMMAND)
 }

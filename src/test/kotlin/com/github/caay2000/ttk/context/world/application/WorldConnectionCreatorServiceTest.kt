@@ -30,7 +30,7 @@ internal class WorldConnectionCreatorServiceTest {
         `world will be saved`()
 
         sut.invoke(Position(0, 0), Position(3, 2)).shouldBeRight {
-            assertThat(it.connectedCells).isEqualTo(expectedPath)
+            assertThat(it.cells.values.filter { cell -> cell.connected }.toSet()).isEqualTo(expectedPath)
             verify(worldRepository).save(it)
         }
     }

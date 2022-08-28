@@ -2,7 +2,6 @@ package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.entity.application.EntityRepository.FindEntityCriteria.ByIdCriteria
 import com.github.caay2000.ttk.context.entity.domain.Entity
@@ -16,7 +15,7 @@ import com.github.caay2000.ttk.shared.EntityId
 
 class EntityRouteAssignerService(
     private val entityRepository: EntityRepository,
-    private val eventPublisher: EventPublisher<Event>
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(entityId: EntityId, stops: List<Position>): Either<EntityException, Entity> =

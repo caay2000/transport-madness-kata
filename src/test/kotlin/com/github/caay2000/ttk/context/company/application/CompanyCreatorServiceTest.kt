@@ -1,6 +1,5 @@
 package com.github.caay2000.ttk.context.company.application
 
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.secondary.InMemoryCompanyRepository
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
@@ -12,7 +11,7 @@ import org.mockito.kotlin.mock
 internal class CompanyCreatorServiceTest {
 
     private val companyRepository: CompanyRepository = InMemoryCompanyRepository(InMemoryDatabase())
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val eventPublisher: EventPublisher = mock()
     private val sut = CompanyCreatorService(companyRepository, eventPublisher)
 
     @Test

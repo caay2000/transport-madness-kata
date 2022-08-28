@@ -6,17 +6,13 @@ import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.WorldId
 import com.github.caay2000.ttk.shared.randomDomainId
-import com.github.caay2000.ttk.shared.replace
 
 data class World(
     override val id: WorldId = randomDomainId(),
     val currentTurn: Int,
-    val cells: Set<Cell>,
+    val cells: Map<Position, Cell>,
     val companies: Map<CompanyId, Company>
 ) : Aggregate() {
-
-    val connectedCells: Set<Cell>
-        get() = cells.filter { it.connected }.toSet()
 
     companion object {
         fun create(width: Int, height: Int) = World(
@@ -25,18 +21,18 @@ data class World(
             companies = emptyMap()
         )
 
-        private fun createCells(width: Int, height: Int): Set<Cell> {
-            val cells = mutableSetOf<Cell>()
+        private fun createCells(width: Int, height: Int): Map<Position, Cell> {
+            val cells = mutableMapOf<Position, Cell>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    cells.add(Cell(x, y))
+                    cells[Position(x, y)] = Cell(x, y)
                 }
             }
             return cells
         }
     }
 
-    fun getCell(position: Position): Cell = cells.first { it.position == position }
+    fun getCell(position: Position): Cell = cells.getValue(position)
 
     fun update(): World = copy(currentTurn = currentTurn + 1)
 
@@ -47,6 +43,6 @@ data class World(
         updateCell { getCell(position).updateLocationId(locationId) }
 
     private fun updateCell(cell: () -> Cell): World = cell().let { newCell ->
-        copy(cells = cells.replace(predicate = { it.samePosition(newCell) }, operation = { newCell }).toSet())
+        copy(cells = cells + (newCell.position to newCell))
     }
 }

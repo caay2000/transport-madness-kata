@@ -2,7 +2,6 @@ package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.left
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
@@ -22,7 +21,7 @@ import org.mockito.kotlin.whenever
 internal class AllLocationsUpdaterServiceTest {
 
     private val locationRepository: LocationRepository = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
+    private val eventPublisher: EventPublisher = mock()
     private val sut = AllLocationsUpdaterService(locationRepository, eventPublisher)
 
     @ParameterizedTest(name = "location with {0} population updated its rawPAX correctly")

@@ -2,21 +2,20 @@ package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.EntityUpdateLoaderServiceException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
-import com.github.caay2000.ttk.context.location.application.LocationRepository
 
 class EntityUpdateLoaderService(
-    locationRepository: LocationRepository,
-    private val eventPublisher: EventPublisher<Event>
+    queryExecutor: QueryExecutor,
+    private val eventPublisher: EventPublisher
 ) {
 
-    private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(locationRepository)
+    private val loadPassengersStrategy = LoadPassengersStrategy.SimpleLoadPassengersStrategy(queryExecutor)
 
     fun invoke(entity: Entity): Either<EntityException, Entity> =
         Either.catch { entity.updateLoad(loadPassengersStrategy) }

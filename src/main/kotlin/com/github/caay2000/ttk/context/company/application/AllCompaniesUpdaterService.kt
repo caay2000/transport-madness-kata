@@ -4,9 +4,7 @@ import arrow.core.Either
 import arrow.core.computations.ResultEffect.bind
 import arrow.core.flatMap
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.Command
 import com.github.caay2000.ttk.api.event.CommandBus
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.context.company.domain.CompanyException
@@ -15,8 +13,8 @@ import com.github.caay2000.ttk.context.entity.primary.command.UpdateAllCompanyVe
 
 class AllCompaniesUpdaterService(
     private val companyRepository: CompanyRepository,
-    private val commandBus: CommandBus<Command>,
-    private val eventPublisher: EventPublisher<Event>
+    private val commandBus: CommandBus,
+    private val eventPublisher: EventPublisher
 ) {
 
     fun invoke(): Either<CompanyException, Unit> =

@@ -1,11 +1,11 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import arrow.core.right
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
-import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQuery
+import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
@@ -22,9 +22,9 @@ import org.mockito.kotlin.whenever
 
 internal class EntityUpdateStarterServiceTest {
 
-    private val locationRepository: LocationRepository = mock()
-    private val eventPublisher: EventPublisher<Event> = mock()
-    private val sut = EntityUpdateStarterService(locationRepository, eventPublisher)
+    private val queryExecutor: QueryExecutor = mock()
+    private val eventPublisher: EventPublisher = mock()
+    private val sut = EntityUpdateStarterService(queryExecutor, eventPublisher)
 
     @Test
     fun `entity should wait x turns in STOP`() {
@@ -79,7 +79,7 @@ internal class EntityUpdateStarterServiceTest {
     }
 
     private fun `world exists`() {
-        whenever(locationRepository.find(any())).thenReturn(location.right())
+        whenever(queryExecutor.execute<LocationFinderQuery, LocationFinderQueryResponse>(any())).thenReturn(LocationFinderQueryResponse(location))
     }
 
     private val configuration = ConfigurationMother.random().set()
