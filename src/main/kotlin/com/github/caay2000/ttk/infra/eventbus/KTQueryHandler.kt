@@ -17,18 +17,9 @@ abstract class KTQueryHandler<in QUERY : Query, out RESPONSE : QueryResponse>(ty
         KTEventBus.getInstance<Command, QUERY, Event>().subscribe(this, type)
     }
 
+    @Suppress("UNCHECKED_CAST")
     internal fun <RESPONSE_1 : @UnsafeVariance RESPONSE> execute(query: QUERY): RESPONSE_1 =
-        @Suppress("UNCHECKED_CAST")
-        (this.handle(query) as RESPONSE_1).updateQueryId(query)
-
-    private fun <RESPONSE_1 : RESPONSE> RESPONSE_1.updateQueryId(query: QUERY): RESPONSE_1 =
-        this.also {
-            it::class.java.getDeclaredField("queryId").let { field ->
-                field.isAccessible = true
-                field.set(this, query.queryId)
-                field.isAccessible = false
-            }
-        }
+        this.handle(query) as RESPONSE_1
 
     abstract override fun handle(query: QUERY): RESPONSE
 }

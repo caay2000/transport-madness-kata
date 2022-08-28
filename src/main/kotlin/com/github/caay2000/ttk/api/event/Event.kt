@@ -6,7 +6,8 @@ import java.util.UUID
 interface Event {
 
     val eventId: UUID
-    fun type(): String = this::class.java.simpleName
+    val type: String
+        get() = this::class.java.simpleName
 
     val aggregateId: DomainId
 }

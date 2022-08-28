@@ -5,5 +5,6 @@ import java.util.UUID
 interface Command {
 
     val commandId: UUID
-    fun type(): String = this::class.java.simpleName
+    val type: String
+        get() = this::class.java.simpleName
 }

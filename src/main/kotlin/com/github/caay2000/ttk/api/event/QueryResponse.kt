@@ -1,10 +1,8 @@
 package com.github.caay2000.ttk.api.event
 
-import java.util.UUID
+interface QueryResponse {
 
-interface Query {
-
-    val queryId: UUID
+    val value: Any
     val type: String
         get() = this::class.java.simpleName
 }

@@ -8,6 +8,6 @@ import com.github.caay2000.ttk.api.event.QueryResponse
 
 class KTQueryExecutor : QueryExecutor {
 
-    override fun <QUERY : Query, RESPONSE : QueryResponse> execute(query: QUERY): RESPONSE =
-        KTEventBus.getInstance<Command, QUERY, Event>().executeQuery(query)
+    override fun <RESPONSE : QueryResponse> execute(query: Query): RESPONSE =
+        KTEventBus.getInstance<Command, Query, Event>().executeQuery(query)
 }

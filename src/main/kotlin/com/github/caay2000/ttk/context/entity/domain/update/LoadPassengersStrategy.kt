@@ -7,8 +7,8 @@ import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
 import com.github.caay2000.ttk.context.location.domain.Location
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQuery
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryResponse
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQuery
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryResponse
 import kotlin.math.min
 
 sealed class LoadPassengersStrategy {
@@ -23,7 +23,7 @@ sealed class LoadPassengersStrategy {
                 .let { amount -> entity.loadPassengers(amount) }
 
         private fun findLocation(entity: Entity): Location =
-            queryExecutor.execute<LocationFinderQuery, LocationFinderQueryResponse>(LocationFinderQuery((ByPositionCriteria(entity.currentPosition)))).value
+            queryExecutor.execute<FindLocationQueryResponse>(FindLocationQuery((ByPositionCriteria(entity.currentPosition)))).value
 
         private fun Entity.loadPassengers(amount: Int): Entity =
             Either.catch {

@@ -4,8 +4,7 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQuery
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryResponse
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
@@ -79,7 +78,7 @@ internal class EntityUpdateStarterServiceTest {
     }
 
     private fun `world exists`() {
-        whenever(queryExecutor.execute<LocationFinderQuery, LocationFinderQueryResponse>(any())).thenReturn(LocationFinderQueryResponse(location))
+        whenever(queryExecutor.execute<FindLocationQueryResponse>(any())).thenReturn(FindLocationQueryResponse(location))
     }
 
     private val configuration = ConfigurationMother.random().set()

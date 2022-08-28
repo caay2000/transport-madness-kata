@@ -18,13 +18,11 @@ internal class QueryBusTest {
 
         val queryTrue = TestQuery(value = true)
         val queryFalse = TestQuery(value = false)
-        val resultTrue = KTQueryExecutor().execute<TestQuery, TestQueryResponse>(queryTrue)
-        val resultFalse = KTQueryExecutor().execute<TestQuery, TestQueryResponse>(queryFalse)
+        val resultTrue = KTQueryExecutor().execute<TestQueryResponse>(queryTrue)
+        val resultFalse = KTQueryExecutor().execute<TestQueryResponse>(queryFalse)
 
         assertThat(resultTrue.value).isEqualTo("true")
-        assertThat(resultTrue.queryId).isEqualTo(queryTrue.queryId)
         assertThat(resultFalse.value).isEqualTo("false")
-        assertThat(resultFalse.queryId).isEqualTo(queryFalse.queryId)
     }
 
     inner class TestQueryHandler : KTQueryHandler<TestQuery, TestQueryResponse>(TestQuery::class) {
@@ -37,7 +35,5 @@ internal class QueryBusTest {
         override val queryId: UUID = UUID.randomUUID()
     }
 
-    internal data class TestQueryResponse(override val value: String) : QueryResponse {
-        override val queryId: UUID = UUID.randomUUID()
-    }
+    internal data class TestQueryResponse(override val value: String) : QueryResponse
 }

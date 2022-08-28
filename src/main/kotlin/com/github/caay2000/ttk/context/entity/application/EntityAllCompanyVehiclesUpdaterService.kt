@@ -15,13 +15,11 @@ import com.github.caay2000.ttk.context.entity.application.update.EntityUpdateUnl
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
-import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.shared.CompanyId
 
 class EntityAllCompanyVehiclesUpdaterService(
     worldRepository: WorldRepository,
-    locationRepository: LocationRepository,
     private val entityRepository: EntityRepository,
     queryExecutor: QueryExecutor,
     eventPublisher: EventPublisher

@@ -10,20 +10,18 @@ import com.github.caay2000.ttk.context.location.application.LocationRepository.F
 import com.github.caay2000.ttk.context.location.domain.Location
 import java.util.UUID
 
-class LocationFinderQueryHandler(locationRepository: LocationRepository) : QueryHandler<LocationFinderQuery, LocationFinderQueryResponse> {
+class LocationFinderQueryHandler(locationRepository: LocationRepository) : QueryHandler<FindLocationQuery, FindLocationQueryResponse> {
 
     private val locationFinder = LocationFinder(locationRepository)
 
-    override fun handle(query: LocationFinderQuery): LocationFinderQueryResponse =
+    override fun handle(query: FindLocationQuery): FindLocationQueryResponse =
         locationFinder.invoke(query.criteria)
-            .map { LocationFinderQueryResponse(it) }
+            .map { FindLocationQueryResponse(it) }
             .bind()
 }
 
-data class LocationFinderQuery(val criteria: FindLocationCriteria) : Query {
+data class FindLocationQuery(val criteria: FindLocationCriteria) : Query {
     override val queryId: UUID = UUID.randomUUID()
 }
 
-data class LocationFinderQueryResponse(override val value: Location) : QueryResponse {
-    override val queryId: UUID = UUID.randomUUID()
-}
+data class FindLocationQueryResponse(override val value: Location) : QueryResponse

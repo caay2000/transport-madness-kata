@@ -7,14 +7,12 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.application.EntityAllCompanyVehiclesUpdaterService
 import com.github.caay2000.ttk.context.entity.application.EntityRepository
-import com.github.caay2000.ttk.context.location.application.LocationRepository
 import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.shared.CompanyId
 import java.util.UUID
 
 class UpdateAllCompanyVehiclesCommandHandler(
     worldRepository: WorldRepository,
-    locationRepository: LocationRepository,
     entityRepository: EntityRepository,
     queryExecutor: QueryExecutor,
     eventPublisher: EventPublisher
@@ -22,7 +20,6 @@ class UpdateAllCompanyVehiclesCommandHandler(
 
     private val entityAllCompanyVehiclesUpdaterService = EntityAllCompanyVehiclesUpdaterService(
         worldRepository,
-        locationRepository,
         entityRepository,
         queryExecutor,
         eventPublisher

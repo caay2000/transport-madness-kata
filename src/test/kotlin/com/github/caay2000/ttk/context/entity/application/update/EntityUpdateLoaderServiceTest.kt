@@ -6,8 +6,7 @@ import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.location.domain.Location
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQuery
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryResponse
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.world.location.LocationMother
@@ -105,7 +104,7 @@ internal class EntityUpdateLoaderServiceTest {
     }
 
     private fun `location exists`(location: Location = crowdedLocation) {
-        whenever(queryExecutor.execute<LocationFinderQuery, LocationFinderQueryResponse>(any())).thenReturn(LocationFinderQueryResponse(location))
+        whenever(queryExecutor.execute<FindLocationQueryResponse>(any())).thenReturn(FindLocationQueryResponse(location))
     }
 
     private val readyToLoadEntity: Entity = EntityMother.random(
