@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.context.world.primary
+package com.github.caay2000.ttk.context.world.primary.event
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.api.event.EventPublisher

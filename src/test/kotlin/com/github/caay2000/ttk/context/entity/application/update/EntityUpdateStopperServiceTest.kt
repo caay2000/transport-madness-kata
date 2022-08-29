@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.world.domain.Position
@@ -9,13 +9,10 @@ import com.github.caay2000.ttk.mother.RouteMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 
 internal class EntityUpdateStopperServiceTest {
 
-    private val eventPublisher: EventPublisher = mock()
-    private val sut = EntityUpdateStopperService(eventPublisher)
+    private val sut = EntityUpdateStopperService()
 
     @Test
     fun `entity should update status to STOP when reaches a stop`() {
@@ -30,7 +27,7 @@ internal class EntityUpdateStopperServiceTest {
     fun `service does not publish any event`() {
 
         sut.invoke(entity).shouldBeRight {
-            verify(eventPublisher).publish(emptyList())
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
         }
     }
 

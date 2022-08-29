@@ -18,13 +18,14 @@ class LocationCreatorService(
     private val locationRepository: LocationRepository,
     private val eventPublisher: EventPublisher
 ) {
+    private val locationService: LocationServiceApi = locationService(locationRepository, eventPublisher)
 
     fun invoke(name: String, position: Position, population: Int): Either<LocationException, Location> =
         guardPositionEmpty(position)
             .flatMap { guardMinimumDistance(position) }
             .flatMap { createLocation(name, position, population) }
-            .flatMap { location -> location.save() }
-            .flatMap { location -> location.publishEvents() }
+            .flatMap { location -> locationService.save(location) }
+            .flatMap { location -> locationService.publishEvents(location) }
 
     private fun guardPositionEmpty(position: Position): Either<LocationException, Unit> =
         if (locationRepository.exists(ByPositionCriteria(position)))
@@ -42,13 +43,5 @@ class LocationCreatorService(
 
     private fun findAllLocations(): Either<LocationException, List<Location>> =
         locationRepository.findAll()
-            .mapLeft { UnknownLocationException(it) }
-
-    private fun Location.save(): Either<LocationException, Location> =
-        locationRepository.save(this)
-            .mapLeft { UnknownLocationException(it) }
-
-    private fun Location.publishEvents(): Either<LocationException, Location> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
             .mapLeft { UnknownLocationException(it) }
 }

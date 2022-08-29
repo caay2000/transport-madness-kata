@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
@@ -9,13 +9,10 @@ import com.github.caay2000.ttk.mother.EntityMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 
 internal class EntityUpdateUnloaderServiceTest {
 
-    private val eventPublisher: EventPublisher = mock()
-    private val sut = EntityUpdateUnloaderService(eventPublisher)
+    private val sut = EntityUpdateUnloaderService()
 
     @Test
     fun `should do nothing if entity is IN_ROUTE`() {
@@ -45,7 +42,7 @@ internal class EntityUpdateUnloaderServiceTest {
     fun `should publish an event when unloads passengers`() {
 
         sut.invoke(loadedEntity).shouldBeRight {
-            verify(eventPublisher).publish(
+            assertThat(it.pullEvents()).isEqualTo(
                 listOf(EntityUnloadedEvent(loadedEntity.id, amount = 10, position = it.currentPosition))
             )
         }
@@ -55,7 +52,7 @@ internal class EntityUpdateUnloaderServiceTest {
     fun `shouldn't publish an event when entity is empty`() {
 
         sut.invoke(unloadedEntity).shouldBeRight {
-            verify(eventPublisher).publish(emptyList())
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
         }
     }
 

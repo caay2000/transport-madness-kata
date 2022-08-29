@@ -10,7 +10,7 @@ import com.github.caay2000.ttk.context.location.application.LocationRepository.F
 import com.github.caay2000.ttk.context.location.domain.Location
 import java.util.UUID
 
-class LocationFinderQueryHandler(locationRepository: LocationRepository) : QueryHandler<FindLocationQuery, FindLocationQueryResponse> {
+class FindLocationQueryHandler(locationRepository: LocationRepository) : QueryHandler<FindLocationQuery, FindLocationQueryResponse> {
 
     private val locationFinder = LocationFinder(locationRepository)
 

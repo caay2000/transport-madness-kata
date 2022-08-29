@@ -12,14 +12,14 @@ sealed class EntityException : RuntimeException {
 data class EntityInvalidNumOfCoachesException(val amount: Int, val entityType: EntityType) :
     EntityException("${entityType.name} cannot have $amount num of coaches, max is ${entityType.maxNumCoaches}")
 
-data class CompanyNotFound(val companyId: CompanyId) : EntityException("companyId $companyId not found")
-data class EntityNotFound(val entityId: EntityId) : EntityException("entity $entityId not found")
-data class InvalidRouteException(val stops: List<Position>) : EntityException("invalid route for $stops")
-data class InvalidEntityPositionException(val position: Position) : EntityException("invalid position $position")
-data class EntityUpdateLoaderServiceException(override val cause: Throwable) : EntityException(cause)
-data class EntityUpdateMoverServiceException(override val cause: Throwable) : EntityException(cause)
-data class EntityUpdateStarterServiceException(override val cause: Throwable) : EntityException(cause)
-data class EntityUpdateStopperServiceException(override val cause: Throwable) : EntityException(cause)
-data class EntityUpdateUnloaderServiceException(override val cause: Throwable) : EntityException(cause)
+data class CompanyNotFoundEntityException(val companyId: CompanyId) : EntityException("companyId $companyId not found")
+data class EntityNotFoundEntityException(val entityId: EntityId) : EntityException("entity $entityId not found")
+data class InvalidRouteEntityException(val stops: List<Position>) : EntityException("invalid route for $stops")
+data class InvalidEntityPositionEntityException(val position: Position) : EntityException("invalid position $position")
+data class EntityUpdateLoaderServiceEntityException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateMoverServiceEntityException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateStarterServiceEntityException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateStopperServiceEntityException(override val cause: Throwable) : EntityException(cause)
+data class EntityUpdateUnloaderServiceEntityException(override val cause: Throwable) : EntityException(cause)
 
 data class UnknownEntityException(override val cause: Throwable) : EntityException(cause)

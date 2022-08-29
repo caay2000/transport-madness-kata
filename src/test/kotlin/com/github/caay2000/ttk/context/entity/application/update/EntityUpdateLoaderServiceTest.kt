@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
@@ -15,15 +15,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 internal class EntityUpdateLoaderServiceTest {
 
     private val queryExecutor: QueryExecutor = mock()
-    private val eventPublisher: EventPublisher = mock()
 
-    private val sut = EntityUpdateLoaderService(queryExecutor, eventPublisher)
+    private val sut = EntityUpdateLoaderService(queryExecutor)
 
     @Test
     fun `should do nothing if entity is IN_ROUTE`() {
@@ -62,7 +60,7 @@ internal class EntityUpdateLoaderServiceTest {
 
         sut.invoke(fullEntity).shouldBeRight {
             assertThat(it).isEqualTo(fullEntity)
-            verify(eventPublisher).publish(emptyList())
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
         }
     }
 
@@ -77,7 +75,9 @@ internal class EntityUpdateLoaderServiceTest {
 
         sut.invoke(almostFullEntity).shouldBeRight {
             assertThat(it.pax).isEqualTo(readyToLoadEntity.entityType.passengerCapacity)
-            listOf(EntityLoadedEvent(aggregateId = readyToLoadEntity.id, amount = 1, position = Position(3, 0)))
+            assertThat(it.pullEvents()).isEqualTo(
+                listOf(EntityLoadedEvent(aggregateId = readyToLoadEntity.id, amount = 1, position = Position(3, 0)))
+            )
         }
     }
 
@@ -87,7 +87,7 @@ internal class EntityUpdateLoaderServiceTest {
         `location exists`(crowdedLocation)
 
         sut.invoke(readyToLoadEntity).shouldBeRight {
-            verify(eventPublisher).publish(
+            assertThat(it.pullEvents()).isEqualTo(
                 listOf(EntityLoadedEvent(aggregateId = readyToLoadEntity.id, amount = 20, position = Position(3, 0)))
             )
         }
@@ -99,7 +99,7 @@ internal class EntityUpdateLoaderServiceTest {
         `location exists`(emptyLocation)
 
         sut.invoke(readyToLoadEntity).shouldBeRight {
-            verify(eventPublisher).publish(emptyList())
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
         }
     }
 

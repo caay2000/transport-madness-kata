@@ -8,23 +8,20 @@ import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
-import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import com.github.caay2000.ttk.pathfinding.PathfindingResult
 
-class WorldConnectionCreatorService(
-    private val worldRepository: WorldRepository,
-    private val eventPublisher: EventPublisher
-) {
+class WorldConnectionCreatorService(worldRepository: WorldRepository, eventPublisher: EventPublisher) {
 
+    private val worldService: WorldServiceApi = worldService(worldRepository, eventPublisher)
     private val pathfinding by lazy { AStartPathfindingStrategy(PathfindingConfiguration.getCreteConnectionStrategyConfiguration()) }
 
     fun invoke(source: Position, target: Position): Either<WorldException, World> =
-        findWorld()
+        worldService.find()
             .flatMap { world -> world.createConnection(source, target) }
-            .flatMap { world -> world.save() }
-            .flatMap { world -> world.publishEvents() }
+            .flatMap { world -> worldService.save(world) }
+            .flatMap { world -> worldService.publishEvents(world) }
 
     private fun World.createConnection(source: Position, target: Position): Either<WorldException, World> =
         pathfinding.invoke(cells.values.toSet(), getCell(source), getCell(target))
@@ -34,16 +31,4 @@ class WorldConnectionCreatorService(
 
     private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
         this.path.map { cell -> cell.createConnection() }.toSet()
-
-    private fun findWorld(): Either<WorldException, World> =
-        worldRepository.get()
-            .mapLeft { WorldNotFoundWorldException(it) }
-
-    private fun World.save(): Either<WorldException, World> =
-        worldRepository.save(this)
-            .mapLeft { UnknownWorldException(it) }
-
-    private fun World.publishEvents(): Either<WorldException, World> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
-            .mapLeft { UnknownWorldException(it) }
 }

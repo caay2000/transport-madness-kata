@@ -30,13 +30,13 @@ import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocatio
 import com.github.caay2000.ttk.context.location.primary.event.UpdateLocationOnEntityLoadedEventSubscriber
 import com.github.caay2000.ttk.context.location.primary.event.UpdateLocationOnEntityUnloadedEventSubscriber
 import com.github.caay2000.ttk.context.location.primary.query.FindLocationQuery
-import com.github.caay2000.ttk.context.location.primary.query.LocationFinderQueryHandler
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryHandler
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
-import com.github.caay2000.ttk.context.world.primary.AddLocationToWorldOnLocationCreatedEventSubscriber
+import com.github.caay2000.ttk.context.world.primary.event.AddLocationToWorldOnLocationCreatedEventSubscriber
 import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
 import com.github.caay2000.ttk.infra.console.HexagonalConsolePrinter
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
@@ -62,7 +62,7 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
     private val addEntityToCompanyOnEntityCreatedEventSubscriber = AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher)
     private val updateLocationOnEntityUnloadedEventSubscriber = UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher)
     private val updateLocationOnEntityLoadedEventSubscriber = UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher)
-    private val locationFinderQueryHandler = LocationFinderQueryHandler(locationRepository)
+    private val findLocationQueryHandler = FindLocationQueryHandler(locationRepository)
     private val updateAllLocationsCommandHandler = UpdateAllLocationsCommandHandler(locationRepository, eventPublisher)
     private val updateAllCompaniesCommandHandler = UpdateAllCompaniesCommandHandler(companyRepository, commandBus, eventPublisher)
     private val updateAllCompanyVehiclesCommandHandler = UpdateAllCompanyVehiclesCommandHandler(worldRepository, entityRepository, queryExecutor, eventPublisher)
@@ -73,7 +73,7 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
         instantiateEventSubscriber(EntityCreatedEvent::class, addEntityToCompanyOnEntityCreatedEventSubscriber)
         instantiateEventSubscriber(EntityUnloadedEvent::class, updateLocationOnEntityUnloadedEventSubscriber)
         instantiateEventSubscriber(EntityLoadedEvent::class, updateLocationOnEntityLoadedEventSubscriber)
-        instantiateQueryHandler(FindLocationQuery::class, locationFinderQueryHandler)
+        instantiateQueryHandler(FindLocationQuery::class, findLocationQueryHandler)
         instantiateCommandHandler(UpdateAllLocationsCommand::class, updateAllLocationsCommandHandler)
         instantiateCommandHandler(UpdateAllCompaniesCommand::class, updateAllCompaniesCommandHandler)
         instantiateCommandHandler(UpdateAllCompanyVehiclesCommand::class, updateAllCompanyVehiclesCommandHandler)

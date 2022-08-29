@@ -7,28 +7,24 @@ import com.github.caay2000.ttk.api.event.CommandBus
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
 import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommand
-import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
-import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 
 class WorldUpdaterService(
-    private val worldRepository: WorldRepository,
+    worldRepository: WorldRepository,
     private val commandBus: CommandBus,
-    private val eventPublisher: EventPublisher
+    eventPublisher: EventPublisher
 ) {
+
+    private val worldService: WorldServiceApi = worldService(worldRepository, eventPublisher)
 
     fun invoke(): Either<WorldException, World> =
         Unit.right()
             .flatMap { updateAllLocations() }
             .flatMap { updateAllCompanies() }
             .flatMap { updateWorld() }
-            .flatMap { world -> world.save() }
-            .flatMap { world -> world.publishEvents() }
-
-    private fun findWorld(): Either<WorldException, World> =
-        worldRepository.get()
-            .mapLeft { WorldNotFoundWorldException(it) }
+            .flatMap { world -> worldService.save(world) }
+            .flatMap { world -> worldService.publishEvents(world) }
 
     private fun updateAllLocations(): Either<WorldException, Unit> =
         commandBus.publish(UpdateAllLocationsCommand()).right()
@@ -37,14 +33,6 @@ class WorldUpdaterService(
         commandBus.publish(UpdateAllCompaniesCommand()).right()
 
     private fun updateWorld(): Either<WorldException, World> =
-        findWorld()
+        worldService.find()
             .map { world -> world.update() }
-
-    private fun World.save(): Either<WorldException, World> =
-        worldRepository.save(this)
-            .mapLeft { UnknownWorldException(it) }
-
-    private fun World.publishEvents(): Either<WorldException, World> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
-            .mapLeft { UnknownWorldException(it) }
 }

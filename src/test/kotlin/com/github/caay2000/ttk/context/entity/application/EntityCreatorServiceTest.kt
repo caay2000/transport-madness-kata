@@ -5,7 +5,7 @@ import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
 import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
 import com.github.caay2000.ttk.context.entity.domain.Entity
-import com.github.caay2000.ttk.context.entity.domain.InvalidEntityPositionException
+import com.github.caay2000.ttk.context.entity.domain.InvalidEntityPositionEntityException
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
 import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.domain.Position
@@ -61,7 +61,7 @@ internal class EntityCreatorServiceTest {
             companyId = company.id,
             entityType = PassengerTrain(),
             position = Position(x, y)
-        ).shouldBeLeftOfType<InvalidEntityPositionException>()
+        ).shouldBeLeftOfType<InvalidEntityPositionEntityException>()
         verifyNoInteractions(entityRepository)
     }
 

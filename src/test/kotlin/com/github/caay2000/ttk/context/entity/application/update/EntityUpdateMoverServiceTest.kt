@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.right
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
 import com.github.caay2000.ttk.context.world.application.WorldRepository
@@ -14,15 +14,13 @@ import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 internal class EntityUpdateMoverServiceTest {
 
     private val worldRepository: WorldRepository = mock()
-    private val eventPublisher: EventPublisher = mock()
 
-    private val sut = EntityUpdateMoverService(worldRepository, eventPublisher)
+    private val sut = EntityUpdateMoverService(worldRepository)
 
     @Test
     fun `entity does not move if STOPPED`() {
@@ -70,7 +68,7 @@ internal class EntityUpdateMoverServiceTest {
         `world exists`()
 
         sut.invoke(movingEntityWithoutNextSection).shouldBeRight {
-            verify(eventPublisher).publish(emptyList())
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
         }
     }
 

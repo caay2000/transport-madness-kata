@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
@@ -16,14 +16,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 internal class EntityUpdateStarterServiceTest {
 
     private val queryExecutor: QueryExecutor = mock()
-    private val eventPublisher: EventPublisher = mock()
-    private val sut = EntityUpdateStarterService(queryExecutor, eventPublisher)
+    private val sut = EntityUpdateStarterService(queryExecutor)
 
     @Test
     fun `entity should wait x turns in STOP`() {
@@ -73,7 +71,7 @@ internal class EntityUpdateStarterServiceTest {
         `world exists`()
 
         sut.invoke(lastStopReadyEntity).shouldBeRight {
-            verify(eventPublisher).publish(emptyList())
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
         }
     }
 

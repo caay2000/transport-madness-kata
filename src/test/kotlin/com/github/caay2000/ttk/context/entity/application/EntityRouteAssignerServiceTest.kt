@@ -3,7 +3,7 @@ package com.github.caay2000.ttk.context.entity.application
 import arrow.core.right
 import com.github.caay2000.ttk.context.entity.application.EntityRepository.FindEntityCriteria.ByIdCriteria
 import com.github.caay2000.ttk.context.entity.domain.Entity
-import com.github.caay2000.ttk.context.entity.domain.InvalidRouteException
+import com.github.caay2000.ttk.context.entity.domain.InvalidRouteEntityException
 import com.github.caay2000.ttk.context.entity.domain.Route
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.extension.thenReturnFirstArgument
@@ -41,7 +41,7 @@ internal class EntityRouteAssignerServiceTest {
 
         `entity exists`()
 
-        sut.invoke(entity.id, emptyList()).shouldBeLeftOfType<InvalidRouteException>()
+        sut.invoke(entity.id, emptyList()).shouldBeLeftOfType<InvalidRouteEntityException>()
         verify(entityRepository, never()).save(any())
     }
 

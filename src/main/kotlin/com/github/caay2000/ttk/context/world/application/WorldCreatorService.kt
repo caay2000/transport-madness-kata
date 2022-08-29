@@ -13,20 +13,14 @@ class WorldCreatorService(
     private val eventPublisher: EventPublisher
 ) {
 
+    private val worldService: WorldServiceApi = worldService(worldRepository, eventPublisher)
+
     fun invoke(): Either<WorldException, World> =
         createWorld()
-            .flatMap { world -> world.save() }
-            .flatMap { world -> world.publishEvents() }
+            .flatMap { world -> worldService.save(world) }
+            .flatMap { world -> worldService.publishEvents(world) }
 
     private fun createWorld(): Either<WorldException, World> =
         Either.catch { World.create(WorldConfiguration.get().worldWidth, WorldConfiguration.get().worldHeight) }
-            .mapLeft { UnknownWorldException(it) }
-
-    private fun World.save(): Either<WorldException, World> =
-        worldRepository.save(this)
-            .mapLeft { UnknownWorldException(it) }
-
-    private fun World.publishEvents(): Either<WorldException, World> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
             .mapLeft { UnknownWorldException(it) }
 }

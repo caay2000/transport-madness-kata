@@ -76,6 +76,6 @@ data class Entity(
 
     fun updateUnload(): Entity =
         if (isStopped && currentDuration == 0 && pax > 0) {
-            copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
+            copy(pax = 0).also { it.pushEvents(pullEvents() + EntityUnloadedEvent(id, pax, currentPosition)) }
         } else this
 }

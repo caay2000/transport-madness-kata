@@ -12,7 +12,7 @@ data class Route(
 
     companion object {
         fun create(stops: List<Position>): Route {
-            if (stops.isEmpty()) throw InvalidRouteException(stops)
+            if (stops.isEmpty()) throw InvalidRouteEntityException(stops)
             return Route(stops = stops)
         }
     }

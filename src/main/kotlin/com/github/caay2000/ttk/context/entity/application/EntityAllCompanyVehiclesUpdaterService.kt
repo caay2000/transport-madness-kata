@@ -25,11 +25,13 @@ class EntityAllCompanyVehiclesUpdaterService(
     eventPublisher: EventPublisher
 ) {
 
-    private val loaderService = EntityUpdateLoaderService(queryExecutor, eventPublisher)
-    private val unloaderService = EntityUpdateUnloaderService(eventPublisher)
-    private val moverService = EntityUpdateMoverService(worldRepository, eventPublisher)
-    private val starterService = EntityUpdateStarterService(queryExecutor, eventPublisher)
-    private val stopperService = EntityUpdateStopperService(eventPublisher)
+    private val entityService: EntityServiceApi = entityService(entityRepository, eventPublisher)
+
+    private val loaderService = EntityUpdateLoaderService(queryExecutor)
+    private val unloaderService = EntityUpdateUnloaderService()
+    private val moverService = EntityUpdateMoverService(worldRepository)
+    private val starterService = EntityUpdateStarterService(queryExecutor)
+    private val stopperService = EntityUpdateStopperService()
 
     fun invoke(companyId: CompanyId): Either<EntityException, Unit> =
         findAllEntities(companyId)
@@ -51,11 +53,7 @@ class EntityAllCompanyVehiclesUpdaterService(
             .flatMap { entity -> moverService.invoke(entity) }
             .flatMap { entity -> stopperService.invoke(entity) }
             .flatMap { entity -> unloaderService.invoke(entity) }
-            .flatMap { entity -> entity.save() }
+            .flatMap { entity -> entityService.save(entity) }
+            .flatMap { entity -> entityService.publishEvents(entity) }
             .bind()
-
-    private fun Entity.save(): Either<EntityException, Entity> =
-        entityRepository.save(this)
-            .map { this }
-            .mapLeft { UnknownEntityException(it) }
 }
