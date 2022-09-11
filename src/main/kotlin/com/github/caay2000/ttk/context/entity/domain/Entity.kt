@@ -1,9 +1,8 @@
 package com.github.caay2000.ttk.context.entity.domain
 
 import com.github.caay2000.ttk.context.entity.domain.update.EntityMovementStrategy
-import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
-import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy
 import com.github.caay2000.ttk.context.entity.event.EntityCreatedEvent
+import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
@@ -48,23 +47,20 @@ data class Entity(
     private val isRouteAssigned: Boolean
         get() = route.stops.size > 1
 
-    private val isInRoute: Boolean
+    val isInRoute: Boolean
         get() = status == EntityStatus.IN_ROUTE
 
-    private val isStopped: Boolean
+    val isStopped: Boolean
         get() = status == EntityStatus.STOP
 
     fun assignRoute(route: Route) = copy(route = route)
 
     fun update(): Entity = copy(currentDuration = currentDuration + 1)
 
-    fun updateLoad(loadPassengersStrategy: LoadPassengersStrategy): Entity =
-        if (isStopped && currentDuration == 1) loadPassengersStrategy.invoke(this)
-        else this
+    fun updateLoad(amount: Int): Entity = copy(pax = pax + amount)
+        .also { it.pushEvents(pullEvents() + EntityLoadedEvent(id, amount, currentPosition)) }
 
-    fun updateStart(shouldResumeRouteStrategy: ShouldResumeRouteStrategy): Entity =
-        if (isStopped) shouldResumeRouteStrategy.invoke(this)
-        else this
+    fun updateStart(): Entity = copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
 
     fun updateMove(entityMovementStrategy: EntityMovementStrategy): Entity =
         if (shouldMove) entityMovementStrategy.invoke(this)
