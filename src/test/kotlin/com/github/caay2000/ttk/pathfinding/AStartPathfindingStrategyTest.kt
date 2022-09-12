@@ -1,5 +1,7 @@
 package com.github.caay2000.ttk.pathfinding
 
+import com.github.caay2000.ttk.context.pathfinding.domain.AStartPathfindingStrategy
+import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingStrategy
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.mother.WorldMother

@@ -1,4 +1,4 @@
-package com.github.caay2000.ttk.pathfinding
+package com.github.caay2000.ttk.context.pathfinding.domain
 
 sealed class PathfindingException(cause: Throwable) : RuntimeException(cause)
 

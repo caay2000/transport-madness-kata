@@ -1,14 +1,18 @@
 package com.github.caay2000.ttk.context.pathfinding.application
 
 import arrow.core.Either
-import arrow.core.right
+import com.github.caay2000.ttk.context.pathfinding.domain.AStartPathfindingStrategy
+import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingConfiguration
+import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingException
+import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingStrategy
 import com.github.caay2000.ttk.context.pathfinding.domain.Section
 import com.github.caay2000.ttk.context.world.domain.Cell
-import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
-import com.github.caay2000.ttk.pathfinding.PathfindingException
 
-class NextSectionFinder(val pathfindingConfiguration: PathfindingConfiguration) {
+class NextSectionFinder(pathfindingConfiguration: PathfindingConfiguration) {
+
+    private val pathfindingStrategy: PathfindingStrategy = AStartPathfindingStrategy(pathfindingConfiguration)
 
     fun invoke(cells: List<Cell>, source: Cell, target: Cell): Either<PathfindingException, Section> =
-        Section(emptyList()).right()
+        pathfindingStrategy.invoke(cells, source, target)
+            .map { result -> Section(result.removeFirstCell().path) }
 }

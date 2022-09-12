@@ -5,8 +5,8 @@ import com.github.caay2000.ttk.api.event.Query
 import com.github.caay2000.ttk.api.event.QueryHandler
 import com.github.caay2000.ttk.api.event.QueryResponse
 import com.github.caay2000.ttk.context.pathfinding.application.NextSectionFinder
+import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingConfiguration
 import com.github.caay2000.ttk.context.world.domain.Cell
-import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
 import java.util.UUID
 
 class FindNextSectionQueryHandler(pathfindingConfiguration: PathfindingConfiguration) : QueryHandler<FindNextSectionQuery, FindNextSectionQueryResponse> {

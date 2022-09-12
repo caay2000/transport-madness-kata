@@ -1,9 +1,9 @@
 package com.github.caay2000.ttk.context.entity.domain
 
-import com.github.caay2000.ttk.context.entity.domain.update.EntityMovementStrategy
 import com.github.caay2000.ttk.context.entity.event.EntityCreatedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
 import com.github.caay2000.ttk.shared.CompanyId
@@ -41,13 +41,13 @@ data class Entity(
     private val destinationReached: Boolean
         get() = isInRoute && currentPosition == currentDestination
 
-    private val shouldMove: Boolean
+    val shouldMove: Boolean
         get() = isInRoute && isRouteAssigned
 
     private val isRouteAssigned: Boolean
         get() = route.stops.size > 1
 
-    val isInRoute: Boolean
+    private val isInRoute: Boolean
         get() = status == EntityStatus.IN_ROUTE
 
     val isStopped: Boolean
@@ -62,9 +62,8 @@ data class Entity(
 
     fun updateStart(): Entity = copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
 
-    fun updateMove(entityMovementStrategy: EntityMovementStrategy): Entity =
-        if (shouldMove) entityMovementStrategy.invoke(this)
-        else this
+    fun updateNextSection(nextSection: List<Cell>): Entity = copy(route = route.updateNextSection(nextSection))
+    fun updateMove(): Entity = copy(currentPosition = route.nextSection.position, route = route.dropNextSection())
 
     fun updateStop(): Entity =
         if (destinationReached) copy(status = EntityStatus.STOP, currentDuration = 0)

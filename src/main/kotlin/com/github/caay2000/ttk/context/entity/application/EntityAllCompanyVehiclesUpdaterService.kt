@@ -29,7 +29,7 @@ class EntityAllCompanyVehiclesUpdaterService(
 
     private val loaderService = EntityUpdateLoaderService(queryExecutor)
     private val unloaderService = EntityUpdateUnloaderService()
-    private val moverService = EntityUpdateMoverService(worldRepository)
+    private val moverService = EntityUpdateMoverService(worldRepository, queryExecutor)
     private val starterService = EntityUpdateStarterService(queryExecutor)
     private val stopperService = EntityUpdateStopperService()
 

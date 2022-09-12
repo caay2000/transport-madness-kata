@@ -2,12 +2,12 @@ package com.github.caay2000.ttk.mother
 
 import arrow.core.computations.ResultEffect.bind
 import com.github.caay2000.ttk.context.company.domain.Company
+import com.github.caay2000.ttk.context.pathfinding.domain.AStartPathfindingStrategy
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.mother.entity.pathfinding.PathfindingConfigurationMother
 import com.github.caay2000.ttk.mother.world.CellMother
-import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
 import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.WorldId
 import com.github.caay2000.ttk.shared.randomDomainId
