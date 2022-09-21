@@ -1,6 +1,9 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.right
+import com.github.caay2000.ttk.api.event.QueryExecutor
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
@@ -17,9 +20,11 @@ import org.mockito.kotlin.whenever
 internal class WorldConnectionCreatorServiceTest {
 
     private val worldRepository: WorldRepository = mock()
+    private val queryExecutor: QueryExecutor = mock()
 
     private val sut = WorldConnectionCreatorService(
         worldRepository = worldRepository,
+        queryExecutor = queryExecutor,
         eventPublisher = mock()
     )
 
@@ -27,6 +32,7 @@ internal class WorldConnectionCreatorServiceTest {
     fun `should create connection when it does not exists`() {
 
         `world exists`()
+        `pathfinding returns correct connection`()
         `world will be saved`()
 
         sut.invoke(Position(0, 0), Position(3, 2)).shouldBeRight {
@@ -36,6 +42,10 @@ internal class WorldConnectionCreatorServiceTest {
     }
 
     private fun `world exists`() = whenever(worldRepository.get()).thenReturn(WorldMother.empty().right())
+
+    private fun `pathfinding returns correct connection`() =
+        whenever(queryExecutor.execute<FindPathQueryResponse>(any<FindPathQuery>()))
+            .thenReturn(FindPathQueryResponse(expectedPath.toList()))
 
     private fun `world will be saved`() {
         whenever(worldRepository.save(any())).thenReturnFirstArgument<World> { it.right() }

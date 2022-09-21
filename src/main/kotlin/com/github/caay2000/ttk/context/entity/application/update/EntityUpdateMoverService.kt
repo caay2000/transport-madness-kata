@@ -7,13 +7,14 @@ import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
-import com.github.caay2000.ttk.context.pathfinding.primary.query.FindNextSectionQuery
-import com.github.caay2000.ttk.context.pathfinding.primary.query.FindNextSectionQueryResponse
-import com.github.caay2000.ttk.context.world.application.WorldRepository
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQuery
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQueryResponse
 
-class EntityUpdateMoverService(private val worldRepository: WorldRepository, private val queryExecutor: QueryExecutor) {
+class EntityUpdateMoverService(private val queryExecutor: QueryExecutor) {
 
     fun invoke(entity: Entity): Either<EntityException, Entity> =
         if (entity.shouldMove) entity.move()
@@ -29,18 +30,22 @@ class EntityUpdateMoverService(private val worldRepository: WorldRepository, pri
     // TODO this findWorld should be moved to pathfinding context
     private fun Entity.updateNextSection(): Either<EntityException, Entity> =
         findWorld()
-            .map { world -> world.findNextSection(currentPosition, route.currentDestination) }
-            .map { section -> updateNextSection(section.value) }
+            .flatMap { world -> world.findNextSection(currentPosition, route.currentDestination) }
+            .map { section -> updateNextSection(section.value.drop(1)) }
             .mapLeft { UnknownEntityException(it) }
 
-    private fun findWorld() = worldRepository.get()
+    private fun findWorld() = Either.catch { queryExecutor.execute<FindWorldQueryResponse>(FindWorldQuery()).value }
+        .mapLeft { UnknownEntityException(it) }
 
     private fun World.findNextSection(source: Position, target: Position) =
-        queryExecutor.execute<FindNextSectionQueryResponse>(
-            FindNextSectionQuery(
-                cells = cells.values.filter { it.connected },
-                source = getCell(source),
-                target = getCell(target)
+        Either.catch {
+            queryExecutor.execute<FindPathQueryResponse>(
+                FindPathQuery(
+                    needConnection = true,
+                    cells = cells.values.filter { it.connected },
+                    source = getCell(source),
+                    target = getCell(target)
+                )
             )
-        )
+        }.mapLeft { UnknownEntityException(it) }
 }

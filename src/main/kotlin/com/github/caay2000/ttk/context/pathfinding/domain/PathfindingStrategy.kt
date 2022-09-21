@@ -5,7 +5,5 @@ import com.github.caay2000.ttk.context.world.domain.Cell
 
 interface PathfindingStrategy {
 
-    val pathfindingConfiguration: PathfindingConfiguration
-
-    fun invoke(cells: Collection<Cell>, source: Cell, target: Cell): Either<PathfindingException, PathfindingResult>
+    fun invoke(pathfindingConfiguration: PathfindingConfiguration, cells: Collection<Cell>, source: Cell, target: Cell): Either<PathfindingException, PathfindingResult>
 }

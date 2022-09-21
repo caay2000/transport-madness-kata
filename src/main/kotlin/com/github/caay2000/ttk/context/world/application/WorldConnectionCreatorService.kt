@@ -3,19 +3,18 @@ package com.github.caay2000.ttk.context.world.application
 import arrow.core.Either
 import arrow.core.flatMap
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.pathfinding.domain.AStartPathfindingStrategy
-import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingConfiguration
-import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingResult
+import com.github.caay2000.ttk.api.event.QueryExecutor
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
 
-class WorldConnectionCreatorService(worldRepository: WorldRepository, eventPublisher: EventPublisher) {
+class WorldConnectionCreatorService(worldRepository: WorldRepository, private val queryExecutor: QueryExecutor, eventPublisher: EventPublisher) {
 
     private val worldService: WorldServiceApi = worldService(worldRepository, eventPublisher)
-    private val pathfinding by lazy { AStartPathfindingStrategy(PathfindingConfiguration.getCreteConnectionStrategyConfiguration()) }
 
     fun invoke(source: Position, target: Position): Either<WorldException, World> =
         worldService.find()
@@ -24,11 +23,23 @@ class WorldConnectionCreatorService(worldRepository: WorldRepository, eventPubli
             .flatMap { world -> worldService.publishEvents(world) }
 
     private fun World.createConnection(source: Position, target: Position): Either<WorldException, World> =
-        pathfinding.invoke(cells.values.toSet(), getCell(source), getCell(target))
+        findConnection(source, target)
             .map { path -> path.updateCellsConnection() }
             .map { updatedCells -> createConnection(updatedCells) }
             .mapLeft { error -> UnknownWorldException(error) }
 
-    private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
-        this.path.map { cell -> cell.createConnection() }.toSet()
+    private fun List<Cell>.updateCellsConnection(): List<Cell> =
+        this.map { cell -> cell.createConnection() }
+
+    private fun World.findConnection(source: Position, target: Position) =
+        Either.catch {
+            queryExecutor.execute<FindPathQueryResponse>(
+                FindPathQuery(
+                    needConnection = false,
+                    cells = cells.values,
+                    source = getCell(source),
+                    target = getCell(target)
+                )
+            ).value
+        }.mapLeft { UnknownWorldException(it) }
 }

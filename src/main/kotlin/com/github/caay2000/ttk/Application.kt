@@ -32,14 +32,15 @@ import com.github.caay2000.ttk.context.location.primary.event.UpdateLocationOnEn
 import com.github.caay2000.ttk.context.location.primary.query.FindLocationQuery
 import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryHandler
 import com.github.caay2000.ttk.context.location.secondary.InMemoryLocationRepository
-import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingConfiguration
-import com.github.caay2000.ttk.context.pathfinding.primary.query.FindNextSectionQuery
-import com.github.caay2000.ttk.context.pathfinding.primary.query.FindNextSectionQueryHandler
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryHandler
 import com.github.caay2000.ttk.context.world.application.WorldConnectionCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldCreatorService
 import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.context.world.application.WorldUpdaterService
 import com.github.caay2000.ttk.context.world.primary.event.AddLocationToWorldOnLocationCreatedEventSubscriber
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQuery
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQueryHandler
 import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
 import com.github.caay2000.ttk.infra.console.HexagonalConsolePrinter
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
@@ -56,39 +57,33 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
     private val commandBus: CommandBus = KTCommandBus()
     private val queryExecutor: QueryExecutor = KTQueryExecutor()
     private val eventPublisher: EventPublisher = KTEventPublisher()
+
     private val locationRepository: LocationRepository = InMemoryLocationRepository(inMemoryDatabase)
     private val companyRepository: CompanyRepository = InMemoryCompanyRepository(inMemoryDatabase)
     private val entityRepository: EntityRepository = InMemoryEntityRepository(inMemoryDatabase)
     private val worldRepository: WorldRepository = InMemoryWorldRepository(inMemoryDatabase)
 
-    private val addLocationToWorldOnLocationCreatedEventSubscriber = AddLocationToWorldOnLocationCreatedEventSubscriber(worldRepository, eventPublisher)
-    private val addEntityToCompanyOnEntityCreatedEventSubscriber = AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher)
-    private val updateLocationOnEntityUnloadedEventSubscriber = UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher)
-    private val updateLocationOnEntityLoadedEventSubscriber = UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher)
-    private val findNextSectionQueryHandler = FindNextSectionQueryHandler(PathfindingConfiguration(needConnection = true))
-    private val findLocationQueryHandler = FindLocationQueryHandler(locationRepository)
-    private val updateAllLocationsCommandHandler = UpdateAllLocationsCommandHandler(locationRepository, eventPublisher)
-    private val updateAllCompaniesCommandHandler = UpdateAllCompaniesCommandHandler(companyRepository, commandBus, eventPublisher)
-    private val updateAllCompanyVehiclesCommandHandler = UpdateAllCompanyVehiclesCommandHandler(worldRepository, entityRepository, queryExecutor, eventPublisher)
-
     init {
         KTEventBus.init<Command, Query, Event>()
-        instantiateEventSubscriber(LocationCreatedEvent::class, addLocationToWorldOnLocationCreatedEventSubscriber)
-        instantiateEventSubscriber(EntityCreatedEvent::class, addEntityToCompanyOnEntityCreatedEventSubscriber)
-        instantiateEventSubscriber(EntityUnloadedEvent::class, updateLocationOnEntityUnloadedEventSubscriber)
-        instantiateEventSubscriber(EntityLoadedEvent::class, updateLocationOnEntityLoadedEventSubscriber)
-        instantiateQueryHandler(FindNextSectionQuery::class, findNextSectionQueryHandler)
-        instantiateQueryHandler(FindLocationQuery::class, findLocationQueryHandler)
-        instantiateCommandHandler(UpdateAllLocationsCommand::class, updateAllLocationsCommandHandler)
-        instantiateCommandHandler(UpdateAllCompaniesCommand::class, updateAllCompaniesCommandHandler)
-        instantiateCommandHandler(UpdateAllCompanyVehiclesCommand::class, updateAllCompanyVehiclesCommandHandler)
+        instantiateEventSubscriber(LocationCreatedEvent::class, AddLocationToWorldOnLocationCreatedEventSubscriber(worldRepository, eventPublisher))
+        instantiateEventSubscriber(EntityCreatedEvent::class, AddEntityToCompanyOnEntityCreatedEventSubscriber(companyRepository, eventPublisher))
+        instantiateEventSubscriber(EntityUnloadedEvent::class, UpdateLocationOnEntityUnloadedEventSubscriber(locationRepository, eventPublisher))
+        instantiateEventSubscriber(EntityLoadedEvent::class, UpdateLocationOnEntityLoadedEventSubscriber(locationRepository, eventPublisher))
+
+        instantiateQueryHandler(FindPathQuery::class, FindPathQueryHandler())
+        instantiateQueryHandler(FindLocationQuery::class, FindLocationQueryHandler(locationRepository))
+        instantiateQueryHandler(FindWorldQuery::class, FindWorldQueryHandler(worldRepository))
+
+        instantiateCommandHandler(UpdateAllLocationsCommand::class, UpdateAllLocationsCommandHandler(locationRepository, eventPublisher))
+        instantiateCommandHandler(UpdateAllCompaniesCommand::class, UpdateAllCompaniesCommandHandler(companyRepository, commandBus, eventPublisher))
+        instantiateCommandHandler(UpdateAllCompanyVehiclesCommand::class, UpdateAllCompanyVehiclesCommandHandler(entityRepository, queryExecutor, eventPublisher))
     }
 
     internal val configurationSetterService = ConfigurationSetterService()
     internal val companyCreatorService = CompanyCreatorService(companyRepository, eventPublisher)
     internal val worldCreatorService = WorldCreatorService(worldRepository, eventPublisher)
     internal val worldUpdaterService = WorldUpdaterService(worldRepository, commandBus, eventPublisher)
-    internal val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, eventPublisher)
+    internal val worldConnectionCreatorService = WorldConnectionCreatorService(worldRepository, queryExecutor, eventPublisher)
     internal val locationCreatorService = LocationCreatorService(locationRepository, eventPublisher)
     internal val entityCreatorService = EntityCreatorService(worldRepository, companyRepository, entityRepository, eventPublisher)
     internal val entityRouteAssignerService = EntityRouteAssignerService(entityRepository, eventPublisher)

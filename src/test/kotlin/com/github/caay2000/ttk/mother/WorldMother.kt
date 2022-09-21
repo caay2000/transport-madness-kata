@@ -14,7 +14,8 @@ import com.github.caay2000.ttk.shared.randomDomainId
 
 object WorldMother {
 
-    private val pathfindingStrategy = AStartPathfindingStrategy(PathfindingConfigurationMother.default(needConnection = false))
+    private val pathfindingStrategy = AStartPathfindingStrategy()
+    private val pathfindingConfiguration = PathfindingConfigurationMother.default(needConnection = false)
 
     private const val DEFAULT_WIDTH: Int = 6
     private const val DEFAULT_HEIGHT: Int = 6
@@ -52,7 +53,7 @@ object WorldMother {
         this.cells.toMap(updatedCells)
         paths.forEach { (source, targets) ->
             targets.forEach { target ->
-                val path = pathfindingStrategy.invoke(this.cells.values.toSet(), this.getCell(source), this.getCell(target)).bind().path
+                val path = pathfindingStrategy.invoke(pathfindingConfiguration, this.cells.values.toSet(), this.getCell(source), this.getCell(target)).bind().path
                 path.forEach { cell ->
                     updatedCells[cell.position] = CellMother.random(cell.position.x, cell.position.y, Cell.CellConnection.CONNECTED)
                 }

@@ -1,15 +1,15 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
-import arrow.core.right
 import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
-import com.github.caay2000.ttk.context.pathfinding.primary.query.FindNextSectionQuery
-import com.github.caay2000.ttk.context.pathfinding.primary.query.FindNextSectionQueryResponse
-import com.github.caay2000.ttk.context.world.application.WorldRepository
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQuery
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQueryResponse
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
 import com.github.caay2000.ttk.mother.WorldMother
@@ -24,10 +24,9 @@ import org.mockito.kotlin.whenever
 
 internal class EntityUpdateMoverServiceTest {
 
-    private val worldRepository: WorldRepository = mock()
     private val queryExecutor: QueryExecutor = mock()
 
-    private val sut = EntityUpdateMoverService(worldRepository, queryExecutor)
+    private val sut = EntityUpdateMoverService(queryExecutor)
 
     @Test
     fun `entity does not move if STOPPED`() {
@@ -95,14 +94,14 @@ internal class EntityUpdateMoverServiceTest {
     }
 
     private fun `world exists`() {
-        whenever(worldRepository.get()).thenReturn(
-            WorldMother.random(connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))).right()
+        whenever(queryExecutor.execute<FindWorldQueryResponse>(any<FindWorldQuery>())).thenReturn(
+            FindWorldQueryResponse(WorldMother.random(connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))))
         )
     }
 
     private fun `next section is retrieved correctly`() {
-        whenever(queryExecutor.execute<FindNextSectionQueryResponse>(any<FindNextSectionQuery>())).thenReturn(
-            FindNextSectionQueryResponse(listOf(CellMother.random(1, 0)))
+        whenever(queryExecutor.execute<FindPathQueryResponse>(any<FindPathQuery>())).thenReturn(
+            FindPathQueryResponse(listOf(CellMother.random(0, 0), CellMother.random(1, 0)))
         )
     }
 

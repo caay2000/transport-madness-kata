@@ -4,19 +4,19 @@ import arrow.core.Either
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 
-class AStartPathfindingStrategy(override val pathfindingConfiguration: PathfindingConfiguration) : PathfindingStrategy {
+class AStartPathfindingStrategy : PathfindingStrategy {
 
-    override fun invoke(cells: Collection<Cell>, source: Cell, target: Cell): Either<PathfindingException, PathfindingResult> =
+    override fun invoke(pathfindingConfiguration: PathfindingConfiguration, cells: Collection<Cell>, source: Cell, target: Cell): Either<PathfindingException, PathfindingResult> =
         Either.catch {
             invoke(
-                grid = createGrid(cells),
+                grid = createGrid(pathfindingConfiguration.needConnection, cells),
                 source = source,
                 target = target
             )
         }.mapLeft { UnknownPathfindingException(it) }
 
-    private fun createGrid(cells: Collection<Cell>): Grid = Grid(
-        cells.filter { if (pathfindingConfiguration.needConnection) it.connected else true }
+    private fun createGrid(needConnection: Boolean, cells: Collection<Cell>): Grid = Grid(
+        cells.filter { if (needConnection) it.connected else true }
             .associateBy { it.position }
     )
 

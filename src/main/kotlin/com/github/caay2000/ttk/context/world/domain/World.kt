@@ -36,7 +36,7 @@ data class World(
 
     fun update(): World = copy(currentTurn = currentTurn + 1)
 
-    fun createConnection(path: Set<Cell>): World =
+    fun createConnection(path: Collection<Cell>): World =
         path.fold(initial = this) { world, cell -> world.updateCell { cell } }
 
     fun addLocation(locationId: LocationId, position: Position): World =

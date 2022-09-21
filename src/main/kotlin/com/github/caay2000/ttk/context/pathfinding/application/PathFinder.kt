@@ -8,11 +8,11 @@ import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingStrategy
 import com.github.caay2000.ttk.context.pathfinding.domain.Section
 import com.github.caay2000.ttk.context.world.domain.Cell
 
-class NextSectionFinder(pathfindingConfiguration: PathfindingConfiguration) {
+class PathFinder {
 
-    private val pathfindingStrategy: PathfindingStrategy = AStartPathfindingStrategy(pathfindingConfiguration)
+    private val pathfindingStrategy: PathfindingStrategy = AStartPathfindingStrategy()
 
-    fun invoke(cells: List<Cell>, source: Cell, target: Cell): Either<PathfindingException, Section> =
-        pathfindingStrategy.invoke(cells, source, target)
-            .map { result -> Section(result.removeFirstCell().path) }
+    fun invoke(pathfindingConfiguration: PathfindingConfiguration, cells: Collection<Cell>, source: Cell, target: Cell): Either<PathfindingException, Section> =
+        pathfindingStrategy.invoke(pathfindingConfiguration, cells, source, target)
+            .map { result -> Section(result.path) }
 }

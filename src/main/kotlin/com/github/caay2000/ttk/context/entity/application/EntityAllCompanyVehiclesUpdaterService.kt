@@ -15,11 +15,9 @@ import com.github.caay2000.ttk.context.entity.application.update.EntityUpdateUnl
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
-import com.github.caay2000.ttk.context.world.application.WorldRepository
 import com.github.caay2000.ttk.shared.CompanyId
 
 class EntityAllCompanyVehiclesUpdaterService(
-    worldRepository: WorldRepository,
     private val entityRepository: EntityRepository,
     queryExecutor: QueryExecutor,
     eventPublisher: EventPublisher
@@ -29,7 +27,7 @@ class EntityAllCompanyVehiclesUpdaterService(
 
     private val loaderService = EntityUpdateLoaderService(queryExecutor)
     private val unloaderService = EntityUpdateUnloaderService()
-    private val moverService = EntityUpdateMoverService(worldRepository, queryExecutor)
+    private val moverService = EntityUpdateMoverService(queryExecutor)
     private val starterService = EntityUpdateStarterService(queryExecutor)
     private val stopperService = EntityUpdateStopperService()
 
@@ -43,8 +41,7 @@ class EntityAllCompanyVehiclesUpdaterService(
             .mapLeft { UnknownEntityException(it) }
 
     private fun findAllEntities(companyId: CompanyId): Either<EntityException, List<Entity>> =
-        entityRepository.findAll(ByCompanyId(companyId))
-            .mapLeft { UnknownEntityException(it) }
+        entityService.findAllEntities(ByCompanyId(companyId))
 
     private fun Entity.updateEntity(): Entity =
         this.update().right()

@@ -11,7 +11,7 @@ data class PathfindingConfiguration(
         private var creteConnectionStrategyConfiguration: PathfindingConfiguration = PathfindingConfiguration()
         private var routeStrategyConfiguration: PathfindingConfiguration = PathfindingConfiguration()
 
-        fun getCreteConnectionStrategyConfiguration(): PathfindingConfiguration = creteConnectionStrategyConfiguration
+        fun getCreateConnectionStrategyConfiguration(): PathfindingConfiguration = creteConnectionStrategyConfiguration
         fun getRouteStrategyConfiguration(): PathfindingConfiguration = routeStrategyConfiguration
 
         fun fromConfiguration(configuration: Configuration) {
