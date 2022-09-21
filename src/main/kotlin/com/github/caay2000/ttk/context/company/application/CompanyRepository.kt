@@ -12,7 +12,6 @@ interface CompanyRepository {
     fun save(company: Company): Either<Throwable, Company>
 
     sealed class FindCompanyCriteria {
-
-        data class ByIdCriteria(val id: CompanyId) : FindCompanyCriteria()
+        data class ById(val id: CompanyId) : FindCompanyCriteria()
     }
 }

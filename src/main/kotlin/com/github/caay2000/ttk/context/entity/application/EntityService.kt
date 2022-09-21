@@ -20,7 +20,7 @@ interface EntityServiceApi {
 fun entityService(entityRepository: EntityRepository, eventPublisher: EventPublisher) = object : EntityServiceApi {
 
     override fun findById(id: EntityId): Either<EntityException, Entity> =
-        entityRepository.find(EntityRepository.FindEntityCriteria.ByIdCriteria(id))
+        entityRepository.find(EntityRepository.FindEntityCriteria.ById(id))
             .mapLeft { EntityNotFoundEntityException(id) }
 
     override fun findAllEntities(criteria: FindAllCriteria): Either<EntityException, List<Entity>> =

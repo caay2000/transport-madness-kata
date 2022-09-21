@@ -2,7 +2,7 @@ package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.extension.thenReturnFirstArgument
 import com.github.caay2000.ttk.mother.world.location.LocationMother
@@ -33,7 +33,7 @@ internal class LocationCargoLoaderServiceTest {
     }
 
     private fun `location exists`() {
-        whenever(locationRepository.find(ByPositionCriteria(location.position))).thenReturn(location.right())
+        whenever(locationRepository.find(ByPosition(location.position))).thenReturn(location.right())
     }
 
     private fun `location will be updated`() {

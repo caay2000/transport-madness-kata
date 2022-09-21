@@ -12,13 +12,15 @@ import com.github.caay2000.ttk.context.company.domain.UnknownCompanyException
 import com.github.caay2000.ttk.context.entity.primary.command.UpdateAllCompanyVehiclesCommand
 
 class AllCompaniesUpdaterService(
-    private val companyRepository: CompanyRepository,
+    companyRepository: CompanyRepository,
     private val commandBus: CommandBus,
-    private val eventPublisher: EventPublisher
+    eventPublisher: EventPublisher
 ) {
 
+    private val companyService: CompanyServiceApi = companyService(companyRepository, eventPublisher)
+
     fun invoke(): Either<CompanyException, Unit> =
-        findAllCompanies()
+        companyService.findAll()
             .flatMap { companies -> companies.updateAll() }
             .void()
 
@@ -29,22 +31,10 @@ class AllCompaniesUpdaterService(
     private fun Company.updateCompany(): Either<CompanyException, Company> =
         updateCompanyVehicles()
             .map { company -> company.update() }
-            .flatMap { company -> company.save() }
-            .flatMap { company -> company.publishEvents() }
+            .flatMap { company -> companyService.save(company) }
+            .flatMap { company -> companyService.publishEvents(company) }
 
     private fun Company.updateCompanyVehicles(): Either<CompanyException, Company> =
         commandBus.publish(UpdateAllCompanyVehiclesCommand(this.id))
             .let { this.right() }
-
-    private fun findAllCompanies(): Either<CompanyException, List<Company>> =
-        companyRepository.findAll()
-            .mapLeft { UnknownCompanyException(it) }
-
-    private fun Company.save(): Either<CompanyException, Company> =
-        companyRepository.save(this)
-            .mapLeft { UnknownCompanyException(it) }
-
-    private fun Company.publishEvents(): Either<CompanyException, Company> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
-            .mapLeft { UnknownCompanyException(it) }
 }

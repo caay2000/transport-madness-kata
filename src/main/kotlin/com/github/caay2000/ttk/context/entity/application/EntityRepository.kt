@@ -14,8 +14,7 @@ interface EntityRepository {
     fun save(entity: Entity): Either<Throwable, Entity>
 
     sealed class FindEntityCriteria {
-
-        data class ByIdCriteria(val id: EntityId) : FindEntityCriteria()
+        data class ById(val id: EntityId) : FindEntityCriteria()
     }
 
     sealed class FindAllCriteria {

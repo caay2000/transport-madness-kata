@@ -18,7 +18,7 @@ internal class InMemoryEntityRepositoryTest {
 
         `entity exists`()
 
-        val result = sut.exists(EntityRepository.FindEntityCriteria.ByIdCriteria(entity.id))
+        val result = sut.exists(EntityRepository.FindEntityCriteria.ById(entity.id))
 
         Assertions.assertThat(result).isTrue
     }
@@ -26,7 +26,7 @@ internal class InMemoryEntityRepositoryTest {
     @Test
     fun `exists returns false if it does not exist`() {
 
-        val result = sut.exists(EntityRepository.FindEntityCriteria.ByIdCriteria(nonExistingEntity.id))
+        val result = sut.exists(EntityRepository.FindEntityCriteria.ById(nonExistingEntity.id))
 
         Assertions.assertThat(result).isFalse
     }
@@ -36,7 +36,7 @@ internal class InMemoryEntityRepositoryTest {
 
         `entity exists`()
 
-        sut.find(EntityRepository.FindEntityCriteria.ByIdCriteria(entity.id)).shouldBeRight {
+        sut.find(EntityRepository.FindEntityCriteria.ById(entity.id)).shouldBeRight {
             Assertions.assertThat(it).isEqualTo(entity)
         }
     }
@@ -44,7 +44,7 @@ internal class InMemoryEntityRepositoryTest {
     @Test
     fun `find returns NoSuchElementException if element does not exists`() {
 
-        sut.find(EntityRepository.FindEntityCriteria.ByIdCriteria(nonExistingEntity.id)).shouldBeLeftOfType<NoSuchElementException>()
+        sut.find(EntityRepository.FindEntityCriteria.ById(nonExistingEntity.id)).shouldBeLeftOfType<NoSuchElementException>()
     }
 
     @Test
@@ -64,7 +64,7 @@ internal class InMemoryEntityRepositoryTest {
 
         sut.save(entity.copy(pax = entity.pax + 10))
 
-        sut.find(EntityRepository.FindEntityCriteria.ByIdCriteria(entity.id)).shouldBeRight {
+        sut.find(EntityRepository.FindEntityCriteria.ById(entity.id)).shouldBeRight {
             Assertions.assertThat(it).isEqualTo(entity.copy(pax = entity.pax + 10))
         }
     }

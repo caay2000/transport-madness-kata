@@ -16,18 +16,18 @@ class InMemoryLocationRepository(private val db: InMemoryDatabase) : LocationRep
 
     override fun exists(criteria: LocationRepository.FindLocationCriteria): Boolean =
         when (criteria) {
-            is LocationRepository.FindLocationCriteria.ByIdCriteria ->
+            is LocationRepository.FindLocationCriteria.ById ->
                 db.exists(TABLE_NAME, criteria.id.rawId)
-            is LocationRepository.FindLocationCriteria.ByPositionCriteria ->
+            is LocationRepository.FindLocationCriteria.ByPosition ->
                 db.exists(TABLE_NAME, byPositionIndex[criteria.position]?.rawId ?: "")
         }
 
     override fun find(criteria: LocationRepository.FindLocationCriteria): Either<Throwable, Location> =
         Either.catch {
             when (criteria) {
-                is LocationRepository.FindLocationCriteria.ByIdCriteria ->
+                is LocationRepository.FindLocationCriteria.ById ->
                     db.getById<Location>(TABLE_NAME, criteria.id.rawId)
-                is LocationRepository.FindLocationCriteria.ByPositionCriteria ->
+                is LocationRepository.FindLocationCriteria.ByPosition ->
                     db.getById(TABLE_NAME, byPositionIndex[criteria.position]?.rawId ?: "")
             }
         }.flatMap { it?.right() ?: NoSuchElementException().left() }

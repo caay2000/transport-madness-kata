@@ -6,7 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
-import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
+import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ById
 import com.github.caay2000.ttk.context.entity.domain.CompanyNotFoundEntityException
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
@@ -36,7 +36,7 @@ class EntityCreatorService(
             .flatMap { entity -> entityService.publishEvents(entity) }
 
     private fun guardCompanyExists(companyId: CompanyId): Either<EntityException, Unit> =
-        if (companyRepository.exists(ByIdCriteria(companyId))) Unit.right()
+        if (companyRepository.exists(ById(companyId))) Unit.right()
         else CompanyNotFoundEntityException(companyId).left()
 
     private fun findWorld(): Either<EntityException, World> =

@@ -1,7 +1,7 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.right
-import com.github.caay2000.ttk.context.entity.application.EntityRepository.FindEntityCriteria.ByIdCriteria
+import com.github.caay2000.ttk.context.entity.application.EntityRepository.FindEntityCriteria.ById
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.InvalidRouteEntityException
 import com.github.caay2000.ttk.context.entity.domain.Route
@@ -46,7 +46,7 @@ internal class EntityRouteAssignerServiceTest {
     }
 
     private fun `entity exists`() {
-        whenever(entityRepository.find(ByIdCriteria(entity.id))).thenReturn(entity.right())
+        whenever(entityRepository.find(ById(entity.id))).thenReturn(entity.right())
     }
 
     private fun `entity will be updated`() {

@@ -6,7 +6,7 @@ import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.primary.query.FindLocationQuery
 import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryResponse
@@ -26,7 +26,7 @@ class EntityUpdateLoaderService(private val queryExecutor: QueryExecutor) {
 
     private fun findLocation(entity: Entity): Either<EntityException, Location> =
         Either.catch {
-            queryExecutor.execute<FindLocationQueryResponse>(FindLocationQuery((ByPositionCriteria(entity.currentPosition)))).value
+            queryExecutor.execute<FindLocationQueryResponse>(FindLocationQuery((ByPosition(entity.currentPosition)))).value
         }.mapLeft { UnknownEntityException(it) }
 
     private fun Entity.checkAmountToLoad(location: Location) =

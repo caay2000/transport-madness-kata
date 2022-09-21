@@ -5,7 +5,7 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationAlreadyExists
 import com.github.caay2000.ttk.context.location.domain.LocationConfiguration
@@ -28,7 +28,7 @@ class LocationCreatorService(
             .flatMap { location -> locationService.publishEvents(location) }
 
     private fun guardPositionEmpty(position: Position): Either<LocationException, Unit> =
-        if (locationRepository.exists(ByPositionCriteria(position)))
+        if (locationRepository.exists(ByPosition(position)))
             LocationAlreadyExists(position).left()
         else Unit.right()
 

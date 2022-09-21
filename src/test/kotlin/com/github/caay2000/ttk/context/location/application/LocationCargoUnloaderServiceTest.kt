@@ -33,7 +33,7 @@ internal class LocationCargoUnloaderServiceTest {
     }
 
     private fun `location exists`() {
-        whenever(locationRepository.find(LocationRepository.FindLocationCriteria.ByPositionCriteria(location.position))).thenReturn(location.right())
+        whenever(locationRepository.find(LocationRepository.FindLocationCriteria.ByPosition(location.position))).thenReturn(location.right())
     }
 
     private fun `location will be updated`() {

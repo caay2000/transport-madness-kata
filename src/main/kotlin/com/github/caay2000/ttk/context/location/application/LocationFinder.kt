@@ -1,8 +1,8 @@
 package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.Either
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByIdCriteria
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ById
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
 import com.github.caay2000.ttk.context.location.domain.LocationNotFoundByLocationIdException
@@ -16,8 +16,8 @@ class LocationFinder(private val locationRepository: LocationRepository) {
             .mapLeft {
                 when (it) {
                     is NoSuchElementException -> when (criteria) {
-                        is ByIdCriteria -> LocationNotFoundByLocationIdException(criteria.id)
-                        is ByPositionCriteria -> LocationNotFoundByPositionException(criteria.position)
+                        is ById -> LocationNotFoundByLocationIdException(criteria.id)
+                        is ByPosition -> LocationNotFoundByPositionException(criteria.position)
                     }
                     else -> UnknownLocationException(it)
                 }

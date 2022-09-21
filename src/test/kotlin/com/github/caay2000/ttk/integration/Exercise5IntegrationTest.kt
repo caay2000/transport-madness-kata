@@ -33,13 +33,13 @@ class Exercise5IntegrationTest {
         sut.createLocation("B", locationB, 1000)
         sut.createLocation("C", locationC, 250)
 
-        sut.createConnection(locationA, locationB)
-        sut.createConnection(locationB, locationC)
-        sut.createConnection(locationC, locationA)
+        val company = sut.createCompany("company")
+        sut.createConnection(company.id, locationA, locationB)
+        sut.createConnection(company.id, locationB, locationC)
+        sut.createConnection(company.id, locationC, locationA)
 
-        val companyA = sut.createCompany("company A")
-        val entityA = sut.createEntity(companyA.id, PassengerTrain(3), locationA)
-        sut.assignRoute(entityA.id, listOf(locationA, locationB, locationC, locationB))
+        val entity = sut.createEntity(company.id, PassengerTrain(3), locationA)
+        sut.assignRoute(entity.id, listOf(locationA, locationB, locationC, locationB))
 
         repeat(finishingTurn) {
             sut.passTurn()
@@ -54,5 +54,5 @@ class Exercise5IntegrationTest {
     }
 
     private fun getLocation(position: Position) =
-        InMemoryLocationRepository(inMemoryDatabase).find(LocationRepository.FindLocationCriteria.ByPositionCriteria(position)).bind()
+        InMemoryLocationRepository(inMemoryDatabase).find(LocationRepository.FindLocationCriteria.ByPosition(position)).bind()
 }

@@ -1,8 +1,8 @@
 package com.github.caay2000.ttk.context.location.secondary
 
 import com.github.caay2000.ttk.context.location.application.LocationRepository
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByIdCriteria
-import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPositionCriteria
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ById
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria.ByPosition
 import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import com.github.caay2000.ttk.mother.world.location.LocationMother
 import io.kotest.assertions.arrow.either.shouldBeLeftOfType
@@ -20,7 +20,7 @@ internal class InMemoryLocationRepositoryTest {
 
         `location exists`()
 
-        val result = sut.exists(ByIdCriteria(location.id))
+        val result = sut.exists(ById(location.id))
 
         assertThat(result).isTrue
     }
@@ -28,7 +28,7 @@ internal class InMemoryLocationRepositoryTest {
     @Test
     fun `exists returns false if it does not exist ById`() {
 
-        val result = sut.exists(ByIdCriteria(nonExistingLocation.id))
+        val result = sut.exists(ById(nonExistingLocation.id))
 
         assertThat(result).isFalse
     }
@@ -36,7 +36,7 @@ internal class InMemoryLocationRepositoryTest {
     @Test
     fun `exists returns false if it does not exist ByPosition`() {
 
-        val result = sut.exists(ByPositionCriteria(nonExistingLocation.position))
+        val result = sut.exists(ByPosition(nonExistingLocation.position))
 
         assertThat(result).isFalse
     }
@@ -46,7 +46,7 @@ internal class InMemoryLocationRepositoryTest {
 
         `location exists`()
 
-        sut.find(ByIdCriteria(location.id)).shouldBeRight {
+        sut.find(ById(location.id)).shouldBeRight {
             assertThat(it).isEqualTo(location)
         }
     }
@@ -56,7 +56,7 @@ internal class InMemoryLocationRepositoryTest {
 
         `location exists`()
 
-        sut.find(ByPositionCriteria(location.position)).shouldBeRight {
+        sut.find(ByPosition(location.position)).shouldBeRight {
             assertThat(it).isEqualTo(location)
         }
     }
@@ -64,7 +64,7 @@ internal class InMemoryLocationRepositoryTest {
     @Test
     fun `find returns NoSuchElementException if element does not exists`() {
 
-        sut.find(ByIdCriteria(nonExistingLocation.id)).shouldBeLeftOfType<NoSuchElementException>()
+        sut.find(ById(nonExistingLocation.id)).shouldBeLeftOfType<NoSuchElementException>()
     }
 
     @Test
@@ -84,7 +84,7 @@ internal class InMemoryLocationRepositoryTest {
 
         sut.save(location.copy(name = "newName"))
 
-        sut.find(ByIdCriteria(location.id)).shouldBeRight {
+        sut.find(ById(location.id)).shouldBeRight {
             assertThat(it).isEqualTo(location.copy(name = "newName"))
         }
     }

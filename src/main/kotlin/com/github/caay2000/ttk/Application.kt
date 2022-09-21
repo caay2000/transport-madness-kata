@@ -11,6 +11,8 @@ import com.github.caay2000.ttk.context.company.application.CompanyRepository
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
 import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommandHandler
 import com.github.caay2000.ttk.context.company.primary.event.AddEntityToCompanyOnEntityCreatedEventSubscriber
+import com.github.caay2000.ttk.context.company.primary.query.FindCompanyQuery
+import com.github.caay2000.ttk.context.company.primary.query.FindCompanyQueryHandler
 import com.github.caay2000.ttk.context.company.secondary.InMemoryCompanyRepository
 import com.github.caay2000.ttk.context.configuration.application.ConfigurationSetterService
 import com.github.caay2000.ttk.context.entity.application.EntityCreatorService
@@ -73,6 +75,7 @@ internal class Application(inMemoryDatabase: InMemoryDatabase) {
         instantiateQueryHandler(FindPathQuery::class, FindPathQueryHandler())
         instantiateQueryHandler(FindLocationQuery::class, FindLocationQueryHandler(locationRepository))
         instantiateQueryHandler(FindWorldQuery::class, FindWorldQueryHandler(worldRepository))
+        instantiateQueryHandler(FindCompanyQuery::class, FindCompanyQueryHandler(companyRepository))
 
         instantiateCommandHandler(UpdateAllLocationsCommand::class, UpdateAllLocationsCommandHandler(locationRepository, eventPublisher))
         instantiateCommandHandler(UpdateAllCompaniesCommand::class, UpdateAllCompaniesCommandHandler(companyRepository, commandBus, eventPublisher))

@@ -12,14 +12,14 @@ class InMemoryEntityRepository(private val db: InMemoryDatabase) : EntityReposit
 
     override fun exists(criteria: EntityRepository.FindEntityCriteria): Boolean =
         when (criteria) {
-            is EntityRepository.FindEntityCriteria.ByIdCriteria ->
+            is EntityRepository.FindEntityCriteria.ById ->
                 db.exists(TABLE_NAME, criteria.id.rawId)
         }
 
     override fun find(criteria: EntityRepository.FindEntityCriteria): Either<Throwable, Entity> =
         Either.catch {
             when (criteria) {
-                is EntityRepository.FindEntityCriteria.ByIdCriteria ->
+                is EntityRepository.FindEntityCriteria.ById ->
                     db.getById<Entity>(TABLE_NAME, criteria.id.rawId)
             }
         }.flatMap { it?.right() ?: NoSuchElementException().left() }

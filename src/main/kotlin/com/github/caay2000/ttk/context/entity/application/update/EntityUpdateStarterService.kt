@@ -24,7 +24,7 @@ class EntityUpdateStarterService(private val queryExecutor: QueryExecutor) {
 
     private fun findLocation(entity: Entity): Either<EntityException, Location> =
         Either.catch {
-            queryExecutor.execute<FindLocationQueryResponse>(FindLocationQuery((LocationRepository.FindLocationCriteria.ByPositionCriteria(entity.currentPosition)))).value
+            queryExecutor.execute<FindLocationQueryResponse>(FindLocationQuery((LocationRepository.FindLocationCriteria.ByPosition(entity.currentPosition)))).value
         }.mapLeft { UnknownEntityException(it) }
 
     private fun Entity.shouldResumeRoute(location: Location): Boolean =

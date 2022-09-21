@@ -21,8 +21,8 @@ class ApplicationService(inMemoryDatabase: InMemoryDatabase) : ApplicationServic
     }
 
     override fun createWorld(): World = application.worldCreatorService.invoke().bind()
-    override fun createConnection(source: Position, destination: Position): World =
-        application.worldConnectionCreatorService.invoke(source, destination).bind()
+    override fun createConnection(companyId: CompanyId, source: Position, destination: Position): World =
+        application.worldConnectionCreatorService.invoke(companyId, source, destination).bind()
 
     override fun createLocation(name: String, position: Position, population: Int): Location =
         application.locationCreatorService.invoke(name, position, population).bind()

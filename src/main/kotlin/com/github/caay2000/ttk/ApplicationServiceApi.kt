@@ -15,7 +15,7 @@ interface ApplicationServiceApi {
     fun setConfiguration(configuration: Configuration)
 
     fun createWorld(): World
-    fun createConnection(source: Position, destination: Position): World
+    fun createConnection(companyId: CompanyId, source: Position, destination: Position): World
 
     fun createLocation(name: String, position: Position, population: Int): Location
 

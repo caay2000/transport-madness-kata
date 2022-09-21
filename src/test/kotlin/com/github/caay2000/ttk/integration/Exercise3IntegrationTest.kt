@@ -36,12 +36,12 @@ class Exercise3IntegrationTest {
         sut.createLocation("C", locationC, 1000)
         sut.createLocation("D", locationD, 250)
 
+        val company = sut.createCompany("company")
         paths.forEach { (source, destinations) ->
-            destinations.forEach { destination -> sut.createConnection(source, destination) }
+            destinations.forEach { destination -> sut.createConnection(company.id, source, destination) }
         }
 
-        val companyA = sut.createCompany("company A")
-        val entityA = sut.createEntity(companyA.id, PassengerTrain(3), startPosition)
+        val entityA = sut.createEntity(company.id, PassengerTrain(3), startPosition)
         sut.assignRoute(entityA.id, route)
 
         repeat(finishingTurn) {
@@ -51,8 +51,7 @@ class Exercise3IntegrationTest {
         Assertions.assertThat(getWorld().currentTurn).isEqualTo(finishingTurn)
     }
 
-    private fun getWorld() =
-        InMemoryWorldRepository(inMemoryDatabase).get().bind()
+    private fun getWorld() = InMemoryWorldRepository(inMemoryDatabase).get().bind()
 
     companion object {
         @JvmStatic

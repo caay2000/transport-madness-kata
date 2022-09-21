@@ -12,14 +12,14 @@ class InMemoryCompanyRepository(private val db: InMemoryDatabase) : CompanyRepos
 
     override fun exists(criteria: CompanyRepository.FindCompanyCriteria): Boolean =
         when (criteria) {
-            is CompanyRepository.FindCompanyCriteria.ByIdCriteria ->
+            is CompanyRepository.FindCompanyCriteria.ById ->
                 db.exists(TABLE_NAME, criteria.id.rawId)
         }
 
     override fun find(criteria: CompanyRepository.FindCompanyCriteria): Either<Throwable, Company> =
         Either.catch {
             when (criteria) {
-                is CompanyRepository.FindCompanyCriteria.ByIdCriteria ->
+                is CompanyRepository.FindCompanyCriteria.ById ->
                     db.getById<Company>(TABLE_NAME, criteria.id.rawId)
             }
         }.flatMap { it?.right() ?: NoSuchElementException().left() }

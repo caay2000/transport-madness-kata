@@ -3,7 +3,7 @@ package com.github.caay2000.ttk.context.entity.application
 import arrow.core.right
 import com.github.caay2000.ttk.api.event.EventPublisher
 import com.github.caay2000.ttk.context.company.application.CompanyRepository
-import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ByIdCriteria
+import com.github.caay2000.ttk.context.company.application.CompanyRepository.FindCompanyCriteria.ById
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.InvalidEntityPositionEntityException
 import com.github.caay2000.ttk.context.entity.domain.PassengerTrain
@@ -70,7 +70,7 @@ internal class EntityCreatorServiceTest {
     }
 
     private fun `company exists`() {
-        whenever(companyRepository.exists(ByIdCriteria(company.id))).thenReturn(true)
+        whenever(companyRepository.exists(ById(company.id))).thenReturn(true)
     }
 
     private fun `entity will be created`() {
