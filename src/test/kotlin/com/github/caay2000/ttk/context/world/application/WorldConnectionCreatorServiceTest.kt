@@ -76,10 +76,10 @@ internal class WorldConnectionCreatorServiceTest {
     private val company = CompanyMother.random()
 
     private val expectedPath = setOf(
-        Cell(position = Position(x = 0, y = 0), connection = Cell.CellConnection.CONNECTED),
-        Cell(position = Position(x = 1, y = 0), connection = Cell.CellConnection.CONNECTED),
-        Cell(position = Position(x = 2, y = 0), connection = Cell.CellConnection.CONNECTED),
-        Cell(position = Position(x = 2, y = 1), connection = Cell.CellConnection.CONNECTED),
-        Cell(position = Position(x = 3, y = 2), connection = Cell.CellConnection.CONNECTED)
+        Cell(position = Position(x = 0, y = 0), connection = Cell.ConnectedCell(company.id)),
+        Cell(position = Position(x = 1, y = 0), connection = Cell.ConnectedCell(company.id)),
+        Cell(position = Position(x = 2, y = 0), connection = Cell.ConnectedCell(company.id)),
+        Cell(position = Position(x = 2, y = 1), connection = Cell.ConnectedCell(company.id)),
+        Cell(position = Position(x = 3, y = 2), connection = Cell.ConnectedCell(company.id))
     )
 }

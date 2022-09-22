@@ -72,9 +72,8 @@ class AStartPathfindingStrategy : PathfindingStrategy {
                 .map { cells.getValue(it) }
                 .toSet()
 
-        fun moveCost(currentPos: Cell, neighbour: Cell): Int {
-            return currentPos.connection.cost + neighbour.connection.cost
-        }
+        fun moveCost(currentPos: Cell, neighbour: Cell): Int =
+            currentPos.connection.cost + neighbour.connection.cost
     }
 
     companion object {

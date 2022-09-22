@@ -9,10 +9,12 @@ import com.github.caay2000.ttk.context.entity.domain.EntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
 import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
 import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
+import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.primary.query.FindWorldQuery
 import com.github.caay2000.ttk.context.world.primary.query.FindWorldQueryResponse
+import com.github.caay2000.ttk.shared.CompanyId
 
 class EntityUpdateMoverService(private val queryExecutor: QueryExecutor) {
 
@@ -30,22 +32,25 @@ class EntityUpdateMoverService(private val queryExecutor: QueryExecutor) {
     // TODO this findWorld should be moved to pathfinding context
     private fun Entity.updateNextSection(): Either<EntityException, Entity> =
         findWorld()
-            .flatMap { world -> world.findNextSection(currentPosition, route.currentDestination) }
+            .flatMap { world -> this.findNextSection(world, currentPosition, route.currentDestination) }
             .map { section -> updateNextSection(section.value.drop(1)) }
             .mapLeft { UnknownEntityException(it) }
 
     private fun findWorld() = Either.catch { queryExecutor.execute<FindWorldQueryResponse>(FindWorldQuery()).value }
         .mapLeft { UnknownEntityException(it) }
 
-    private fun World.findNextSection(source: Position, target: Position) =
+    private fun Entity.findNextSection(world: World, source: Position, target: Position) =
         Either.catch {
             queryExecutor.execute<FindPathQueryResponse>(
                 FindPathQuery(
                     needConnection = true,
-                    cells = cells.values.filter { it.connected },
-                    source = getCell(source),
-                    target = getCell(target)
+                    cells = world.cells.values.filterByCompanyId(companyId),
+                    source = world.getCell(source),
+                    target = world.getCell(target)
                 )
             )
         }.mapLeft { UnknownEntityException(it) }
+
+    private fun Collection<Cell>.filterByCompanyId(companyId: CompanyId) =
+        this.filter { it.connection is Cell.ConnectedCell && it.connection.companyId == companyId }
 }

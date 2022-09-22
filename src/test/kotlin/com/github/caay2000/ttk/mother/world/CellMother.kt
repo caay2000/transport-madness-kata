@@ -8,7 +8,7 @@ object CellMother {
     fun random(
         x: Int = 0,
         y: Int = 0,
-        cost: Cell.CellConnection = Cell.CellConnection.NOT_CONNECTED
+        cost: Cell.CellConnection = Cell.NotConnetedCell
     ) = Cell(
         position = Position(x, y),
         connection = cost

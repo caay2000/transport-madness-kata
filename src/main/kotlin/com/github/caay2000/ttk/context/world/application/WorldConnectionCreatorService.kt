@@ -24,7 +24,7 @@ class WorldConnectionCreatorService(worldRepository: WorldRepository, private va
     fun invoke(companyId: CompanyId, source: Position, target: Position): Either<WorldException, World> =
         guardCompanyExists(companyId)
             .flatMap { worldService.find() }
-            .flatMap { world -> world.createConnection(source, target) }
+            .flatMap { world -> world.createConnection(companyId, source, target) }
             .flatMap { world -> worldService.save(world) }
             .flatMap { world -> worldService.publishEvents(world) }
 
@@ -32,14 +32,14 @@ class WorldConnectionCreatorService(worldRepository: WorldRepository, private va
         Either.catch { queryExecutor.execute<FindCompanyQueryResponse>(FindCompanyQuery(companyId)).value }
             .mapLeft { CompanyNotFoundException(it) }
 
-    private fun World.createConnection(source: Position, target: Position): Either<WorldException, World> =
+    private fun World.createConnection(companyId: CompanyId, source: Position, target: Position): Either<WorldException, World> =
         findConnection(source, target)
-            .map { path -> path.updateCellsConnection() }
+            .map { path -> path.updateCellsConnection(companyId) }
             .map { updatedCells -> createConnection(updatedCells) }
             .mapLeft { error -> UnknownWorldException(error) }
 
-    private fun List<Cell>.updateCellsConnection(): List<Cell> =
-        this.map { cell -> cell.createConnection() }
+    private fun List<Cell>.updateCellsConnection(companyId: CompanyId): List<Cell> =
+        this.map { cell -> cell.createConnection(companyId) }
 
     private fun World.findConnection(source: Position, target: Position) =
         Either.catch {
