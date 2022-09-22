@@ -1,40 +1,38 @@
 package com.github.caay2000.ttk.context.entity.application
 
 import arrow.core.Either
-import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.entity.application.EntityRepository.FindAllCriteria
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
-import com.github.caay2000.ttk.context.entity.domain.EntityNotFound
+import com.github.caay2000.ttk.context.entity.domain.EntityNotFoundEntityException
 import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
-import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.shared.EntityId
 
-abstract class EntityService(protected val provider: Provider, protected val eventPublisher: EventPublisher<Event>) {
+interface EntityServiceApi {
 
-//    protected fun findEntity(entityId: EntityId): Either<EntityException, Entity> =
-//        provider.get()
-//            .flatMap { world -> world.findEntity(entityId) }
-//            .mapLeft { UnknownEntityException(it) }
+    fun findById(id: EntityId): Either<EntityException, Entity>
+    fun findAllEntities(criteria: FindAllCriteria): Either<EntityException, List<Entity>>
+    fun save(entity: Entity): Either<EntityException, Entity>
+    fun publishEvents(entity: Entity): Either<EntityException, Entity>
+}
 
-    protected fun findWorld(): Either<EntityException, World> =
-        provider.get()
+fun entityService(entityRepository: EntityRepository, eventPublisher: EventPublisher) = object : EntityServiceApi {
+
+    override fun findById(id: EntityId): Either<EntityException, Entity> =
+        entityRepository.find(EntityRepository.FindEntityCriteria.ById(id))
+            .mapLeft { EntityNotFoundEntityException(id) }
+
+    override fun findAllEntities(criteria: FindAllCriteria): Either<EntityException, List<Entity>> =
+        entityRepository.findAll(criteria)
             .mapLeft { UnknownEntityException(it) }
 
-    protected fun World.findEntity(entityId: EntityId): Either<EntityException, Entity> =
-        Either.catch { getEntity(entityId) }
-            .mapLeft { EntityNotFound(entityId) }
-
-    protected fun Entity.save(): Either<EntityException, Entity> =
-        provider.get()
-            .map { world -> world.putEntity(this) }
-            .flatMap { world -> provider.set(world) }
-            .map { this }
+    override fun save(entity: Entity): Either<EntityException, Entity> =
+        entityRepository.save(entity)
+            .map { entity }
             .mapLeft { UnknownEntityException(it) }
 
-    protected fun Entity.publishEvents(): Either<EntityException, Entity> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
+    override fun publishEvents(entity: Entity): Either<EntityException, Entity> =
+        Either.catch { eventPublisher.publish(entity.pullEvents()).let { entity } }
             .mapLeft { UnknownEntityException(it) }
 }

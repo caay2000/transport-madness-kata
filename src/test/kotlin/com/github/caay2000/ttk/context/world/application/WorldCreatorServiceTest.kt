@@ -1,10 +1,9 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
-import com.github.caay2000.ttk.infra.provider.DefaultProvider
-import com.github.caay2000.ttk.mother.ConfigurationMother
-import com.github.caay2000.ttk.mother.WorldMother
+import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.world.secondary.InMemoryWorldRepository
+import com.github.caay2000.ttk.infra.database.InMemoryDatabase
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -12,19 +11,15 @@ import org.mockito.kotlin.mock
 
 internal class WorldCreatorServiceTest {
 
-    private val provider = DefaultProvider()
-    private val sut = WorldCreatorService(provider, mock())
-
-    private val configuration: Configuration = ConfigurationMother.random()
+    private val worldRepository: WorldRepository = InMemoryWorldRepository(InMemoryDatabase())
+    private val eventPublisher: EventPublisher = mock()
+    private val sut = WorldCreatorService(worldRepository, eventPublisher)
 
     @Test
     fun `world is created correctly`() {
 
-        provider.setConfiguration(configuration)
-
         sut.invoke().shouldBeRight {
-            assertThat(it).isEqualTo(WorldMother.empty(id = it.id, width = configuration.worldWidth, height = configuration.worldHeight))
-            assertThat(it).isEqualTo(provider.get().bind())
+            assertThat(it).isEqualTo(worldRepository.get().bind())
         }
     }
 }

@@ -1,64 +1,48 @@
 package com.github.caay2000.ttk.context.world.domain
 
-import com.github.caay2000.ttk.context.entity.domain.Entity
-import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.company.domain.Company
 import com.github.caay2000.ttk.shared.Aggregate
-import com.github.caay2000.ttk.shared.EntityId
+import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.LocationId
 import com.github.caay2000.ttk.shared.WorldId
 import com.github.caay2000.ttk.shared.randomDomainId
-import com.github.caay2000.ttk.shared.replace
 
 data class World(
     override val id: WorldId = randomDomainId(),
     val currentTurn: Int,
-    val cells: Set<Cell>,
-    val entities: Map<EntityId, Entity>,
-    val locations: Map<LocationId, Location>
+    val cells: Map<Position, Cell>,
+    val companies: Map<CompanyId, Company>
 ) : Aggregate() {
-
-    val connectedCells: Set<Cell>
-        get() = cells.filter { it.connected }.toSet()
 
     companion object {
         fun create(width: Int, height: Int) = World(
             currentTurn = 0,
             cells = createCells(width, height),
-            entities = emptyMap(),
-            locations = emptyMap()
+            companies = emptyMap()
         )
 
-        private fun createCells(width: Int, height: Int): Set<Cell> {
-            val cells = mutableSetOf<Cell>()
+        private fun createCells(width: Int, height: Int): Map<Position, Cell> {
+            val cells = mutableMapOf<Position, Cell>()
             for (x in 0 until width) {
                 for (y in 0 until height) {
-                    cells.add(Cell(x, y))
+                    cells[Position(x, y)] = Cell(x, y)
                 }
             }
             return cells
         }
     }
 
-    fun getCell(position: Position): Cell = cells.first { it.position == position }
-
-    fun getEntity(id: EntityId): Entity = entities.getValue(id)
-    fun putEntity(entity: Entity): World = copy(entities = entities + (entity.id to entity))
-
-    fun getLocation(id: LocationId): Location = locations.getValue(id)
-    fun getLocation(position: Position): Location = locations.values.first { it.position == position }
-    fun addLocation(location: Location): World =
-        updateCell { getCell(location.position).updateLocationId(location.id) }
-            .copy(locations = locations + (location.id to location))
-
-    fun updateLocation(location: Location): World =
-        copy(locations = locations + (location.id to location))
+    fun getCell(position: Position): Cell = cells.getValue(position)
 
     fun update(): World = copy(currentTurn = currentTurn + 1)
 
-    fun createConnection(path: Set<Cell>): World =
+    fun createConnection(path: Collection<Cell>): World =
         path.fold(initial = this) { world, cell -> world.updateCell { cell } }
 
+    fun addLocation(locationId: LocationId, position: Position): World =
+        updateCell { getCell(position).updateLocationId(locationId) }
+
     private fun updateCell(cell: () -> Cell): World = cell().let { newCell ->
-        copy(cells = cells.replace(predicate = { it.samePosition(newCell) }, operation = { newCell }).toSet())
+        copy(cells = cells + (newCell.position to newCell))
     }
 }

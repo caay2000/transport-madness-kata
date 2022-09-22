@@ -1,39 +1,87 @@
 package com.github.caay2000.ttk.context.world.application
 
-import arrow.core.computations.ResultEffect.bind
-import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import arrow.core.right
+import com.github.caay2000.ttk.api.event.CommandBus
+import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.context.company.domain.UnknownCompanyException
+import com.github.caay2000.ttk.context.company.primary.command.UpdateAllCompaniesCommand
+import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
+import com.github.caay2000.ttk.context.location.primary.command.UpdateAllLocationsCommand
+import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.extension.thenReturnFirstArgument
 import com.github.caay2000.ttk.mother.WorldMother
 import io.kotest.assertions.arrow.either.shouldBeRight
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 internal class WorldUpdaterServiceTest {
 
-    private val provider = DefaultProvider()
-    private val sut = WorldUpdaterService(provider, mock())
+    private val worldRepository: WorldRepository = mock()
+    private val commandBus: CommandBus = mock()
+    private val eventPublisher: EventPublisher = mock()
+    private val sut = WorldUpdaterService(worldRepository, commandBus, eventPublisher)
 
     @Test
     fun `turn is updated correctly`() {
 
         `world exists`()
+        `world will be updated`()
 
         sut.invoke().shouldBeRight {
-            assertThat(it.currentTurn).isEqualTo(1)
-            assertThat(it).isEqualTo(provider.get().bind())
+            verify(worldRepository).save(world.copy(currentTurn = 1))
+            verify(commandBus).publish(any<UpdateAllLocationsCommand>())
+            verify(commandBus).publish(any<UpdateAllCompaniesCommand>())
         }
     }
 
     @Test
-    fun `entities are also updated`() {
+    fun `should fail if location command fails`() {
 
         `world exists`()
+        `updateAllLocationsCommand will fail`()
 
-        sut.invoke().shouldBeRight {
-            assertThat(it.currentTurn).isEqualTo(1)
-            assertThat(it).isEqualTo(provider.get().bind())
+        assertThrows<UnknownLocationException> {
+            sut.invoke()
         }
+        verify(worldRepository, never()).save(any())
+        verify(commandBus).publish(any<UpdateAllLocationsCommand>())
+        verify(commandBus, never()).publish(any<UpdateAllCompaniesCommand>())
     }
 
-    private fun `world exists`() = provider.set(WorldMother.empty(width = 3, height = 3))
+    @Test
+    fun `should fail if companies command fails`() {
+
+        `world exists`()
+        `updateAllCompaniesCommand will fail`()
+
+        assertThrows<UnknownCompanyException> {
+            sut.invoke()
+        }
+        verify(worldRepository, never()).save(any())
+        verify(commandBus).publish(any<UpdateAllLocationsCommand>())
+        verify(commandBus).publish(any<UpdateAllCompaniesCommand>())
+    }
+
+    private fun `world exists`() {
+        whenever(worldRepository.get()).thenReturn(world.right())
+    }
+
+    private fun `world will be updated`() {
+        whenever(worldRepository.save(any())).thenReturnFirstArgument<World> { it.right() }
+    }
+
+    private fun `updateAllLocationsCommand will fail`() {
+        whenever(commandBus.publish(any<UpdateAllLocationsCommand>())).thenThrow(UnknownLocationException(RuntimeException()))
+    }
+
+    private fun `updateAllCompaniesCommand will fail`() {
+        whenever(commandBus.publish(any<UpdateAllCompaniesCommand>())).thenThrow(UnknownCompanyException(RuntimeException()))
+    }
+
+    private val world = WorldMother.random()
 }

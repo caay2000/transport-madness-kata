@@ -1,36 +1,32 @@
 package com.github.caay2000.ttk.context.location.application
 
 import arrow.core.Either
-import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.context.location.application.LocationRepository.FindLocationCriteria
 import com.github.caay2000.ttk.context.location.domain.Location
 import com.github.caay2000.ttk.context.location.domain.LocationException
-import com.github.caay2000.ttk.context.location.domain.LocationNotFoundByPositionException
 import com.github.caay2000.ttk.context.location.domain.UnknownLocationException
-import com.github.caay2000.ttk.context.world.domain.Position
-import com.github.caay2000.ttk.context.world.domain.World
 
-abstract class LocationService(protected val provider: Provider, protected val eventPublisher: EventPublisher<Event>) {
+interface LocationServiceApi {
 
-    protected fun findWorld(): Either<LocationException, World> =
-        provider.get()
+    fun find(criteria: FindLocationCriteria): Either<LocationException, Location>
+    fun save(location: Location): Either<LocationException, Location>
+    fun publishEvents(location: Location): Either<LocationException, Location>
+}
+
+fun locationService(locationRepository: LocationRepository, eventPublisher: EventPublisher) = object : LocationServiceApi {
+
+    private val locationFinder = LocationFinder(locationRepository)
+
+    override fun find(criteria: FindLocationCriteria): Either<LocationException, Location> =
+        locationFinder.invoke(criteria)
+
+    override fun save(location: Location): Either<LocationException, Location> =
+        locationRepository.save(location)
+            .map { location }
             .mapLeft { UnknownLocationException(it) }
 
-    protected fun World.findLocation(position: Position): Either<LocationException, Location> =
-        Either.catch { getCell(position) }
-            .flatMap { cell -> Either.catch { getLocation(cell.locationId!!) } }
-            .mapLeft { LocationNotFoundByPositionException(position) }
-
-    protected fun Location.save(): Either<LocationException, Location> =
-        provider.get()
-            .map { world -> world.updateLocation(this) }
-            .flatMap { world -> provider.set(world) }
-            .map { this }
-            .mapLeft { UnknownLocationException(it) }
-
-    protected fun Location.publishEvents(): Either<LocationException, Location> =
-        Either.catch { eventPublisher.publish(this.pullEvents()).let { this } }
+    override fun publishEvents(location: Location): Either<LocationException, Location> =
+        Either.catch { eventPublisher.publish(location.pullEvents()).let { location } }
             .mapLeft { UnknownLocationException(it) }
 }

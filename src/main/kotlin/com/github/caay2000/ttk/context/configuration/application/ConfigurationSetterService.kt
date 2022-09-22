@@ -1,12 +1,18 @@
 package com.github.caay2000.ttk.context.configuration.application
 
 import arrow.core.Either
-import com.github.caay2000.ttk.api.provider.Provider
 import com.github.caay2000.ttk.context.configuration.domain.Configuration
+import com.github.caay2000.ttk.context.location.domain.LocationConfiguration
+import com.github.caay2000.ttk.context.pathfinding.domain.PathfindingConfiguration
+import com.github.caay2000.ttk.context.world.domain.WorldConfiguration
 
-class ConfigurationSetterService(private val provider: Provider) {
+class ConfigurationSetterService {
 
-    fun invoke(configuration: Configuration): Either<ConfigurationException, Configuration> =
-        provider.setConfiguration(configuration)
-            .mapLeft { UnknownConfigurationException(it) }
+    fun invoke(configuration: Configuration): Either<ConfigurationException, Unit> =
+        Either.catch {
+            WorldConfiguration.fromConfiguration(configuration)
+            LocationConfiguration.fromConfiguration(configuration)
+            PathfindingConfiguration.fromConfiguration(configuration)
+        }.mapLeft { UnknownConfigurationException(it) }
+            .void()
 }

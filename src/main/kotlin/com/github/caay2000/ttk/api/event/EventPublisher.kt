@@ -1,6 +1,6 @@
 package com.github.caay2000.ttk.api.event
 
-interface EventPublisher<in EVENT> {
+interface EventPublisher {
 
-    fun publish(events: List<EVENT>)
+    fun <EVENT : Event> publish(events: List<EVENT>)
 }

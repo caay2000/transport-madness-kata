@@ -1,30 +1,37 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
-import com.github.caay2000.ttk.infra.provider.DefaultProvider
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQuery
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQueryResponse
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
 import com.github.caay2000.ttk.mother.WorldMother
+import com.github.caay2000.ttk.mother.world.CellMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class EntityUpdateMoverServiceTest {
 
-    private val provider = DefaultProvider()
-    private val eventPublisher: EventPublisher<Event> = mock()
-    private val sut = EntityUpdateMoverService(provider, eventPublisher)
+    private val queryExecutor: QueryExecutor = mock()
+
+    private val sut = EntityUpdateMoverService(queryExecutor)
 
     @Test
     fun `entity does not move if STOPPED`() {
 
-        `world exists`(stoppedEntity)
+        `world exists`()
 
         sut.invoke(stoppedEntity).shouldBeRight {
             assertThat(it).isEqualTo(stoppedEntity)
@@ -34,7 +41,7 @@ internal class EntityUpdateMoverServiceTest {
     @Test
     fun `entity does not move if route is not assigned`() {
 
-        `world exists`(noRouteAssignedEntity)
+        `world exists`()
 
         sut.invoke(noRouteAssignedEntity).shouldBeRight {
             assertThat(it).isEqualTo(noRouteAssignedEntity)
@@ -44,7 +51,7 @@ internal class EntityUpdateMoverServiceTest {
     @Test
     fun `entity moves if it has an assigned route`() {
 
-        `world exists`(movingEntityWithNextSection)
+        `world exists`()
 
         sut.invoke(movingEntityWithNextSection).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(1, 0))
@@ -54,19 +61,47 @@ internal class EntityUpdateMoverServiceTest {
     @Test
     fun `entity updates next section and moves if it has an assigned route`() {
 
-        `world exists`(movingEntityWithoutNextSection)
+        `world exists`()
+        `next section is retrieved correctly`()
 
         sut.invoke(movingEntityWithoutNextSection).shouldBeRight {
             assertThat(it.currentPosition).isEqualTo(Position(1, 0))
         }
     }
 
-    private fun `world exists`(entity: Entity) {
-        provider.set(
-            WorldMother.random(
-                entities = mapOf(entity.id to entity),
-                connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))
-            )
+    // TODO complete this test
+    @Test
+    @Disabled
+    fun `entity updates next section with and empty section and TODO`() {
+
+        `world exists`()
+        `next section is retrieved correctly`()
+
+        sut.invoke(movingEntityWithoutNextSection).shouldBeRight {
+            assertThat(it.currentPosition).isEqualTo(Position(1, 0))
+        }
+    }
+
+    @Test
+    fun `service does not publish any event`() {
+
+        `world exists`()
+        `next section is retrieved correctly`()
+
+        sut.invoke(movingEntityWithoutNextSection).shouldBeRight {
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
+        }
+    }
+
+    private fun `world exists`() {
+        whenever(queryExecutor.execute<FindWorldQueryResponse>(any<FindWorldQuery>())).thenReturn(
+            FindWorldQueryResponse(WorldMother.random(connectedPaths = mapOf(Position(0, 0) to listOf(Position(3, 0)))))
+        )
+    }
+
+    private fun `next section is retrieved correctly`() {
+        whenever(queryExecutor.execute<FindPathQueryResponse>(any<FindPathQuery>())).thenReturn(
+            FindPathQueryResponse(listOf(CellMother.random(0, 0), CellMother.random(1, 0)))
         )
     }
 

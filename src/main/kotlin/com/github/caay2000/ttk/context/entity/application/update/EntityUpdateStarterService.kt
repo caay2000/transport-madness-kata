@@ -1,21 +1,32 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.Either
-import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
-import com.github.caay2000.ttk.context.entity.application.EntityService
+import arrow.core.right
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
-import com.github.caay2000.ttk.context.entity.domain.EntityUpdateStarterServiceException
-import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy
-import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy.SimpleShouldResumeRouteStrategy
+import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
+import com.github.caay2000.ttk.context.location.application.LocationRepository
+import com.github.caay2000.ttk.context.location.domain.Location
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQuery
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryResponse
 
-class EntityUpdateStarterService(provider: Provider, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
+class EntityUpdateStarterService(private val queryExecutor: QueryExecutor) {
 
-    private val shouldResumeRouteStrategy: ShouldResumeRouteStrategy = SimpleShouldResumeRouteStrategy(provider)
+    fun invoke(entity: Entity): Either<EntityException, Entity> =
+        if (entity.isStopped) entity.resumeRoute()
+        else entity.right()
 
-    fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
-        Either.catch { initialEntity.updateStart(shouldResumeRouteStrategy) }
-            .mapLeft { EntityUpdateStarterServiceException(it) }
+    private fun Entity.resumeRoute(): Either<EntityException, Entity> =
+        findLocation(this)
+            .map { location -> shouldResumeRoute(location) }
+            .map { shouldResume -> if (shouldResume) updateStart() else this }
+
+    private fun findLocation(entity: Entity): Either<EntityException, Location> =
+        Either.catch {
+            queryExecutor.execute<FindLocationQueryResponse>(FindLocationQuery((LocationRepository.FindLocationCriteria.ByPosition(entity.currentPosition)))).value
+        }.mapLeft { UnknownEntityException(it) }
+
+    private fun Entity.shouldResumeRoute(location: Location): Boolean =
+        currentDuration > location.configuration.cityDefaultWaitingTurnsForEntities
 }

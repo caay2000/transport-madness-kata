@@ -9,6 +9,7 @@ sealed class DomainId(uuid: UUID) {
 }
 
 data class WorldId(override val uuid: UUID = UUID.randomUUID()) : DomainId(uuid)
+data class CompanyId(override val uuid: UUID = UUID.randomUUID()) : DomainId(uuid)
 data class EntityId(override val uuid: UUID = UUID.randomUUID()) : DomainId(uuid)
 data class LocationId(override val uuid: UUID = UUID.randomUUID()) : DomainId(uuid)
 

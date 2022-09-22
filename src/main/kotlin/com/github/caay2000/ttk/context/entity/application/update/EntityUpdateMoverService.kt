@@ -1,20 +1,56 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import arrow.core.Either
-import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
-import com.github.caay2000.ttk.context.entity.application.EntityService
+import arrow.core.flatMap
+import arrow.core.right
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityException
-import com.github.caay2000.ttk.context.entity.domain.EntityUpdateMoverServiceException
-import com.github.caay2000.ttk.context.entity.domain.update.EntityMovementStrategy
+import com.github.caay2000.ttk.context.entity.domain.UnknownEntityException
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
+import com.github.caay2000.ttk.context.world.domain.Cell
+import com.github.caay2000.ttk.context.world.domain.Position
+import com.github.caay2000.ttk.context.world.domain.World
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQuery
+import com.github.caay2000.ttk.context.world.primary.query.FindWorldQueryResponse
+import com.github.caay2000.ttk.shared.CompanyId
 
-class EntityUpdateMoverService(provider: Provider, eventPublisher: EventPublisher<Event>) : EntityService(provider, eventPublisher) {
+class EntityUpdateMoverService(private val queryExecutor: QueryExecutor) {
 
-    private val entityMovementStrategy = EntityMovementStrategy.SimpleEntityMovementStrategy(provider)
+    fun invoke(entity: Entity): Either<EntityException, Entity> =
+        if (entity.shouldMove) entity.move()
+        else entity.right()
 
-    fun invoke(initialEntity: Entity): Either<EntityException, Entity> =
-        Either.catch { initialEntity.updateMove(entityMovementStrategy) }
-            .mapLeft { EntityUpdateMoverServiceException(it) }
+    private fun Entity.move(): Either<EntityException, Entity> =
+        shouldUpdateNextSection()
+            .flatMap { needNewSection -> if (needNewSection) this.updateNextSection() else this.right() }
+            .map { entity -> entity.updateMove() }
+
+    private fun Entity.shouldUpdateNextSection(): Either<EntityException, Boolean> = route.nextSectionList.isEmpty().right()
+
+    // TODO this findWorld should be moved to pathfinding context
+    private fun Entity.updateNextSection(): Either<EntityException, Entity> =
+        findWorld()
+            .flatMap { world -> this.findNextSection(world, currentPosition, route.currentDestination) }
+            .map { section -> updateNextSection(section.value.drop(1)) }
+            .mapLeft { UnknownEntityException(it) }
+
+    private fun findWorld() = Either.catch { queryExecutor.execute<FindWorldQueryResponse>(FindWorldQuery()).value }
+        .mapLeft { UnknownEntityException(it) }
+
+    private fun Entity.findNextSection(world: World, source: Position, target: Position) =
+        Either.catch {
+            queryExecutor.execute<FindPathQueryResponse>(
+                FindPathQuery(
+                    needConnection = true,
+                    cells = world.cells.values.filterByCompanyId(companyId),
+                    source = world.getCell(source),
+                    target = world.getCell(target)
+                )
+            )
+        }.mapLeft { UnknownEntityException(it) }
+
+    private fun Collection<Cell>.filterByCompanyId(companyId: CompanyId) =
+        this.filter { it.connection is Cell.ConnectedCell && it.connection.companyId == companyId }
 }

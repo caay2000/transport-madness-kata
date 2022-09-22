@@ -1,15 +1,17 @@
 package com.github.caay2000.ttk.infra.eventbus
 
+import com.github.caay2000.ttk.api.event.Command
+import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.Query
 
-class KTEventPublisher<in EVENT> : EventPublisher<EVENT> {
+class KTEventPublisher : EventPublisher {
 
-    override fun publish(events: List<EVENT>) {
+    override fun <EVENT : Event> publish(events: List<EVENT>) {
         events.forEach { event ->
-//            println(event)
             publish(event)
         }
     }
 
-    private fun publish(event: EVENT) = KTEventBus.getInstance<EVENT>().publishEvent(event)
+    private fun <EVENT : Event> publish(event: EVENT) = KTEventBus.getInstance<Command, Query, EVENT>().publishEvent(event)
 }

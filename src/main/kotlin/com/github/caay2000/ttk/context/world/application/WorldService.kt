@@ -1,31 +1,31 @@
 package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.Either
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
-import com.github.caay2000.ttk.context.configuration.domain.Configuration
-import com.github.caay2000.ttk.context.world.domain.ConfigurationNotFoundWorldException
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
-import com.github.caay2000.ttk.context.world.domain.WorldNotFoundWorldException
 
-abstract class WorldService(private val provider: Provider, private val eventBus: EventPublisher<Event>) {
+interface WorldServiceApi {
 
-    protected fun findWorld(): Either<WorldException, World> =
-        provider.get()
-            .mapLeft { WorldNotFoundWorldException(it) }
+    fun find(): Either<WorldException, World>
+    fun save(world: World): Either<WorldException, World>
+    fun publishEvents(world: World): Either<WorldException, World>
+}
 
-    protected fun findConfiguration(): Either<WorldException, Configuration> =
-        provider.getConfiguration()
-            .mapLeft { ConfigurationNotFoundWorldException(it) }
+fun worldService(worldRepository: WorldRepository, eventPublisher: EventPublisher) = object : WorldServiceApi {
 
-    protected fun World.save(): Either<WorldException, World> =
-        provider.set(this)
+    private val worldFinderService = WorldFinderService(worldRepository)
+
+    override fun find(): Either<WorldException, World> =
+        worldFinderService.invoke()
+
+    override fun save(world: World): Either<WorldException, World> =
+        worldRepository.save(world)
+            .map { world }
             .mapLeft { UnknownWorldException(it) }
 
-    protected fun World.publishEvents(): Either<WorldException, World> =
-        Either.catch { eventBus.publish(this.pullEvents()).let { this } }
+    override fun publishEvents(world: World): Either<WorldException, World> =
+        Either.catch { eventPublisher.publish(world.pullEvents()).let { world } }
             .mapLeft { UnknownWorldException(it) }
 }

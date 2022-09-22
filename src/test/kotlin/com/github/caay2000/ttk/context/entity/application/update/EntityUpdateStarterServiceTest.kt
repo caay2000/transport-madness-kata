@@ -1,31 +1,32 @@
 package com.github.caay2000.ttk.context.entity.application.update
 
 import com.github.caay2000.ttk.api.event.Event
-import com.github.caay2000.ttk.api.event.EventPublisher
+import com.github.caay2000.ttk.api.event.QueryExecutor
 import com.github.caay2000.ttk.context.entity.domain.Entity
 import com.github.caay2000.ttk.context.entity.domain.EntityStatus
+import com.github.caay2000.ttk.context.location.primary.query.FindLocationQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Position
-import com.github.caay2000.ttk.infra.provider.DefaultProvider
 import com.github.caay2000.ttk.mother.ConfigurationMother
 import com.github.caay2000.ttk.mother.EntityMother
 import com.github.caay2000.ttk.mother.RouteMother
-import com.github.caay2000.ttk.mother.WorldMother
+import com.github.caay2000.ttk.mother.set
 import com.github.caay2000.ttk.mother.world.location.LocationMother
 import io.kotest.assertions.arrow.either.shouldBeRight
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class EntityUpdateStarterServiceTest {
 
-    private val provider = DefaultProvider()
-    private val eventPublisher: EventPublisher<Event> = mock()
-    private val sut = EntityUpdateStarterService(provider, eventPublisher)
+    private val queryExecutor: QueryExecutor = mock()
+    private val sut = EntityUpdateStarterService(queryExecutor)
 
     @Test
     fun `entity should wait x turns in STOP`() {
 
-        `world exists`(waitingEntity)
+        `world exists`()
 
         sut.invoke(waitingEntity).shouldBeRight {
             assertThat(it).isEqualTo(waitingEntity)
@@ -35,7 +36,7 @@ internal class EntityUpdateStarterServiceTest {
     @Test
     fun `entity starts movement to next route destination after configuration$turnsStoppedInStation turns in STOP`() {
 
-        `world exists`(firstStopReadyEntity)
+        `world exists`()
 
         sut.invoke(firstStopReadyEntity).shouldBeRight {
             assertThat(it).isEqualTo(
@@ -51,7 +52,7 @@ internal class EntityUpdateStarterServiceTest {
     @Test
     fun `entity starts movement to initial destination after configuration$turnsStoppedInStation turns in STOP if current stop is the last one`() {
 
-        `world exists`(lastStopReadyEntity)
+        `world exists`()
 
         sut.invoke(lastStopReadyEntity).shouldBeRight {
             assertThat(it).isEqualTo(
@@ -64,18 +65,21 @@ internal class EntityUpdateStarterServiceTest {
         }
     }
 
-    private fun `world exists`(entity: Entity) {
-        provider.set(
-            WorldMother.random(
-                entities = mapOf(entity.id to entity),
-                locations = mapOf(location.id to location),
-                connectedPaths = mapOf(Position(3, 0) to listOf(Position(3, 4)))
-            )
-        )
-        provider.setConfiguration(configuration)
+    @Test
+    fun `service does not publish any event`() {
+
+        `world exists`()
+
+        sut.invoke(lastStopReadyEntity).shouldBeRight {
+            assertThat(it.pullEvents()).isEqualTo(emptyList<Event>())
+        }
     }
 
-    private val configuration = ConfigurationMother.random()
+    private fun `world exists`() {
+        whenever(queryExecutor.execute<FindLocationQueryResponse>(any())).thenReturn(FindLocationQueryResponse(location))
+    }
+
+    private val configuration = ConfigurationMother.random().set()
 
     private val location = LocationMother.random(position = Position(3, 0))
 

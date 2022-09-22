@@ -1,16 +1,18 @@
 package com.github.caay2000.ttk.context.entity.domain
 
-import com.github.caay2000.ttk.context.entity.domain.update.EntityMovementStrategy
-import com.github.caay2000.ttk.context.entity.domain.update.LoadPassengersStrategy
-import com.github.caay2000.ttk.context.entity.domain.update.ShouldResumeRouteStrategy
+import com.github.caay2000.ttk.context.entity.event.EntityCreatedEvent
+import com.github.caay2000.ttk.context.entity.event.EntityLoadedEvent
 import com.github.caay2000.ttk.context.entity.event.EntityUnloadedEvent
+import com.github.caay2000.ttk.context.world.domain.Cell
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.shared.Aggregate
+import com.github.caay2000.ttk.shared.CompanyId
 import com.github.caay2000.ttk.shared.EntityId
 import com.github.caay2000.ttk.shared.randomDomainId
 
 data class Entity(
     override val id: EntityId,
+    val companyId: CompanyId,
     val entityType: EntityType,
     val currentPosition: Position,
     val currentDuration: Int,
@@ -20,14 +22,17 @@ data class Entity(
 ) : Aggregate() {
 
     companion object {
-        fun create(entityType: EntityType, position: Position): Entity = Entity(
+        fun create(companyId: CompanyId, entityType: EntityType, position: Position): Entity = Entity(
             id = randomDomainId(),
+            companyId = companyId,
             entityType = entityType,
             currentPosition = position,
             currentDuration = 0,
             route = Route.create(listOf(position)),
             pax = 0
-        )
+        ).also {
+            it.pushEvent(EntityCreatedEvent(aggregateId = it.id, companyId = it.companyId, entityType = it.entityType))
+        }
     }
 
     private val currentDestination: Position
@@ -36,7 +41,7 @@ data class Entity(
     private val destinationReached: Boolean
         get() = isInRoute && currentPosition == currentDestination
 
-    private val shouldMove: Boolean
+    val shouldMove: Boolean
         get() = isInRoute && isRouteAssigned
 
     private val isRouteAssigned: Boolean
@@ -45,24 +50,20 @@ data class Entity(
     private val isInRoute: Boolean
         get() = status == EntityStatus.IN_ROUTE
 
-    private val isStopped: Boolean
+    val isStopped: Boolean
         get() = status == EntityStatus.STOP
 
     fun assignRoute(route: Route) = copy(route = route)
 
     fun update(): Entity = copy(currentDuration = currentDuration + 1)
 
-    fun updateLoad(loadPassengersStrategy: LoadPassengersStrategy): Entity =
-        if (isStopped && currentDuration == 1) loadPassengersStrategy.invoke(this)
-        else this
+    fun updateLoad(amount: Int): Entity = copy(pax = pax + amount)
+        .also { it.pushEvents(pullEvents() + EntityLoadedEvent(id, amount, currentPosition)) }
 
-    fun updateStart(shouldResumeRouteStrategy: ShouldResumeRouteStrategy): Entity =
-        if (isStopped) shouldResumeRouteStrategy.invoke(this)
-        else this
+    fun updateStart(): Entity = copy(route = route.nextStop(), status = EntityStatus.IN_ROUTE, currentDuration = 0)
 
-    fun updateMove(entityMovementStrategy: EntityMovementStrategy): Entity =
-        if (shouldMove) entityMovementStrategy.invoke(this)
-        else this
+    fun updateNextSection(nextSection: List<Cell>): Entity = copy(route = route.updateNextSection(nextSection))
+    fun updateMove(): Entity = copy(currentPosition = route.nextSection.position, route = route.dropNextSection())
 
     fun updateStop(): Entity =
         if (destinationReached) copy(status = EntityStatus.STOP, currentDuration = 0)
@@ -70,6 +71,6 @@ data class Entity(
 
     fun updateUnload(): Entity =
         if (isStopped && currentDuration == 0 && pax > 0) {
-            copy(pax = 0).also { it.pushEvent(EntityUnloadedEvent(id, pax, currentPosition)) }
+            copy(pax = 0).also { it.pushEvents(pullEvents() + EntityUnloadedEvent(id, pax, currentPosition)) }
         } else this
 }

@@ -2,38 +2,54 @@ package com.github.caay2000.ttk.context.world.application
 
 import arrow.core.Either
 import arrow.core.flatMap
-import com.github.caay2000.ttk.api.event.Event
 import com.github.caay2000.ttk.api.event.EventPublisher
-import com.github.caay2000.ttk.api.provider.Provider
+import com.github.caay2000.ttk.api.event.QueryExecutor
+import com.github.caay2000.ttk.context.company.domain.Company
+import com.github.caay2000.ttk.context.company.primary.query.FindCompanyQuery
+import com.github.caay2000.ttk.context.company.primary.query.FindCompanyQueryResponse
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQuery
+import com.github.caay2000.ttk.context.pathfinding.primary.query.FindPathQueryResponse
 import com.github.caay2000.ttk.context.world.domain.Cell
+import com.github.caay2000.ttk.context.world.domain.CompanyNotFoundException
 import com.github.caay2000.ttk.context.world.domain.Position
 import com.github.caay2000.ttk.context.world.domain.UnknownWorldException
 import com.github.caay2000.ttk.context.world.domain.World
 import com.github.caay2000.ttk.context.world.domain.WorldException
-import com.github.caay2000.ttk.pathfinding.AStartPathfindingStrategy
-import com.github.caay2000.ttk.pathfinding.PathfindingConfiguration
-import com.github.caay2000.ttk.pathfinding.PathfindingResult
+import com.github.caay2000.ttk.shared.CompanyId
 
-class WorldConnectionCreatorService(
-    provider: Provider,
-    eventPublisher: EventPublisher<Event>,
-    pathfindingConfiguration: PathfindingConfiguration
-) : WorldService(provider, eventPublisher) {
+class WorldConnectionCreatorService(worldRepository: WorldRepository, private val queryExecutor: QueryExecutor, eventPublisher: EventPublisher) {
 
-    private val pathfinding = AStartPathfindingStrategy(pathfindingConfiguration)
+    private val worldService: WorldServiceApi = worldService(worldRepository, eventPublisher)
 
-    fun invoke(source: Position, target: Position): Either<WorldException, World> =
-        findWorld()
-            .flatMap { world -> world.createConnection(source, target) }
-            .flatMap { world -> world.save() }
-            .flatMap { world -> world.publishEvents() }
+    fun invoke(companyId: CompanyId, source: Position, target: Position): Either<WorldException, World> =
+        guardCompanyExists(companyId)
+            .flatMap { worldService.find() }
+            .flatMap { world -> world.createConnection(companyId, source, target) }
+            .flatMap { world -> worldService.save(world) }
+            .flatMap { world -> worldService.publishEvents(world) }
 
-    private fun World.createConnection(source: Position, target: Position): Either<WorldException, World> =
-        pathfinding.invoke(cells, getCell(source), getCell(target))
-            .map { path -> path.updateCellsConnection() }
+    private fun guardCompanyExists(companyId: CompanyId): Either<WorldException, Company> =
+        Either.catch { queryExecutor.execute<FindCompanyQueryResponse>(FindCompanyQuery(companyId)).value }
+            .mapLeft { CompanyNotFoundException(it) }
+
+    private fun World.createConnection(companyId: CompanyId, source: Position, target: Position): Either<WorldException, World> =
+        findConnection(source, target)
+            .map { path -> path.updateCellsConnection(companyId) }
             .map { updatedCells -> createConnection(updatedCells) }
             .mapLeft { error -> UnknownWorldException(error) }
 
-    private fun PathfindingResult.updateCellsConnection(): Set<Cell> =
-        this.path.map { cell -> cell.createConnection() }.toSet()
+    private fun List<Cell>.updateCellsConnection(companyId: CompanyId): List<Cell> =
+        this.map { cell -> cell.createConnection(companyId) }
+
+    private fun World.findConnection(source: Position, target: Position) =
+        Either.catch {
+            queryExecutor.execute<FindPathQueryResponse>(
+                FindPathQuery(
+                    needConnection = false,
+                    cells = cells.values,
+                    source = getCell(source),
+                    target = getCell(target)
+                )
+            ).value
+        }.mapLeft { UnknownWorldException(it) }
 }
