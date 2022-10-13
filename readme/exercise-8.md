@@ -4,7 +4,7 @@ What about other people wanting to create their own transport madness net? Let's
 
 <kbd> <img src="exercise_8_header.png" /> </kbd>
 
-[Home](../README.md) | [Exercise 7 - Map I](exercise-7.md)
+[Home](../README.md) | [Exercise 7 - Map I](exercise-7.md) | [Exercise 9 - Money I](exercise-9.md)
 
 ## Summary
 
